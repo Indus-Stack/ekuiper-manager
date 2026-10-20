@@ -31,6 +31,14 @@ This project fills that gap with a manager that is:
 - **Safe by default** — credentials stay server-side, stored secrets are encrypted, and the browser cannot choose arbitrary proxy destinations.
 - **Useful without a cloud account** — AI assistance is optional and disabled by default.
 
+### 🔄 Engine Compatibility
+
+eKuiper Manager primarily targets official LF Edge eKuiper deployments.
+
+The Manager also provides partial support for **reKuiper**. reKuiper is a high-performance stream-processing engine written in Rust for edge environments. It eliminates runtime pauses and reduces memory use while keeping compatibility with eKuiper SQL. Operators can probe, configure, and run core streams and rules on reKuiper preview instances.
+
+Full support will arrive by the end of this year when reKuiper reaches a stable release.
+
 ---
 
 ## 📋 Feature Status
@@ -112,6 +120,7 @@ See the living [development plan](DEVELOPMENT_PLAN.md) for tracked outcomes, gap
 - ⏳ Safe diagnostic bundles and bounded component logs.
 - ⏳ Verified plugin supply-chain workflow.
 - ⏳ Optional guided onboarding and deeper local automation.
+- ⏳ Full support for stable reKuiper releases by the end of this year.
 
 ---
 

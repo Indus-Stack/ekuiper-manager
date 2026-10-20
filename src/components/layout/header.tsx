@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LogOut, Moon, Settings, Sun, UserRound } from 'lucide-react';
+import { LogOut, Settings, UserRound } from 'lucide-react';
 import { ServerSelector } from './server-selector';
 import { MobileNav } from './mobile-nav';
 import { Button } from '@/components/ui/button';
@@ -28,22 +28,13 @@ interface SessionUser {
 
 export function Header({ title }: HeaderProps) {
   const router = useRouter();
-  const [isDark, setIsDark] = React.useState(true);
   const [user, setUser] = React.useState<SessionUser | null>(null);
 
   React.useEffect(() => {
-    setIsDark(document.documentElement.classList.contains('dark'));
     fetch('/api/auth/session', { cache: 'no-store' })
       .then((response) => (response.ok ? response.json() : null))
       .then((payload) => setUser(payload?.user ?? null));
   }, []);
-
-  const toggleTheme = () => {
-    const next = !isDark;
-    setIsDark(next);
-    document.documentElement.classList.toggle('dark', next);
-    localStorage.setItem('theme', next ? 'dark' : 'light');
-  };
 
   const logout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -59,9 +50,6 @@ export function Header({ title }: HeaderProps) {
       </div>
       <div className="flex items-center gap-1.5">
         <ServerSelector />
-        <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle colour theme">
-          {isDark ? <Sun className="size-4" aria-hidden="true" /> : <Moon className="size-4" aria-hidden="true" />}
-        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Account menu">
