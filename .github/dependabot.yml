@@ -9,16 +9,8 @@ updates:
       dependencies:
         patterns:
           - "*"
-        exclude-patterns:
-          - "tailwindcss"
     ignore:
-      - dependency-name: "tailwindcss"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "typescript"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "eslint"
-        update-types: ["version-update:semver-major"]
-      - dependency-name: "@eslint/*"
+      - dependency-name: "*"
         update-types: ["version-update:semver-major"]
     
   - package-ecosystem: "github-actions"
