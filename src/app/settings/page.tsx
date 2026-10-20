@@ -3,41 +3,17 @@
 import * as React from 'react';
 import Link from 'next/link';
 import {
-  Check,
   Database,
-  Globe,
   HelpCircle,
   KeyRound,
   Server,
   Users,
 } from 'lucide-react';
-import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function SettingsPage() {
-  const [lang, setLang] = React.useState('en');
-
-  React.useEffect(() => {
-    try {
-      const stored = localStorage.getItem('language');
-      if (stored) setLang(stored);
-    } catch {
-      // safe fallback
-    }
-  }, []);
-
-  const handleLangChange = (newLang: string) => {
-    setLang(newLang);
-    try {
-      localStorage.setItem('language', newLang);
-      toast.success(newLang === 'zh' ? '语言已切换为简体中文' : 'Language set to English (US)');
-    } catch {
-      // ignore
-    }
-  };
-
   return (
     <AppLayout title="Settings">
       <div className="mx-auto max-w-4xl flex flex-col gap-6 pb-12">
@@ -122,40 +98,6 @@ export default function SettingsPage() {
           </Card>
         </div>
 
-        {/* Localization & Preferences */}
-        <Card className="border-border/80 bg-card/60">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Globe className="size-5 text-primary" />
-              Language & Localization
-            </CardTitle>
-            <CardDescription className="text-xs">
-              Select interface language. Settings are stored locally and synced with sub-components.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant={lang === 'en' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleLangChange('en')}
-                className="gap-2 text-xs"
-              >
-                {lang === 'en' && <Check className="size-3.5" />}
-                English (US)
-              </Button>
-              <Button
-                variant={lang === 'zh' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => handleLangChange('zh')}
-                className="gap-2 text-xs"
-              >
-                {lang === 'zh' && <Check className="size-3.5" />}
-                简体中文 (Chinese)
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Persistence & Data Integrity */}
         <Card className="border-border/80 bg-card/40">
