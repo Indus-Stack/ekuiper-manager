@@ -54,7 +54,7 @@ jobs:
           timeout 120 sh -c 'until curl --fail --silent http://localhost:3000/health/ready; do sleep 2; done'
       - name: Upload browser diagnostics
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: |
