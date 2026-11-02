@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { AlertTriangle, Trash2, Power } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 type ConfirmVariant = "danger" | "warning" | "info";
 
@@ -57,14 +58,17 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = "Confirm",
-  cancelLabel = "Cancel",
+  confirmLabel,
+  cancelLabel,
   variant = "danger",
   onConfirm,
   loading = false,
 }: ConfirmDialogProps) {
+  const t = useT();
   const config = variantConfig[variant];
   const Icon = config.icon;
+  const resolvedConfirm = confirmLabel ?? t("common.confirm");
+  const resolvedCancel = cancelLabel ?? t("common.cancel");
   const [isLoading, setIsLoading] = React.useState(false);
 
   const handleConfirm = async () => {
@@ -98,7 +102,7 @@ export function ConfirmDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isLoading || loading}>
-            {cancelLabel}
+            {resolvedCancel}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
@@ -111,7 +115,7 @@ export function ConfirmDialog({
             {(isLoading || loading) && (
               <span className="mr-2 size-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />
             )}
-            {confirmLabel}
+            {resolvedConfirm}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

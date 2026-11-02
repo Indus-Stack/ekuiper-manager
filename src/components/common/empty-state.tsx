@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Database, FileX, Inbox, Plus, RefreshCw, Search } from "lucide-react";
 
@@ -69,11 +70,16 @@ interface ErrorStateProps {
 }
 
 export function ErrorState({
-  title = "Something went wrong",
-  description = "An error occurred while loading the data. Please try again.",
+  title,
+  description,
   onRetry,
   className,
 }: ErrorStateProps) {
+  // Defaults are resolved here rather than in the parameter list: hooks
+  // cannot run in a default expression.
+  const t = useT();
+  const resolvedTitle = title ?? t("layout.somethingWentWrong");
+  const resolvedDescription = description ?? t("layout.loadErrorDescription");
   return (
     <div
       className={cn(
@@ -84,14 +90,14 @@ export function ErrorState({
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
         <FileX className="h-8 w-8 text-destructive" />
       </div>
-      <h3 className="mt-4 text-lg font-semibold">{title}</h3>
+      <h3 className="mt-4 text-lg font-semibold">{resolvedTitle}</h3>
       <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-        {description}
+        {resolvedDescription}
       </p>
       {onRetry && (
         <Button onClick={onRetry} variant="outline" className="mt-4">
           <RefreshCw className="mr-2 h-4 w-4" />
-          Try Again
+          {t("layout.retry")}
         </Button>
       )}
     </div>

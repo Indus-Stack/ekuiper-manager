@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Check, ChevronDown, Plus, Server } from 'lucide-react';
+import { useT } from '@/lib/i18n';
 import { useServerStore } from '@/stores/server-store';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,15 +17,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 export function ServerSelector() {
+  const t = useT();
   const { servers, activeServerId, setActiveServer } = useServerStore();
   const active = servers.find((node) => node.id === activeServerId);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="max-w-[140px] sm:max-w-[220px] md:max-w-[260px] gap-2 touch-manipulation" aria-label="Select eKuiper node">
+        <Button variant="outline" className="max-w-[140px] sm:max-w-[220px] md:max-w-[260px] gap-2 touch-manipulation" aria-label={t('layout.selectNodeButton')}>
           <Server className="size-4 shrink-0" aria-hidden="true" />
-          <span className="truncate" title={active?.name ?? 'Select node'}>{active?.name ?? 'Select node'}</span>
+          <span className="truncate" title={active?.name ?? t('layout.selectNode')}>{active?.name ?? t('layout.selectNode')}</span>
           {active?.version && (
             <Badge variant="secondary" className="hidden font-normal lg:inline-flex">
               {active.version}
@@ -60,8 +62,8 @@ export function ServerSelector() {
                     {node.status === 'connected' ? ' (Connected)' : node.status === 'error' ? ' (Error)' : ' (Disconnected)'}
                   </span>
                 </span>
-                <span className="block truncate text-xs text-muted-foreground" title={node.version ? `eKuiper ${node.version}` : 'Version not detected'}>
-                  {node.version ? `eKuiper ${node.version}` : 'Version not detected'}
+                <span className="block truncate text-xs text-muted-foreground" title={node.version ? `eKuiper ${node.version}` : t('layout.versionNotDetected')}>
+                  {node.version ? `eKuiper ${node.version}` : t('layout.versionNotDetected')}
                 </span>
               </span>
               {node.id === activeServerId && <Check className="mt-1 size-4 text-primary" aria-hidden="true" />}

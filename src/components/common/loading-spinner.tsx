@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface LoadingSpinnerProps {
   size?: "sm" | "md" | "lg";
@@ -33,10 +34,11 @@ interface LoadingOverlayProps {
   label?: string;
 }
 
-export function LoadingOverlay({ label = "Loading..." }: LoadingOverlayProps) {
+export function LoadingOverlay({ label }: LoadingOverlayProps) {
+  const t = useT();
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-      <LoadingSpinner size="lg" label={label} />
+      <LoadingSpinner size="lg" label={label ?? t("layout.loading")} />
     </div>
   );
 }
@@ -45,10 +47,11 @@ interface LoadingPageProps {
   label?: string;
 }
 
-export function LoadingPage({ label = "Loading..." }: LoadingPageProps) {
+export function LoadingPage({ label }: LoadingPageProps) {
+  const t = useT();
   return (
     <div className="flex h-full min-h-[400px] items-center justify-center">
-      <LoadingSpinner size="lg" label={label} />
+      <LoadingSpinner size="lg" label={label ?? t("layout.loading")} />
     </div>
   );
 }
