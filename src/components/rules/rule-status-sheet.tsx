@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { ekuiperClient } from '@/lib/ekuiper/client';
+import { useT } from '@/lib/i18n';
 
 interface RuleStatusSheetProps {
   ruleId: string | null;
@@ -39,6 +40,7 @@ export function RuleStatusSheet({
   onOpenChange,
   onClearAlarm,
 }: RuleStatusSheetProps) {
+  const t = useT();
   const [status, setStatus] = React.useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [showRaw, setShowRaw] = React.useState(false);
@@ -111,9 +113,7 @@ export function RuleStatusSheet({
             </Button>
           </div>
           <SheetTitle className="text-lg font-mono font-semibold truncate pt-1">{ruleId}</SheetTitle>
-          <SheetDescription className="text-xs text-muted-foreground">
-            Live runtime metrics and execution health for this rule.
-          </SheetDescription>
+          <SheetDescription className="text-xs text-muted-foreground">{t('rule.liveMetricsHint')}</SheetDescription>
         </SheetHeader>
 
         <div className="flex flex-col gap-5 text-sm">
@@ -123,7 +123,7 @@ export function RuleStatusSheet({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="size-4 shrink-0" aria-hidden="true" />
-                  <AlertTitle className="text-xs font-semibold">Rule Exception Detected</AlertTitle>
+                  <AlertTitle className="text-xs font-semibold">{t('rule.ruleExceptionDetected')}</AlertTitle>
                 </div>
                 {onClearAlarm && (
                   <Button
@@ -131,9 +131,7 @@ export function RuleStatusSheet({
                     size="sm"
                     className="h-6 text-[10px] text-destructive border-destructive/30 hover:bg-destructive/20 touch-manipulation"
                     onClick={() => onClearAlarm(ruleId)}
-                  >
-                    Acknowledge
-                  </Button>
+                  >{t('rule.acknowledge')}</Button>
                 )}
               </div>
               <AlertDescription className="mt-2 flex flex-col gap-2">
@@ -153,13 +151,13 @@ export function RuleStatusSheet({
           {/* Quick Metrics Grid */}
           <div className="grid grid-cols-2 gap-2.5">
             <div className="p-3 rounded-lg border border-border/60 bg-muted/20">
-              <span className="text-[11px] text-muted-foreground font-medium block">Exceptions Total</span>
+              <span className="text-[11px] text-muted-foreground font-medium block">{t('rule.exceptionsTotal')}</span>
               <span className="text-xl font-mono tabular-nums font-semibold text-foreground">
                 {exceptionsTotal ? String(exceptionsTotal[1]) : '0'}
               </span>
             </div>
             <div className="p-3 rounded-lg border border-border/60 bg-muted/20">
-              <span className="text-[11px] text-muted-foreground font-medium block">Source Records</span>
+              <span className="text-[11px] text-muted-foreground font-medium block">{t('rule.sourceRecords')}</span>
               <span className="text-xl font-mono tabular-nums font-semibold text-emerald-600 dark:text-emerald-400">
                 {String(
                   statusEntries.find(([k]) => k.includes('source_') && k.endsWith('_records_in_total'))?.[1] ??
@@ -174,9 +172,7 @@ export function RuleStatusSheet({
           {opKeys.length > 0 && (
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-muted-foreground">
-                  Pipeline Operators
-                </span>
+                <span className="text-xs font-semibold text-muted-foreground">{t('rule.pipelineOperators')}</span>
                 <span className="text-[11px] text-muted-foreground">{opKeys.length} active node(s)</span>
               </div>
               <div className="divide-y divide-border/60 rounded-lg border border-border/60 bg-card overflow-hidden">
@@ -222,9 +218,7 @@ export function RuleStatusSheet({
           <div className="pt-2">
             <Button asChild variant="outline" className="w-full text-xs gap-2">
               <Link href={`/rules/${encodeURIComponent(ruleId)}?tab=topology`}>
-                <Network className="size-4" />
-                Open Live Interactive Topology
-                <ArrowRight className="size-3.5 ml-auto text-muted-foreground" />
+                <Network className="size-4" />{t('rule.openLiveTopology')}<ArrowRight className="size-3.5 ml-auto text-muted-foreground" />
               </Link>
             </Button>
           </div>
@@ -234,7 +228,7 @@ export function RuleStatusSheet({
           {/* Raw Metrics JSON Collapsible */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-muted-foreground font-medium">Telemetry Payload</span>
+              <span className="text-xs text-muted-foreground font-medium">{t('rule.telemetryPayload')}</span>
               <Button
                 variant="ghost"
                 size="sm"

@@ -63,6 +63,8 @@ import { useServerStore } from '@/stores/server-store';
 import { RuleTopologyViewer } from '@/components/rules/rule-topology-viewer';
 import { ImportRuleModal } from '@/components/rules/import-rule-modal';
 import { RuleStatusSheet } from '@/components/rules/rule-status-sheet';
+import { useT } from '@/lib/i18n';
+import { ruleStatusKey } from '@/lib/i18n/translate';
 
 interface RuleListRecord {
   id: string;
@@ -82,6 +84,7 @@ function stopped(status?: string): boolean {
 }
 
 export function RuleList() {
+  const t = useT();
   const router = useRouter();
   const { servers, activeServerId } = useServerStore();
   const active = servers.find((node) => node.id === activeServerId);
@@ -148,7 +151,7 @@ export function RuleList() {
       toast.success(`${rule.id} ${action} requested`);
       await load();
     } catch (reason) {
-      toast.error(reason instanceof Error ? reason.message : `Failed to ${action} rule`);
+      toast.error(reason instanceof Error ? reason.message : t('rule.failedToAction', { action }));
     } finally {
       setBusy(null);
     }
@@ -193,7 +196,7 @@ export function RuleList() {
     try {
       const source = await ekuiperClient.getRule(duplicateSource.id);
       await ekuiperClient.createRule(buildDuplicateRule(source, nextId));
-      toast.success(`Created stopped copy ${nextId}`);
+      toast.success(t('rule.createdCopy', { id: nextId }));
       setDuplicateSource(null);
       await load();
       router.push(`/rules/${encodeURIComponent(nextId)}/edit`);
@@ -222,7 +225,7 @@ export function RuleList() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success(`Exported ${ids.length} rule(s)`);
+      toast.success(t('rule.exportedRules', { count: ids.length }));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to export rules');
     } finally {
@@ -294,13 +297,13 @@ export function RuleList() {
   };
 
   return (
-    <AppLayout title="Rules">
+    <AppLayout title={t('rule.rulesTitle')}>
       <div className="mx-auto max-w-7xl flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Rules</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">{t('rule.rulesTitle')}</h2>
             <p className="mt-1 text-muted-foreground">
-              Create and operate rules on {active?.name ?? 'the selected eKuiper node'}.
+              {t('rule.listSubtitle', { node: active?.name ?? t('rule.selectedNode') })}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -308,11 +311,11 @@ export function RuleList() {
               variant="outline"
               size="sm"
               onClick={handleClearAlarms}
-              title="Acknowledge and clear exception alarms"
+              title={t('rule.acknowledgeAlarms')}
               className="text-xs"
             >
               <BellOff className="mr-1.5 size-3.5 text-muted-foreground" />
-              Clear Alarms
+              {t('rule.clearAlarms')}
             </Button>
             <Button
               variant="outline"
@@ -321,7 +324,7 @@ export function RuleList() {
               className="text-xs"
             >
               <Upload className="mr-1.5 size-3.5 text-muted-foreground" />
-              Import Rules
+              {t('rule.importRules')}
             </Button>
             <Button
               variant="outline"
@@ -331,18 +334,18 @@ export function RuleList() {
               className="text-xs"
             >
               <RefreshCw className={`mr-1.5 size-3.5 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
+              {t('rule.refresh')}
             </Button>
             <Button variant="outline" size="sm" asChild className="text-xs transition-transform duration-150 active:scale-[0.97]">
               <Link href="/flows">
                 <Workflow className="mr-1.5 size-3.5 text-primary" />
-                Flows
+                {t('rule.flows')}
               </Link>
             </Button>
             <Button size="sm" asChild className="text-xs transition-transform duration-150 active:scale-[0.97]">
               <Link href="/rules/new">
                 <Plus className="mr-1.5 size-3.5" />
-                Create rule
+                {t('rule.createRule')}
               </Link>
             </Button>
           </div>
@@ -355,7 +358,7 @@ export function RuleList() {
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search rules or tags"
+              placeholder={t('rule.searchPlaceholder')}
               className="pl-9 h-9 text-xs"
             />
           </div>
@@ -380,7 +383,7 @@ export function RuleList() {
                 className="h-7 text-xs text-muted-foreground hover:text-foreground"
                 onClick={() => setSelectedRules(new Set())}
               >
-                Clear
+                {t('rule.clear')}
               </Button>
             </div>
           )}
@@ -395,7 +398,7 @@ export function RuleList() {
         {!active ? (
           <Card className="border-dashed">
             <CardContent className="py-12 text-center text-sm text-muted-foreground">
-              Select an eKuiper node first.
+              {t('rule.selectNodeFirst')}
             </CardContent>
           </Card>
         ) : !loading && !visible.length ? (
@@ -405,7 +408,7 @@ export function RuleList() {
               <h3 className="font-semibold">{search ? 'No matching rules' : 'No rules yet'}</h3>
               {!search && (
                 <Button asChild className="mt-5">
-                  <Link href="/rules/new">Create first rule</Link>
+                  <Link href="/rules/new">{t('rule.createFirstRule')}</Link>
                 </Button>
               )}
             </CardContent>
@@ -416,11 +419,11 @@ export function RuleList() {
               <Checkbox
                 checked={allVisibleSelected}
                 onCheckedChange={toggleSelectAll}
-                aria-label="Select all visible rules"
+                aria-label={t('rule.selectAllVisible')}
               />
-              <span className="flex-1">Rule Name / ID</span>
-              <span className="w-28 text-center">Status</span>
-              <span className="w-24 text-center">Alarms</span>
+              <span className="flex-1">{t('rule.ruleNameId')}</span>
+              <span className="w-28 text-center">{t('rule.statusColumn')}</span>
+              <span className="w-24 text-center">{t('rule.alarmsColumn')}</span>
               <span className="w-10"></span>
             </div>
             <CardContent className="divide-y p-0">
@@ -438,7 +441,7 @@ export function RuleList() {
                     <Checkbox
                       checked={isSelected}
                       onCheckedChange={() => toggleSelectOne(rule.id)}
-                      aria-label={`Select rule ${rule.id}`}
+                      aria-label={t('rule.selectRule', { id: rule.id })}
                     />
 
                     {/* Status Dot with fast inspector trigger */}
@@ -449,7 +452,7 @@ export function RuleList() {
                             type="button"
                             onClick={() => setInspectRuleId(rule.id)}
                             className="p-1 -m-1 rounded hover:bg-muted transition-colors cursor-pointer"
-                            aria-label={`Inspect ${rule.id} status`}
+                            aria-label={t('rule.inspectRuleStatus', { id: rule.id })}
                           >
                             <span
                               aria-hidden="true"
@@ -464,7 +467,7 @@ export function RuleList() {
                           </button>
                         </TooltipTrigger>
                         <TooltipContent side="top" className="text-xs">
-                          Click to inspect live metrics
+                          {t('rule.clickToInspect')}
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -494,13 +497,13 @@ export function RuleList() {
                         type="button"
                         onClick={() => setInspectRuleId(rule.id)}
                         className="cursor-pointer"
-                        aria-label={`Inspect status for ${rule.name || rule.id}`}
+                        aria-label={t('rule.inspectRuleStatus', { id: rule.name || rule.id })}
                       >
                         <Badge
                           variant={running(rule.status) ? 'default' : 'secondary'}
                           className="text-[11px] font-mono capitalize"
                         >
-                          {rule.status ?? 'unknown'}
+                          {t(ruleStatusKey(rule.status))}
                         </Badge>
                       </button>
                     </div>
@@ -521,7 +524,7 @@ export function RuleList() {
                               </Badge>
                             </TooltipTrigger>
                             <TooltipContent side="top" className="max-w-xs text-xs font-mono">
-                              <p className="font-semibold text-destructive">Last exception:</p>
+                              <p className="font-semibold text-destructive">{t('rule.lastException')}</p>
                               <p className="break-words text-[11px]">{alarm.lastException || 'Runtime exception logged'}</p>
                             </TooltipContent>
                           </Tooltip>
@@ -538,7 +541,7 @@ export function RuleList() {
                           variant="ghost"
                           size="icon"
                           disabled={busy === rule.id}
-                          aria-label={`Actions for ${rule.id}`}
+                          aria-label={t('rule.actionsFor', { id: rule.id })}
                           className="size-8"
                         >
                           {busy === rule.id ? (
@@ -552,12 +555,12 @@ export function RuleList() {
                         <DropdownMenuGroup>
                           <DropdownMenuItem onSelect={() => setInspectRuleId(rule.id)}>
                             <Activity className="mr-2 size-4 text-blue-500" aria-hidden="true" />
-                            Inspect Status
+                            {t('rule.inspectStatus')}
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
                             <Link href={`/rules/${encodeURIComponent(rule.id)}?tab=topology`}>
                               <Workflow className="mr-2 size-4 text-purple-500" aria-hidden="true" />
-                              View Topology
+                              {t('rule.viewTopology')}
                             </Link>
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
@@ -566,41 +569,41 @@ export function RuleList() {
                           {!running(rule.status) && (
                             <DropdownMenuItem onSelect={() => void control(rule, 'start')}>
                               <Play className="mr-2 size-4 text-emerald-500" />
-                              Start
+                              {t('rule.start')}
                             </DropdownMenuItem>
                           )}
                           {running(rule.status) && (
                             <DropdownMenuItem onSelect={() => void control(rule, 'stop')}>
                               <Square className="mr-2 size-4 text-amber-500" />
-                              Stop
+                              {t('rule.stop')}
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuItem onSelect={() => void control(rule, 'restart')}>
                             <RotateCw className="mr-2 size-4 text-cyan-500" />
-                            Restart
+                            {t('rule.restart')}
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
                             <Link href={`/rules/${encodeURIComponent(rule.id)}/edit`}>
                               <Pencil className="mr-2 size-4" />
-                              Edit
+                              {t('rule.edit')}
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem asChild>
                             <Link href="/flows">
                               <Workflow className="mr-2 size-4 text-primary" />
-                              Flow Studio
+                              {t('rule.flowStudio')}
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem onSelect={() => openDuplicate(rule)}>
                             <Copy className="mr-2 size-4" />
-                            Duplicate
+                            {t('rule.duplicate')}
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                           <DropdownMenuItem className="text-destructive" onSelect={() => setDeleteRule(rule)}>
                             <Trash2 className="mr-2 size-4" />
-                            Delete
+                            {t('rule.delete')}
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                       </DropdownMenuContent>
@@ -625,13 +628,13 @@ export function RuleList() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Duplicate rule</DialogTitle>
+            <DialogTitle>{t('rule.duplicateRule')}</DialogTitle>
             <DialogDescription>
               Create a stopped copy of {duplicateSource?.id}. Runtime state and status are not copied.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2 py-2">
-            <Label htmlFor="duplicate-rule-id">New rule ID</Label>
+            <Label htmlFor="duplicate-rule-id">{t('rule.newRuleId')}</Label>
             <Input
               id="duplicate-rule-id"
               value={duplicateId}
@@ -649,7 +652,7 @@ export function RuleList() {
           </div>
           <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
             <Button variant="outline" onClick={() => setDuplicateSource(null)} disabled={duplicating} className="touch-manipulation">
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button onClick={() => void duplicate()} disabled={duplicating || !duplicateId.trim()} className="touch-manipulation">
               {duplicating && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}
@@ -677,9 +680,9 @@ export function RuleList() {
       <ConfirmDialog
         open={Boolean(deleteRule)}
         onOpenChange={(open) => !open && setDeleteRule(null)}
-        title="Delete rule?"
-        description={`Delete ${deleteRule?.id ?? 'this rule'} from eKuiper? This cannot be undone.`}
-        confirmLabel="Delete rule"
+        title={t('rule.deleteRuleTitle')}
+        description={t('rule.deleteRuleDescription', { id: deleteRule?.id ?? t('rule.thisRule') })}
+        confirmLabel={t('rule.deleteRuleConfirm')}
         variant="danger"
         onConfirm={remove}
       />
@@ -695,6 +698,7 @@ const tabs: Array<{ id: RuleTab; label: string }> = [
 ];
 
 export function RuleWorkspace({ id }: { id: string }) {
+  const t = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   const tab = (tabs.some((item) => item.id === searchParams.get('tab')) ? searchParams.get('tab') : 'definition') as RuleTab;
@@ -745,7 +749,7 @@ export function RuleWorkspace({ id }: { id: string }) {
     try {
       const source = rule ?? await ekuiperClient.getRule(id);
       await ekuiperClient.createRule(buildDuplicateRule(source as any, nextId));
-      toast.success(`Created stopped copy ${nextId}`);
+      toast.success(t('rule.createdCopy', { id: nextId }));
       setDuplicateOpen(false);
       router.push(`/rules/${encodeURIComponent(nextId)}/edit`);
     } catch (reason) {
@@ -755,20 +759,20 @@ export function RuleWorkspace({ id }: { id: string }) {
     }
   };
   const setTab = (next: RuleTab) => router.replace(`/rules/${encodeURIComponent(id)}?tab=${next}`);
-  const trace = async (action: 'start' | 'stop') => { if (action === 'start') await ekuiperClient.startRuleTrace(id, 'always'); else await ekuiperClient.stopRuleTrace(id); toast.success(`Trace ${action} requested`); await load(); };
+  const trace = async (action: 'start' | 'stop') => { if (action === 'start') await ekuiperClient.startRuleTrace(id, 'always'); else await ekuiperClient.stopRuleTrace(id); toast.success(t('rule.traceRequested', { action })); await load(); };
   const statusValue = String(status?.status ?? 'unknown');
 
   return (
-    <AppLayout title="Rule">
+    <AppLayout title={t('rule.rulesTitle')}>
       <div className="mx-auto max-w-7xl flex flex-col gap-6">
-        <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-end"><div className="flex items-center gap-3"><Button variant="ghost" size="icon" asChild><Link href="/rules" aria-label="Back to rules"><ArrowLeft className="size-5" /></Link></Button><div><div className="flex items-center gap-2"><h2 className="text-2xl font-semibold tracking-tight">{String(rule?.name ?? id)}</h2><Badge variant={running(statusValue) ? 'default' : 'secondary'}>{statusValue}</Badge></div>{Boolean(rule?.name) && <p className="mt-1 text-sm text-muted-foreground">{id}</p>}</div></div><div className="flex flex-wrap gap-2">{running(statusValue) ? <Button variant="outline" onClick={() => void control('stop')}><Square className="mr-2 size-4" />Stop</Button> : <Button variant="outline" onClick={() => void control('start')}><Play className="mr-2 size-4" />Start</Button>}<Button variant="outline" onClick={() => void control('restart')}><RotateCw className="mr-2 size-4" />Restart</Button><Button variant="outline" onClick={() => { setDuplicateId(`${id}_copy`); setDuplicateError(''); setDuplicateOpen(true); }}><Copy className="mr-2 size-4" />Duplicate</Button><Button asChild><Link href={`/rules/${encodeURIComponent(id)}/edit`}><Pencil className="mr-2 size-4" />Edit</Link></Button><Button variant="destructive" size="icon" onClick={() => setDeleteOpen(true)} aria-label="Delete rule"><Trash2 className="size-4" /></Button></div></div>
+        <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-end"><div className="flex items-center gap-3"><Button variant="ghost" size="icon" asChild><Link href="/rules" aria-label={t('rule.backToRules')}><ArrowLeft className="size-5" /></Link></Button><div><div className="flex items-center gap-2"><h2 className="text-2xl font-semibold tracking-tight">{String(rule?.name ?? id)}</h2><Badge variant={running(statusValue) ? 'default' : 'secondary'}>{t(ruleStatusKey(statusValue))}</Badge></div>{Boolean(rule?.name) && <p className="mt-1 text-sm text-muted-foreground">{id}</p>}</div></div><div className="flex flex-wrap gap-2">{running(statusValue) ? <Button variant="outline" onClick={() => void control('stop')}><Square className="mr-2 size-4" />{t('rule.stop')}</Button> : <Button variant="outline" onClick={() => void control('start')}><Play className="mr-2 size-4" />{t('rule.start')}</Button>}<Button variant="outline" onClick={() => void control('restart')}><RotateCw className="mr-2 size-4" />{t('rule.restart')}</Button><Button variant="outline" onClick={() => { setDuplicateId(`${id}_copy`); setDuplicateError(''); setDuplicateOpen(true); }}><Copy className="mr-2 size-4" />{t('rule.duplicate')}</Button><Button asChild><Link href={`/rules/${encodeURIComponent(id)}/edit`}><Pencil className="mr-2 size-4" />{t('rule.edit')}</Link></Button><Button variant="destructive" size="icon" onClick={() => setDeleteOpen(true)} aria-label={t('rule.delete')}><Trash2 className="size-4" /></Button></div></div>
         <div className="flex gap-1 overflow-x-auto border-b" role="tablist">{tabs.map((item) => <button key={item.id} role="tab" aria-selected={tab === item.id} onClick={() => setTab(item.id)} className={`whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium ${tab === item.id ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>{item.label}</button>)}</div>
         {error && (
           <Alert variant="destructive">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-        {loading && !rule ? <Card><CardContent className="py-16 text-center text-sm text-muted-foreground">Loading rule…</CardContent></Card> : tab === 'definition' ? <div className="grid gap-4 lg:grid-cols-2"><Card className="lg:col-span-2"><CardHeader><CardTitle>SQL</CardTitle></CardHeader><CardContent><pre className="whitespace-pre-wrap rounded-md bg-muted p-4 font-mono text-sm">{String(rule?.sql ?? 'Graph rule')}</pre></CardContent></Card><Card><CardHeader><CardTitle>Actions</CardTitle></CardHeader><CardContent><pre className="max-h-96 overflow-auto rounded-md bg-muted p-4 text-xs">{JSON.stringify(rule?.actions ?? [], null, 2)}</pre></CardContent></Card><Card><CardHeader><CardTitle>Options and tags</CardTitle></CardHeader><CardContent className="flex flex-col gap-4"><pre className="max-h-72 overflow-auto rounded-md bg-muted p-4 text-xs">{JSON.stringify(rule?.options ?? {}, null, 2)}</pre><div className="flex flex-wrap gap-1">{((rule?.tags as string[] | undefined) ?? []).map((item) => <Badge key={item} variant="outline"><Tags className="mr-1 size-3" />{item}</Badge>)}</div></CardContent></Card></div> : tab === 'topology' ? (
+        {loading && !rule ? <Card><CardContent className="py-16 text-center text-sm text-muted-foreground">Loading rule…</CardContent></Card> : tab === 'definition' ? <div className="grid gap-4 lg:grid-cols-2"><Card className="lg:col-span-2"><CardHeader><CardTitle>{t('rule.sectionSql')}</CardTitle></CardHeader><CardContent><pre className="whitespace-pre-wrap rounded-md bg-muted p-4 font-mono text-sm">{String(rule?.sql ?? 'Graph rule')}</pre></CardContent></Card><Card><CardHeader><CardTitle>{t('rule.sectionActions')}</CardTitle></CardHeader><CardContent><pre className="max-h-96 overflow-auto rounded-md bg-muted p-4 text-xs">{JSON.stringify(rule?.actions ?? [], null, 2)}</pre></CardContent></Card><Card><CardHeader><CardTitle>{t('rule.sectionOptions')}</CardTitle></CardHeader><CardContent className="flex flex-col gap-4"><pre className="max-h-72 overflow-auto rounded-md bg-muted p-4 text-xs">{JSON.stringify(rule?.options ?? {}, null, 2)}</pre><div className="flex flex-wrap gap-1">{((rule?.tags as string[] | undefined) ?? []).map((item) => <Badge key={item} variant="outline"><Tags className="mr-1 size-3" />{item}</Badge>)}</div></CardContent></Card></div> : tab === 'topology' ? (
           <RuleTopologyViewer
             ruleId={id}
             topology={tabData as any}
@@ -776,16 +780,16 @@ export function RuleWorkspace({ id }: { id: string }) {
             isRunning={running(statusValue)}
             onRefresh={() => void load()}
           />
-        ) : tab === 'status' ? <Card><CardHeader><CardTitle className="flex items-center gap-2"><Activity className="size-5" />Runtime status</CardTitle><CardDescription>Native values from eKuiper&apos;s v2 rule-status endpoint.</CardDescription></CardHeader><CardContent><pre className="max-h-[36rem] overflow-auto rounded-md bg-muted p-4 text-xs">{JSON.stringify(status ?? {}, null, 2)}</pre></CardContent></Card> : tab === 'trace' ? <Card><CardHeader><CardTitle>Rule trace</CardTitle><CardDescription>Start or stop always-sampled tracing and inspect trace identifiers.</CardDescription></CardHeader><CardContent className="flex flex-col gap-4"><div className="flex gap-2"><Button onClick={() => void trace('start')}><Play className="mr-2 size-4" />Start trace</Button><Button variant="outline" onClick={() => void trace('stop')}><Square className="mr-2 size-4" />Stop trace</Button></div><pre className="max-h-96 overflow-auto rounded-md bg-muted p-4 text-xs">{JSON.stringify(tabData ?? [], null, 2)}</pre></CardContent></Card> : <Card><CardHeader><CardTitle className="flex items-center gap-2"><FileCode2 className="size-5" />{tabs.find((item) => item.id === tab)?.label}</CardTitle><CardDescription>Authoritative response from the selected eKuiper node.</CardDescription></CardHeader><CardContent><pre className="max-h-[40rem] overflow-auto whitespace-pre-wrap rounded-md bg-muted p-4 text-xs">{typeof tabData === 'string' ? tabData : JSON.stringify(tabData ?? {}, null, 2)}</pre></CardContent></Card>}
+        ) : tab === 'status' ? <Card><CardHeader><CardTitle className="flex items-center gap-2"><Activity className="size-5" />{t('rule.sectionRuntime')}</CardTitle><CardDescription>Native values from eKuiper&apos;s v2 rule-status endpoint.</CardDescription></CardHeader><CardContent><pre className="max-h-[36rem] overflow-auto rounded-md bg-muted p-4 text-xs">{JSON.stringify(status ?? {}, null, 2)}</pre></CardContent></Card> : tab === 'trace' ? <Card><CardHeader><CardTitle>{t('rule.sectionTrace')}</CardTitle><CardDescription>{t('rule.traceDescription')}</CardDescription></CardHeader><CardContent className="flex flex-col gap-4"><div className="flex gap-2"><Button onClick={() => void trace('start')}><Play className="mr-2 size-4" />{t('rule.startTrace')}</Button><Button variant="outline" onClick={() => void trace('stop')}><Square className="mr-2 size-4" />{t('rule.stopTrace')}</Button></div><pre className="max-h-96 overflow-auto rounded-md bg-muted p-4 text-xs">{JSON.stringify(tabData ?? [], null, 2)}</pre></CardContent></Card> : <Card><CardHeader><CardTitle className="flex items-center gap-2"><FileCode2 className="size-5" />{tabs.find((item) => item.id === tab)?.label}</CardTitle><CardDescription>{t('rule.authoritativeResponse')}</CardDescription></CardHeader><CardContent><pre className="max-h-[40rem] overflow-auto whitespace-pre-wrap rounded-md bg-muted p-4 text-xs">{typeof tabData === 'string' ? tabData : JSON.stringify(tabData ?? {}, null, 2)}</pre></CardContent></Card>}
       </div>
       <Dialog open={duplicateOpen} onOpenChange={setDuplicateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Duplicate rule</DialogTitle>
+            <DialogTitle>{t('rule.duplicateRule')}</DialogTitle>
             <DialogDescription>Create a stopped copy of {id}. Runtime metrics and state are reset.</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2 py-2">
-            <Label htmlFor="dup-ws-id">New rule ID</Label>
+            <Label htmlFor="dup-ws-id">{t('rule.newRuleId')}</Label>
             <Input id="dup-ws-id" value={duplicateId} onChange={(e) => { setDuplicateId(e.target.value); setDuplicateError(''); }} autoFocus />
             {duplicateError && (
               <Alert variant="destructive" className="py-2 text-xs">
@@ -794,12 +798,12 @@ export function RuleWorkspace({ id }: { id: string }) {
             )}
           </div>
           <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setDuplicateOpen(false)} disabled={duplicating} className="touch-manipulation">Cancel</Button>
+            <Button variant="outline" onClick={() => setDuplicateOpen(false)} disabled={duplicating} className="touch-manipulation">{t('common.cancel')}</Button>
             <Button onClick={() => void duplicate()} disabled={duplicating || !duplicateId.trim()} className="touch-manipulation">{duplicating && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}{duplicating ? 'Duplicating…' : 'Duplicate stopped'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <ConfirmDialog open={deleteOpen} onOpenChange={setDeleteOpen} title="Delete rule?" description={`Delete ${id} from eKuiper? This cannot be undone.`} confirmLabel="Delete rule" variant="danger" onConfirm={remove} />
+      <ConfirmDialog open={deleteOpen} onOpenChange={setDeleteOpen} title={t('rule.deleteRuleTitle')} description={t('rule.deleteRuleDescription', { id })} confirmLabel={t('rule.deleteRuleConfirm')} variant="danger" onConfirm={remove} />
     </AppLayout>
   );
 }

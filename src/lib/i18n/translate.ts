@@ -63,3 +63,21 @@ export function createCatalog(locales: Record<Locale, Messages>): Record<Locale,
 export function byKind<T extends MessageKey>(kind: 'stream' | 'table', streamKey: T, tableKey: T): T {
   return kind === 'stream' ? streamKey : tableKey;
 }
+
+/** eKuiper reports rule status as a raw string; map it to a locale key. */
+export function ruleStatusKey(status: string | undefined): MessageKey {
+  switch ((status ?? '').toLowerCase()) {
+    case 'running':
+      return 'layout.statusRunning';
+    case 'stopped':
+      return 'layout.statusStopped';
+    case 'starting':
+      return 'common.statusStarting';
+    case 'stopping':
+      return 'common.statusStopping';
+    case 'error':
+      return 'layout.statusError';
+    default:
+      return 'common.statusUnknown';
+  }
+}

@@ -17,6 +17,7 @@ import { Switch } from '@/components/ui/switch';
 import { CodeEditor } from '@/components/ui/code-editor';
 import { FileAutocomplete } from '@/components/uploads/file-autocomplete';
 import { ekuiperClient } from '@/lib/ekuiper/client';
+import { useT } from '@/lib/i18n';
 
 interface ImportRuleModalProps {
   open: boolean;
@@ -25,6 +26,7 @@ interface ImportRuleModalProps {
 }
 
 export function ImportRuleModal({ open, onOpenChange, onSuccess }: ImportRuleModalProps) {
+  const t = useT();
   const [tab, setTab] = React.useState<'editor' | 'file'>('editor');
   const [jsonContent, setJsonContent] = React.useState('');
   const [filePath, setFilePath] = React.useState('');
@@ -100,7 +102,7 @@ export function ImportRuleModal({ open, onOpenChange, onSuccess }: ImportRuleMod
               <Upload className="size-5" aria-hidden="true" />
             </div>
             <div>
-              <DialogTitle className="text-lg font-semibold tracking-tight">Import Ruleset</DialogTitle>
+              <DialogTitle className="text-lg font-semibold tracking-tight">{t('rule.importRuleset')}</DialogTitle>
               <DialogDescription className="text-xs text-muted-foreground">
                 Import exported rule definitions, streams, and configurations into the current node.
               </DialogDescription>
@@ -121,9 +123,7 @@ export function ImportRuleModal({ open, onOpenChange, onSuccess }: ImportRuleMod
                 : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
             }`}
           >
-            <FileCode className="size-3.5" aria-hidden="true" />
-            JSON Content / Drop
-          </button>
+            <FileCode className="size-3.5" aria-hidden="true" />{t('rule.jsonContentDrop')}</button>
           <button
             type="button"
             role="tab"
@@ -176,14 +176,13 @@ export function ImportRuleModal({ open, onOpenChange, onSuccess }: ImportRuleMod
                   if (f) void readJsonFile(f);
                 }}
               />
-              <p className="text-xs text-muted-foreground">
-                Drop your <span className="font-mono text-foreground">.json</span> ruleset file here or click to browse
+              <p className="text-xs text-muted-foreground">{t('rule.dropYour')}<span className="font-mono text-foreground">.json</span> ruleset file here or click to browse
               </p>
             </div>
 
             <div className="flex flex-col gap-1.5">
               <div className="flex justify-between items-center">
-                <Label className="text-xs font-medium">JSON Definition</Label>
+                <Label className="text-xs font-medium">{t('rule.jsonDefinition')}</Label>
                 {jsonContent && (
                   <Button
                     variant="ghost"
@@ -191,9 +190,7 @@ export function ImportRuleModal({ open, onOpenChange, onSuccess }: ImportRuleMod
                     className="h-6 text-[10px] text-muted-foreground hover:text-foreground px-2"
                     onClick={() => setJsonContent('')}
                     aria-label="Clear JSON definition"
-                  >
-                    Clear
-                  </Button>
+                  >{t('rule.clear')}</Button>
                 )}
               </div>
               <div className="h-[220px] rounded-md border border-border/80 overflow-hidden font-mono text-xs">
@@ -208,7 +205,7 @@ export function ImportRuleModal({ open, onOpenChange, onSuccess }: ImportRuleMod
         ) : (
           <div className="flex flex-col gap-4 py-2">
             <div className="flex flex-col gap-2">
-              <Label className="text-xs font-medium">File Path or URL</Label>
+              <Label className="text-xs font-medium">{t('rule.filePathOrUrl')}</Label>
               <FileAutocomplete
                 value={filePath}
                 onChange={setFilePath}
@@ -216,8 +213,7 @@ export function ImportRuleModal({ open, onOpenChange, onSuccess }: ImportRuleMod
                 prefix="file://"
                 placeholder="file://rules-export.json or http://..."
               />
-              <p className="text-[11px] text-muted-foreground">
-                Select an uploaded file from <span className="font-mono text-xs">/config/uploads</span> or specify a direct HTTP endpoint.
+              <p className="text-[11px] text-muted-foreground">{t('rule.selectUploadedFile')}<span className="font-mono text-xs">/config/uploads</span> or specify a direct HTTP endpoint.
               </p>
             </div>
           </div>
@@ -227,24 +223,22 @@ export function ImportRuleModal({ open, onOpenChange, onSuccess }: ImportRuleMod
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-border/50 text-xs">
           <div className="flex items-center justify-between p-2.5 rounded-lg border border-border/50 bg-muted/20">
             <div>
-              <span className="font-medium text-foreground block">Partial Import</span>
-              <span className="text-[11px] text-muted-foreground">Skip failed entries and continue</span>
+              <span className="font-medium text-foreground block">{t('rule.partialImport')}</span>
+              <span className="text-[11px] text-muted-foreground">{t('rule.skipFailedEntries')}</span>
             </div>
             <Switch checked={partial} onCheckedChange={setPartial} aria-label="Partial Import" />
           </div>
           <div className="flex items-center justify-between p-2.5 rounded-lg border border-border/50 bg-muted/20">
             <div>
-              <span className="font-medium text-foreground block">Stop on Error</span>
-              <span className="text-[11px] text-muted-foreground">Halt on first rule failure</span>
+              <span className="font-medium text-foreground block">{t('rule.stopOnError')}</span>
+              <span className="text-[11px] text-muted-foreground">{t('rule.haltOnFirstFailure')}</span>
             </div>
             <Switch checked={stopOnError} onCheckedChange={setStopOnError} aria-label="Stop on Error" />
           </div>
         </div>
 
         <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={importing} className="touch-manipulation">
-            Cancel
-          </Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={importing} className="touch-manipulation">{t('common.cancel')}</Button>
           <Button onClick={() => void handleImport()} disabled={importing} className="touch-manipulation">
             {importing && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}
             {importing ? 'Importing…' : 'Import Rules'}

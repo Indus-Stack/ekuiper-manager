@@ -23,6 +23,7 @@ import {
   Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from '@/lib/i18n';
 
 export interface RuleTopologyViewerProps {
   ruleId: string;
@@ -73,6 +74,7 @@ export function RuleTopologyViewer({
   isRunning,
   onRefresh,
 }: RuleTopologyViewerProps) {
+  const t = useT();
   const [autoPoll, setAutoPoll] = React.useState(true);
   const [liveStatus, setLiveStatus] = React.useState<Record<string, unknown> | null>(status ?? null);
   const [polling, setPolling] = React.useState(false);
@@ -293,9 +295,7 @@ export function RuleTopologyViewer({
             className="h-7 text-xs font-mono gap-1"
             onClick={() => onRefresh?.()}
           >
-            <RefreshCw className={cn("size-3", polling && "animate-spin")} />
-            Poll Metrics
-          </Button>
+            <RefreshCw className={cn("size-3", polling && "animate-spin")} />{t('rule.pollMetrics')}</Button>
 
           <Button
             variant={viewJson ? "secondary" : "ghost"}
@@ -312,7 +312,7 @@ export function RuleTopologyViewer({
       {viewJson ? (
         <Card className="border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-mono">Topology Wire Object</CardTitle>
+            <CardTitle className="text-xs font-mono">{t('rule.topologyWireObject')}</CardTitle>
           </CardHeader>
           <CardContent>
             <pre className="max-h-[30rem] overflow-auto rounded bg-muted p-4 font-mono text-xs">
