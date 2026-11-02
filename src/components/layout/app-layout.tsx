@@ -7,12 +7,14 @@ import { Header } from "./header";
 import { UnifiedSearch } from "@/components/common/unified-search";
 import { Assistant } from "@/components/assistant/assistant";
 
+import { useT } from '@/lib/i18n';
 interface AppLayoutProps {
   children: React.ReactNode;
   title?: string;
 }
 
 export function AppLayout({ children, title }: AppLayoutProps) {
+  const t = useT();
   const router = useRouter();
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
@@ -68,7 +70,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:shadow-beautiful-md focus:ring-2 focus:ring-ring"
       >
-        Skip to main content
+        {t('admin.skipToMain')}
       </a>
 
       {/* Sidebar - Hidden on mobile, visible on md+ screens */}

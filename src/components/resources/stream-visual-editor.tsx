@@ -452,7 +452,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                             {t('stream.lookupTableMode')}
                           </Label>
                           <p className="text-[11px] text-muted-foreground">
-                            When enabled, this table acts as a static or periodically reloaded lookup dimension for JOINs.
+                            {t('admin.tablesLookupHint')}
                           </p>
                         </div>
                         <Switch

@@ -47,8 +47,7 @@ export default function FlowStudioPerfPage() {
             <CardContent className="flex flex-col items-center py-14 text-center">
               <h2 className="font-semibold">{t('flow.notAvailableInProduction')}</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                The Flow Studio performance fixture route is development-only and
-                is disabled in this build.
+                {t('admin.perfDevOnly')}
               </p>
               <Button asChild className="mt-5">
                 <Link href="/flows">{t('flow.backToFlows')}</Link>

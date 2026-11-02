@@ -137,7 +137,7 @@ export default function SystemPage() {
               </Badge>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              Real-time hardware runtime, engine architecture, and operating parameters.
+              {t('admin.systemHint')}
             </p>
           </div>
 
@@ -183,7 +183,7 @@ export default function SystemPage() {
               ) : (
                 <Copy className="mr-1.5 size-3.5 text-muted-foreground" />
               )}
-              {copied ? 'Copied' : 'Copy JSON'}
+              {copied ? t('admin.copied') : t('admin.copyJson')}
             </Button>
           </div>
         </div>

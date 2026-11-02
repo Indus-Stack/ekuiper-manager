@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Copy, KeyRound, Loader2, MoreHorizontal, Plus, Shield, Trash2, UserRound, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout';
-import { useT } from '@/lib/i18n';
+import { useT, useI18n } from '@/lib/i18n';
 import type { Translate } from '@/lib/i18n';
 import { ConfirmDialog } from '@/components/common';
 import { Badge } from '@/components/ui/badge';
@@ -46,6 +46,7 @@ async function getError(response: Response, t: Translate): Promise<string> {
 }
 
 export default function UsersPage() {
+  const { locale } = useI18n();
   const t = useT();
   const [users, setUsers] = React.useState<UserRecord[]>([]);
   const [currentUserId, setCurrentUserId] = React.useState('');
@@ -153,7 +154,7 @@ export default function UsersPage() {
                     {user.mustChangePassword && <Badge variant="outline">{t('page.passwordChangeRequired')}</Badge>}
                     {user.id === currentUserId && <span className="text-xs text-muted-foreground">{t('page.you')}</span>}
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">{t('page.lastSignIn', { when: user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : t('page.never') })}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('page.lastSignIn', { when: user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString(locale) : t('page.never') })}</p>
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" aria-label={t('page.actionsForUser', { name: user.username })}><MoreHorizontal className="size-4" aria-hidden="true" /></Button></DropdownMenuTrigger>

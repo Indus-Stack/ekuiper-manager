@@ -325,7 +325,7 @@ export function Assistant({ pageTitle }: AssistantProps) {
             aria-label={t('layout.openAssistant')}
           >
             <Sparkles className="mr-2 h-4 w-4" />
-            Ask AI
+            {t('admin.askAi')}
           </Button>
         </SheetTrigger>
         <SheetContent

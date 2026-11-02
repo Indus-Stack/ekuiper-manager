@@ -140,13 +140,13 @@ function CreateSchemaContent() {
             <div>
               <h2 className="text-2xl font-bold tracking-tight">{t('nav.createSchema')}</h2>
               <p className="text-muted-foreground">
-                Register a Protobuf or custom dynamic-library schema for binary stream decoding
+                {t('admin.schemaNewHint')}
               </p>
             </div>
           </div>
           <Button onClick={handleSave} disabled={saving} className="gap-1.5">
             {saving ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
-            Create Schema
+            {t('admin.schemasCreateTitle')}
           </Button>
         </div>
 
@@ -188,7 +188,7 @@ function CreateSchemaContent() {
                     className="font-mono text-xs h-8"
                   />
                   <p className="text-[11px] text-muted-foreground">
-                    Identifier referenced in stream definitions (`SCHEMA = "name"`).
+                    {t('admin.schemaNameHint')}
                   </p>
                 </div>
 
@@ -196,7 +196,7 @@ function CreateSchemaContent() {
                 <div className="flex flex-col gap-1.5 pt-2 border-t border-border">
                   <div className="flex items-center justify-between">
                     <Label className="text-xs font-medium">
-                      {type === "custom" ? "Binary File (.so) *" : "Compiled Library (.so, optional)"}
+                      {type === 'custom' ? t('admin.binaryFileRequired') : t('admin.compiledLibraryOptional')}
                     </Label>
                   </div>
                   <FileAutocomplete
@@ -209,7 +209,7 @@ function CreateSchemaContent() {
                   <p className="text-[11px] text-muted-foreground">
                     {type === "custom"
                       ? "Custom decode logic compiled into a Go/C shared object."
-                      : "Optional pre-compiled proto descriptor library for high performance."}
+                      : t('admin.compiledLibraryHint')}
                   </p>
                 </div>
               </CardContent>
@@ -220,7 +220,7 @@ function CreateSchemaContent() {
                 <div className="flex items-center gap-2 text-xs font-medium text-foreground">
                   <Info className="size-4 text-primary shrink-0" />{t('admin.streamIntegration')}</div>
                 <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  After creating this schema, you can bind it to any stream or table by setting
+                  {t('admin.streamIntegrationBind')}
                   <code className="mx-1 px-1 py-0.5 rounded bg-muted font-mono text-[10px]">
                     FORMAT = &quot;protobuf&quot;
                   </code>
@@ -228,7 +228,7 @@ function CreateSchemaContent() {
                   <code className="mx-1 px-1 py-0.5 rounded bg-muted font-mono text-[10px]">
                     SCHEMA = &quot;{name || 'my_schema'}&quot;
                   </code>
-                  in the Stream Visual Editor.
+                  {t('admin.streamEditorTail')}
                 </p>
               </CardContent>
             </Card>

@@ -16,59 +16,77 @@ import {
 } from 'lucide-react';
 import { AppLayout } from '@/components/layout';
 import { useT } from '@/lib/i18n';
+import type { MessageKey, Translate } from '@/lib/i18n';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { INDUSTRIAL_DRIVERS, DRIVER_CATEGORIES } from '@/lib/ekuiper/driver-catalog';
 
-const docLinks = [
+const buildDocLinks = (t: Translate) => [
   {
-    title: 'LF Edge eKuiper Documentation',
-    desc: 'Official architectural reference, stream syntax, windowing functions, and rule execution.',
+    title: t('admin.helpDocsTitle'),
+    desc: t('admin.helpDocsHint'),
     url: 'https://ekuiper.org/docs/en/latest/',
-    tag: 'Official Docs',
+    tag: t('admin.tagOfficialDocs'),
   },
   {
-    title: 'GitHub LF Edge Repository',
-    desc: 'Source code, open issue tracker, releases, and edge deployment manifests.',
+    title: t('admin.helpGithubTitle'),
+    desc: t('admin.helpGithubHint'),
     url: 'https://github.com/lf-edge/ekuiper',
-    tag: 'v2.x Engine',
+    tag: t('admin.tagEngine'),
   },
   {
-    title: 'SQL Function Reference',
-    desc: 'Complete index of mathematical, string, aggregate, and DSP functions available in queries.',
+    title: t('admin.helpFunctionsTitle'),
+    desc: t('admin.helpFunctionsHint'),
     url: 'https://ekuiper.org/docs/en/latest/sqls/functions/overview.html',
-    tag: 'SQL Reference',
+    tag: t('admin.tagSqlReference'),
   },
   {
-    title: 'Plugin & Portable Extension Guide',
-    desc: 'Guide to authoring custom native Go plugins, WASM functions, and Python portable runtimes.',
+    title: t('admin.helpPluginGuide'),
+    desc: t('admin.helpPluginHint'),
     url: 'https://ekuiper.org/docs/en/latest/extension/overview.html',
-    tag: 'Extensions',
+    tag: t('admin.tagExtensions'),
   },
 ];
 
-const cliSnippets = [
+const buildCliSnippets = (t: Translate) => [
   {
     cmd: 'kuiperd',
-    desc: 'Starts the edge stream processing daemon',
+    desc: t('admin.cliStartDaemon'),
   },
   {
     cmd: 'bin/kuiper create rule <rule_id> -f <rule.json>',
-    desc: 'Deploy a stream rule definition from JSON',
+    desc: t('admin.cliDeployRule'),
   },
   {
     cmd: 'bin/kuiper getstatus rule <rule_id>',
-    desc: 'Inspect metrics and exceptions for a rule',
+    desc: t('admin.cliInspectRule'),
   },
   {
     cmd: 'bin/kuiper query',
-    desc: 'Interactive SQL query shell against edge streams',
+    desc: t('admin.cliQueryShell'),
   },
 ];
 
+const DRIVER_CATEGORY_KEYS: Record<string, MessageKey> = {
+  'PLC & Automation': 'admin.helpIndustryPlc',
+  'CNC & Machine Tools': 'admin.helpIndustryCnc',
+  'Power & Telecontrol': 'admin.helpIndustryPower',
+  'Building & Utilities': 'admin.helpIndustryBuilding',
+  'IoT & Protocols': 'admin.helpIndustryIot',
+};
+
+/** driver-catalog keeps categories in English; the UI resolves them per locale. */
+function driverCategoryLabel(category: string, t: Translate): string {
+  const key = DRIVER_CATEGORY_KEYS[category];
+  return key ? t(key) : category;
+}
+
 export default function HelpPage() {
   const t = useT();
+  // Built per render so the catalog follows the active locale.
+  const docLinks = buildDocLinks(t);
+  const cliSnippets = buildCliSnippets(t);
   return (
     <AppLayout title={t('nav.help')}>
       <div className="mx-auto max-w-5xl flex flex-col gap-8 pb-12">
@@ -79,7 +97,7 @@ export default function HelpPage() {
             <h2 className="text-2xl font-semibold tracking-tight">{t('admin.docsRef')}</h2>
           </div>
           <p className="text-sm text-muted-foreground">
-            Architectural reference, streaming SQL manuals, and edge operations guidance for LF Edge eKuiper.
+            {t('admin.helpIntro')}
           </p>
         </div>
 
@@ -135,10 +153,10 @@ export default function HelpPage() {
               <div className="rounded-lg border border-border/60 bg-muted/20 p-4">
                 <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
                   <Radio className="size-4 text-blue-500" />
-                  1. Source Ingestion
+                  {t('admin.helpStepSource')}
                 </div>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  Streams ingest telemetry via MQTT, Neuron IPC, EdgeX, OPC-UA, HTTP, or WebSocket. Data schemas can be inferred dynamically or validated against Protobuf/Custom schemas.
+                  {t('admin.helpStepSourceHint')}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   <Badge variant="secondary" className="font-mono text-[10px]">MQTT</Badge>
@@ -150,7 +168,7 @@ export default function HelpPage() {
               <div className="rounded-lg border border-border/60 bg-muted/20 p-4">
                 <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
                   <Workflow className="size-4 text-emerald-500" />
-                  2. Stream Engine & Rules
+                  {t('admin.helpStepEngine')}
                 </div>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
                   SQL queries and DAG topologies filter, transform, aggregate across tumbling/sliding/count windows, and execute custom Go/Python DSP algorithms in microsecond latency.
@@ -165,10 +183,10 @@ export default function HelpPage() {
               <div className="rounded-lg border border-border/60 bg-muted/20 p-4">
                 <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
                   <Server className="size-4 text-amber-500" />
-                  3. Sink Dispatch
+                  {t('admin.helpStepSink')}
                 </div>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  Processed signals and alerts route to MQTT brokers, InfluxDB, PostgreSQL, Redis, EdgeX message buses, or local files with built-in retry and caching buffers.
+                  {t('admin.helpStepSinkHint')}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   <Badge variant="secondary" className="font-mono text-[10px]">InfluxDB</Badge>
@@ -186,14 +204,14 @@ export default function HelpPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Cpu className="size-4 text-primary" />
-                <CardTitle className="text-sm font-semibold tracking-tight">Industrial Protocols & Southbound Drivers</CardTitle>
+                <CardTitle className="text-sm font-semibold tracking-tight">{t('admin.helpIndustries')}</CardTitle>
               </div>
               <Badge variant="outline" className="font-mono text-[10px]">
-                {INDUSTRIAL_DRIVERS.length} Drivers
+                {t('admin.driverCount', { count: INDUSTRIAL_DRIVERS.length })}
               </Badge>
             </div>
             <CardDescription className="text-xs">
-              Fieldbus, CNC machine tool, power telecontrol, and IoT connectivity supported via edge gateways and Neuron streams.
+              {t('admin.helpIndustriesHint')}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
@@ -203,7 +221,7 @@ export default function HelpPage() {
                 return (
                   <div key={category} className="rounded-lg border border-border/50 bg-muted/20 p-3 flex flex-col gap-2">
                     <div className="flex items-center justify-between text-xs font-semibold text-foreground">
-                      <span>{category}</span>
+                      <span>{driverCategoryLabel(category, t)}</span>
                       <span className="text-[10px] text-muted-foreground font-mono">{drivers.length}</span>
                     </div>
                     <div className="flex flex-wrap gap-1">
@@ -250,7 +268,7 @@ export default function HelpPage() {
         {/* Community & Releases */}
         <div className="flex flex-col items-center justify-between gap-4 rounded-xl border border-border/80 bg-gradient-to-r from-card to-muted/20 p-6 sm:flex-row">
           <div className="flex flex-col gap-1">
-            <h3 className="text-sm font-semibold text-foreground">LF Edge Open Source Community</h3>
+            <h3 className="text-sm font-semibold text-foreground">{t('admin.helpCommunity')}</h3>
             <p className="text-xs text-muted-foreground">
               eKuiper is an open source project governed under LF Edge and the Linux Foundation.
             </p>

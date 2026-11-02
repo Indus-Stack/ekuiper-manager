@@ -26,7 +26,7 @@ export default function SettingsPage() {
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">{t('admin.settingsTitle')}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Control plane configuration, user authorization, and system preferences.
+            {t('admin.settingsHintShort')}
           </p>
         </div>
 
@@ -39,7 +39,7 @@ export default function SettingsPage() {
                 eKuiper nodes
               </CardTitle>
               <CardDescription className="text-xs">
-                Register edge clusters, inspect connection health, and switch active node.
+                {t('admin.settingsNodesHint')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -101,7 +101,7 @@ export default function SettingsPage() {
               {t('common.language')}
             </CardTitle>
             <CardDescription className="text-xs">
-              The interface language. The choice is stored in this browser and applies immediately.
+              {t('admin.languageOptionHint')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -128,8 +128,7 @@ export default function SettingsPage() {
             <CardTitle className="flex items-center gap-2 text-base">
               <Database className="size-5 text-primary" />{t('admin.persistenceArchitecture')}</CardTitle>
             <CardDescription className="text-xs leading-relaxed">
-              Manager state is stored in central SQLite / PostgreSQL persistence and migrated automatically at startup.
-              No ephemeral browser-only storage is used for cluster registration, preventing credential loss across container restarts.
+              {t('admin.settingsPersistenceHint')}
             </CardDescription>
           </CardHeader>
         </Card>
