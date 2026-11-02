@@ -34,11 +34,11 @@ export default function ChangePasswordPage() {
         body: JSON.stringify({ currentPassword, newPassword }),
       });
       const payload = await response.json();
-      if (!response.ok) throw new Error(payload?.error?.message ?? 'Password change failed');
+      if (!response.ok) throw new Error(payload?.error?.message ?? t('flow.passwordChangeFailed'));
       router.replace('/dashboard');
       router.refresh();
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'Password change failed');
+      setError(reason instanceof Error ? reason.message : t('flow.passwordChangeFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -72,7 +72,7 @@ export default function ChangePasswordPage() {
             )}
             <Button type="submit" className="w-full touch-manipulation" disabled={submitting}>
               {submitting && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}
-              {submitting ? 'Saving…' : 'Save password'}
+              {submitting ? 'Saving…' : t('flow.savePassword')}
             </Button>
           </form>
         </CardContent>

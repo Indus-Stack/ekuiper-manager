@@ -72,7 +72,7 @@ export default function FunctionsPage() {
                 setBuiltinFuncs(data || {});
             }
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to fetch functions");
+            setError(err instanceof Error ? err.message : t('extension.failedFetchFunctions'));
         } finally {
             setLoading(false);
         }
@@ -91,7 +91,7 @@ export default function FunctionsPage() {
             setDeleteId(null);
             fetchData();
         } catch (err) {
-            toast.error(`Failed to delete function: ${err instanceof Error ? err.message : "Unknown error"}`);
+            toast.error(`Failed to delete function: ${err instanceof Error ? err.message : t('extension.unknownError')}`);
         }
     };
 
@@ -114,7 +114,7 @@ export default function FunctionsPage() {
         },
         {
             id: "actions",
-            header: "Actions",
+            header: t('extension.actionsColumn'),
             cell: ({ row }) => {
                 return (
                     <DropdownMenu>
@@ -145,7 +145,7 @@ export default function FunctionsPage() {
     const extColumns: ColumnDef<ExternalFunction>[] = [
         {
             accessorKey: "name",
-            header: "Function Name",
+            header: t('extension.functionNameColumn'),
             cell: ({ row }) => (
                 <div className="flex items-center gap-2">
                     <Network className="size-4 text-blue-500" />
@@ -155,7 +155,7 @@ export default function FunctionsPage() {
         },
         {
             accessorKey: "serviceName",
-            header: "Service",
+            header: t('extension.serviceColumn'),
             cell: ({ row }) => (
                 <StatusBadge status="default" label={row.getValue("serviceName")} showIcon={false} />
             ),
@@ -222,9 +222,9 @@ export default function FunctionsPage() {
                                 columns={jsColumns}
                                 data={jsUdfs}
                                 searchKey="id"
-                                searchPlaceholder="Search UDFs..."
+                                searchPlaceholder={t('extension.searchUdFs')}
                                 loading={loading}
-                                emptyMessage="No JavaScript UDFs found"
+                                emptyMessage={t('extension.noJsUdFs')}
                             />
                         )}
                     </TabsContent>
@@ -237,9 +237,9 @@ export default function FunctionsPage() {
                                 columns={extColumns}
                                 data={externalFuncs}
                                 searchKey="name"
-                                searchPlaceholder="Search service functions..."
+                                searchPlaceholder={t('extension.searchServiceFunctions')}
                                 loading={loading}
-                                emptyMessage="No external functions found"
+                                emptyMessage={t('extension.noExternalFunctions')}
                             />
                         )}
                     </TabsContent>

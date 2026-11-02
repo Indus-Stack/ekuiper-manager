@@ -45,6 +45,15 @@ export default function PluginsPage() {
   const activeServer = servers.find((s) => s.id === activeServerId);
 
   const [activeTab, setActiveTab] = React.useState<InstallablePluginType>("sources");
+  // activeTab is an internal routing key ('sources'/'sinks'/...); the UI
+  // must show its localized label instead of the raw slice.
+  const pluginTypeLabels: Record<InstallablePluginType, string> = {
+    sources: t('extension.sources'),
+    sinks: t('extension.sinks'),
+    functions: t('extension.functions'),
+    portables: t('extension.portables'),
+  };
+  const typeLabel = pluginTypeLabels[activeTab];
   const [plugins, setPlugins] = React.useState<Plugin[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -52,7 +61,7 @@ export default function PluginsPage() {
 
   const fetchPlugins = React.useCallback(async (type: InstallablePluginType) => {
     if (!activeServer) {
-      setError("No server selected");
+      setError(t('extension.noServerSelected'));
       setLoading(false);
       return;
     }
@@ -67,7 +76,7 @@ export default function PluginsPage() {
         : [];
       setPlugins(pluginList);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch plugins");
+      setError(err instanceof Error ? err.message : t('extension.failedFetchPlugins'));
     } finally {
       setLoading(false);
     }
@@ -87,7 +96,7 @@ export default function PluginsPage() {
       setDeletePlugin(null);
       fetchPlugins(activeTab);
     } catch (err) {
-      toast.error(`Failed to delete plugin: ${err instanceof Error ? err.message : "Unknown error"}`);
+      toast.error(`Failed to delete plugin: ${err instanceof Error ? err.message : t('extension.unknownError')}`);
     }
   };
 
@@ -123,14 +132,14 @@ export default function PluginsPage() {
     },
     {
       id: "type",
-      header: "Type",
+      header: t('extension.typeColumn'),
       cell: () => (
-        <StatusBadge status="info" label={activeTab.slice(0, -1)} showIcon={false} />
+        <StatusBadge status="info" label={typeLabel} showIcon={false} />
       ),
     },
     {
       id: "actions",
-      header: "Actions",
+      header: t('extension.actionsColumn'),
       cell: ({ row }) => {
         const plugin = row.original;
         return (
@@ -209,10 +218,10 @@ export default function PluginsPage() {
                   columns={columns}
                   data={plugins}
                   searchKey="name"
-                  searchPlaceholder={`Search ${type}...`}
+                  searchPlaceholder={t('extension.searchPlugins', { type: typeLabel })}
                   loading={loading}
-                  emptyMessage={`No ${type} plugins found`}
-                  emptyDescription={`Install a ${type.slice(0, -1)} plugin to extend eKuiper functionality.`}
+                  emptyMessage={t('extension.noPluginsFound', { type: typeLabel })}
+                  emptyDescription={t('extension.installPluginHint', { type: typeLabel })}
                   onRefresh={() => fetchPlugins(activeTab)}
                 />
               )}

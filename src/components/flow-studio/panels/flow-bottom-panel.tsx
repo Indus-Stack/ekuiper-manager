@@ -72,7 +72,7 @@ export function FlowBottomPanel({
         >{}</Button>
         <span className="text-xs text-muted-foreground">
           {clientErrorCount === 0
-            ? "Validation: no client errors"
+            ? t('flow.validationNoClientErrors')
             : `Validation: ${clientErrorCount} client error(s)`}
         </span>
         {historyToggle ? <div className="ml-auto">{historyToggle}</div> : null}

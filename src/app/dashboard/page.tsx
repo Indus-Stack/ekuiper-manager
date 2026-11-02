@@ -65,7 +65,7 @@ export default function DashboardPage() {
         })),
       });
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : 'Failed to load eKuiper overview');
+      setError(reason instanceof Error ? reason.message : t('flow.failedLoadOverview'));
     } finally {
       setLoading(false);
     }
@@ -131,8 +131,8 @@ export default function DashboardPage() {
             <CardContent className="flex flex-col gap-4 text-sm">
               <div><p className="text-xs text-muted-foreground">{t('page.version')}</p><p className="font-medium">{data?.info.version ?? '—'}</p></div>
               <div><p className="text-xs text-muted-foreground">{t('page.platform')}</p><p className="font-medium">{[data?.info.os, data?.info.arch].filter(Boolean).join(' / ') || '—'}</p></div>
-              <div><p className="text-xs text-muted-foreground">{t('page.cpu')}</p><p className="font-medium">{data?.info.cpuUsage ?? 'Not reported'}</p></div>
-              <div><p className="text-xs text-muted-foreground">{t('page.memory')}</p><p className="font-medium">{data?.info.memoryUsed ?? 'Not reported'}{data?.info.memoryTotal ? ` / ${data.info.memoryTotal}` : ''}</p></div>
+              <div><p className="text-xs text-muted-foreground">{t('page.cpu')}</p><p className="font-medium">{data?.info.cpuUsage ?? t('flow.notReported')}</p></div>
+              <div><p className="text-xs text-muted-foreground">{t('page.memory')}</p><p className="font-medium">{data?.info.memoryUsed ?? t('flow.notReported')}{data?.info.memoryTotal ? ` / ${data.info.memoryTotal}` : ''}</p></div>
             </CardContent>
           </Card>
         </div>

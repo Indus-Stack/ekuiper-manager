@@ -66,7 +66,7 @@ export function NodeFocusDialog({
       >
         <DialogHeader>
           <DialogTitle data-testid="flow-node-focus-dialog-title">
-            {focusedName ? `Edit node — ${focusedName}` : "Edit node"}
+            {focusedName ? `Edit node — ${focusedName}` : t('flow.editNode')}
           </DialogTitle>
           <DialogDescription>
             {t('flow.sameEditorHint')}

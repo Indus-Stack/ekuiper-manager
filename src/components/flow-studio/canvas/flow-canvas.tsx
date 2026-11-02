@@ -460,7 +460,7 @@ export function FlowCanvas({
         />
         {showMiniMap ? (
           <MiniMap
-            ariaLabel="Flow overview minimap"
+            ariaLabel={t('flow.flowOverviewMinimap')}
             pannable
             nodeBorderRadius={2}
           />

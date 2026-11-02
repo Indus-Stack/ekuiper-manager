@@ -70,12 +70,12 @@ export default function DataImportPage() {
 
         // Basic validation
         if (!file.name.endsWith(".json")) {
-            toast.error("Please upload a JSON file");
+            toast.error(t('extension.uploadJsonRequired'));
             return;
         }
 
         setUploading(true);
-        setImportStatus({ status: "running", message: "Starting upload...", progress: 0 });
+        setImportStatus({ status: "running", message: t('extension.startingUpload'), progress: 0 });
         const pollInterval = setInterval(async () => {
             try {
                 const status = await ekuiperClient.getImportStatus();
@@ -91,7 +91,7 @@ export default function DataImportPage() {
                 JSON.parse(fileContent);
             } catch (parseErr) {
                 clearInterval(pollInterval);
-                toast.error("Invalid JSON file");
+                toast.error(t('extension.invalidJsonFile'));
                 setUploading(false);
                 setImportStatus(null);
                 return;
@@ -102,11 +102,11 @@ export default function DataImportPage() {
                 toast.success("eKuiper configuration imported successfully");
             } else {
                 await ekuiperClient.importRuleset(fileContent);
-                toast.success("Ruleset imported successfully");
+                toast.success(t('extension.rulesetImported'));
             }
         } catch (err: any) {
-            const errorMsg = err?.message || err?.error || "Structure mismatch or server error";
-            console.error("Import error details:", err);
+            const errorMsg = err?.message || err?.error || t('extension.structureMismatch');
+            console.error(t('extension.importErrorDetails'), err);
             toast.error(`Import failed: ${errorMsg}`);
             setImportStatus({ status: "failed", message: errorMsg, errors: [errorMsg] });
         } finally {
@@ -134,7 +134,7 @@ export default function DataImportPage() {
             <div className="max-w-3xl mx-auto flex flex-col gap-6">
                 <div className="flex flex-col gap-2">
                     <h1 className="text-3xl font-bold">{t('admin.importConfig')}</h1>
-                    <p className="text-muted-foreground">Import configuration or a ruleset into the selected node. Manager users and nodes are not included.</p>
+                    <p className="text-muted-foreground">{t('admin.importPageHint')}</p>
                 </div>
 
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -150,7 +150,7 @@ export default function DataImportPage() {
                                     <Loader2 className="size-10 animate-spin text-primary" />
                                     <div className="flex flex-col gap-2 text-center w-full max-w-md">
                                         <h3 className="font-semibold text-lg">{t('admin.importing')}</h3>
-                                        <p className="text-sm text-muted-foreground">{importStatus?.message || "Processing..."}</p>
+                                        <p className="text-sm text-muted-foreground">{importStatus?.message || t('extension.processing')}</p>
                                         {importStatus && (
                                             <Progress value={(importStatus.progress || 0) * 100} className="w-full h-2" />
                                         )}
@@ -180,10 +180,10 @@ export default function DataImportPage() {
                                         {activeTab === 'data' ? <UploadCloud className="size-8 text-primary" /> : <FileJson className="size-8 text-primary" />}
                                     </div>
                                     <h3 className="text-lg font-semibold mb-1">
-                                        Drag & drop {activeTab === 'data' ? 'configuration' : 'ruleset'} file
+                                        {activeTab === 'data' ? t('admin.dragDropConfigFile') : t('admin.dragDropRulesetFile')}
                                     </h3>
                                     <p className="text-muted-foreground text-sm mb-4">
-                                        or click to browse from your computer
+                                        {t('admin.orClickToBrowse')}
                                     </p>
                                     <p className="text-xs text-muted-foreground/70">{t('admin.acceptsJson')}</p>
                                     <input

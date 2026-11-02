@@ -126,12 +126,12 @@ export default function InstallPluginPage() {
       : fileUrl).trim();
 
     if (!name) {
-      toast.error("Plugin name is required");
+      toast.error(t('extension.pluginNameRequired'));
       return;
     }
 
     if (!url) {
-      toast.error("Plugin file or URL is required");
+      toast.error(t('extension.pluginSourceRequired'));
       return;
     }
 
@@ -158,7 +158,7 @@ export default function InstallPluginPage() {
       toast.success(`Plugin "${name}" installed successfully`);
       router.push("/plugins");
     } catch (err) {
-      toast.error(`Failed to install plugin: ${err instanceof Error ? err.message : "Unknown error"}`);
+      toast.error(`Failed to install plugin: ${err instanceof Error ? err.message : t('extension.unknownError')}`);
     } finally {
       setInstalling(false);
     }
@@ -291,7 +291,7 @@ export default function InstallPluginPage() {
                     <Select value={selectedPrebuild} onValueChange={handlePrebuildChange}>
                       <SelectTrigger className="h-8 text-xs font-mono">
                         <SelectValue
-                          placeholder={loadingPrebuild ? "Loading prebuilts..." : "Select a plugin"}
+                          placeholder={loadingPrebuild ? t('extension.loadingPrebuilts') : t('extension.selectAPlugin')}
                         />
                       </SelectTrigger>
                       <SelectContent>
@@ -336,7 +336,7 @@ export default function InstallPluginPage() {
                   onChange={setFileUrl}
                   placeholder="file:///tmp/plugins/my_plugin.zip or http://..."
                   accept=".zip"
-                  modalTitle="Upload Plugin Zip Package"
+                  modalTitle={t('extension.uploadPluginZip')}
                 />
                 <p className="text-[11px] text-muted-foreground">
                   Reference an uploaded file with <code className="font-mono text-foreground">file://</code> or a downloadable HTTP link.
@@ -416,7 +416,7 @@ export default function InstallPluginPage() {
               >{t('common.cancel')}</Button>
               <Button size="sm" onClick={handleInstall} disabled={installing} className="gap-1.5">
                 {installing ? <Loader2 className="size-3.5 animate-spin" /> : <Plug className="size-3.5" />}
-                {installing ? "Installing..." : t('extension.installPlugin')}
+                {installing ? t('extension.installing') : t('extension.installPlugin')}
               </Button>
             </div>
           </CardContent>

@@ -32,12 +32,12 @@ export default function NewServicePage() {
     if (!activeServer) return;
 
     if (!name) {
-      toast.error("Service name is required");
+      toast.error(t('extension.serviceNameRequired'));
       return;
     }
 
     if (!file) {
-      toast.error("Service package URI is required");
+      toast.error(t('extension.serviceUriRequired'));
       return;
     }
 
@@ -49,7 +49,7 @@ export default function NewServicePage() {
       toast.success(`Service "${name}" registered successfully`);
       router.push("/services");
     } catch (err) {
-      toast.error(`Failed to register service: ${err instanceof Error ? err.message : "Unknown error"}`);
+      toast.error(`Failed to register service: ${err instanceof Error ? err.message : t('extension.unknownError')}`);
     } finally {
       setCreating(false);
     }

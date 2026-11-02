@@ -133,14 +133,14 @@ export function ValidationPanel({
           return;
         }
         if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-          setError("Unexpected validation response.");
+          setError(t('flow.unexpectedValidation'));
           return;
         }
         const record = payload as Record<string, unknown>;
         const valid = record["valid"];
         const diagnostics = record["diagnostics"];
         if (typeof valid !== "boolean" || !Array.isArray(diagnostics)) {
-          setError("Unexpected validation response.");
+          setError(t('flow.unexpectedValidation'));
           return;
         }
         setServer({
@@ -152,7 +152,7 @@ export function ValidationPanel({
         setError(
           requestError instanceof Error
             ? requestError.message
-            : "Validation request failed.",
+            : t('flow.validationFailed'),
         );
       } finally {
         if (!cancelled) setLoading(false);
@@ -182,7 +182,7 @@ export function ValidationPanel({
           disabled={loading}
           data-testid="flow-validation-server-button"
         >
-          {loading ? "Validating…" : "Run server validation"}
+          {loading ? "Validating…" : t('flow.runServerValidation')}
         </Button>
         {server.valid !== null ? (
           <span
@@ -192,7 +192,7 @@ export function ValidationPanel({
             )}
             data-testid="flow-validation-server-summary"
           >
-            {server.valid ? "Server: valid" : "Server: invalid"}
+            {server.valid ? t('flow.serverValid') : t('flow.serverInvalid')}
           </span>
         ) : null}
       </div>

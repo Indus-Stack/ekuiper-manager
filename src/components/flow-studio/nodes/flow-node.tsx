@@ -216,7 +216,7 @@ function FlowNodeView({ data, selected }: FlowNodeProps) {
   const category = data.definition?.category ?? data.category;
   const inputs = resolvePorts(data.inputs, data.definition?.inputs);
   const outputs = resolvePorts(data.outputs, data.definition?.outputs);
-  const title = data.name || "Unnamed node";
+  const title = data.name || t('flow.unnamedNode');
   // FS-0148: presentation metadata. Guards fail open to the legacy chrome
   // (category mark, neutral style, displayName subtitle) without throwing.
   const iconMark = resolveFlowNodeIconMark(data.definition?.icon);
@@ -376,7 +376,7 @@ function FlowNodeView({ data, selected }: FlowNodeProps) {
       ) : null}
 
       <span className="sr-only">
-        {selected === true ? "Selected" : "Not selected"}
+        {selected === true ? "Selected" : t('flow.notSelected')}
       </span>
 
       <div

@@ -88,7 +88,7 @@ export function DefinitionPanel({ flowId, className }: DefinitionPanelProps) {
           return;
         }
         if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-          setError("Unexpected compile response.");
+          setError(t('flow.unexpectedCompile'));
           setLoaded(true);
           return;
         }
@@ -149,7 +149,7 @@ export function DefinitionPanel({ flowId, className }: DefinitionPanelProps) {
           {loading
             ? "Loading…"
             : artifact
-              ? "Refresh definition"
+              ? t('flow.refreshDefinition')
               : "Load definition"}
         </Button>
         {loaded && !loading && !error ? (

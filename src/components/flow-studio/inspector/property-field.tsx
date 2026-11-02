@@ -690,6 +690,7 @@ function JsonField({
   fieldId: string;
   descriptionId: string | undefined;
 }) {
+  const t = useT();
   // Interaction (FS-0062): plain textarea; parse on every change and
   // re-validate on blur. Invalid text (unparseable JSON, or parsed JSON
   // that is not an object/array since the config contract expects an
@@ -721,11 +722,11 @@ function JsonField({
     try {
       parsed = JSON.parse(raw);
     } catch (error) {
-      setParseError(error instanceof Error ? error.message : "Invalid JSON.");
+      setParseError(error instanceof Error ? error.message : t('flow.invalidJson'));
       return;
     }
     if (typeof parsed !== "object" || parsed === null) {
-      setParseError("JSON must be an object or array.");
+      setParseError(t('flow.jsonMustBeObject'));
       return;
     }
     committedValueRef.current = parsed;

@@ -177,4 +177,8 @@ export default {
   dataExport: 'Export',
   importHint: 'Import eKuiper resources from a ruleset file.',
   exportHint: 'Export eKuiper resources as a ruleset file.',
+  importPageHint: 'Import configuration or a ruleset into the selected node. Manager users and nodes are not included.',
+  dragDropConfigFile: 'Drag & drop configuration file',
+  dragDropRulesetFile: 'Drag & drop ruleset file',
+  orClickToBrowse: 'or click to browse from your computer',
 };

@@ -166,6 +166,26 @@ const flow: Record<keyof typeof en, string> = {
 
   usePlainText: '使用纯文本',
   sameEditorHint: '与侧边检查器使用同一编辑器。变更通过',
+  editNode: '编辑节点',
+  unnamedNode: '未命名节点',
+  notSelected: '未选中',
+  invalidJson: 'JSON 无效。',
+  jsonMustBeObject: 'JSON 必须是对象或数组。',
+  unexpectedValidation: '校验响应异常。',
+  validationFailed: '校验请求失败。',
+  runServerValidation: '执行服务端校验',
+  serverValid: '服务端：通过',
+  serverInvalid: '服务端：未通过',
+  unexpectedCompile: '编译响应异常。',
+  refreshDefinition: '刷新定义',
+  flowOverviewMinimap: '流程缩略图',
+  validationNoClientErrors: '校验：无客户端错误',
+  skipToMain: '跳到主内容',
+  failedLoadOverview: '加载 eKuiper 概览失败',
+  notReported: '未上报',
+  passwordChangeFailed: '修改密码失败',
+  savePassword: '保存密码',
+  thisAccountControls: '该账户可管理节点，并可添加其他用户。',
 };
 
 export default flow;

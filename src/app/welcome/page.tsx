@@ -89,7 +89,7 @@ export default function WelcomePage() {
             <CardTitle>{status?.setupRequired ? 'Create the owner account' : 'Sign in'}</CardTitle>
             <CardDescription>
               {status?.setupRequired
-                ? 'This account controls nodes and can add other users.'
+                ? t('flow.thisAccountControls')
                 : 'Use your Manager account to continue.'}
             </CardDescription>
           </CardHeader>

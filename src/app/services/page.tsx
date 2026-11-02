@@ -51,7 +51,7 @@ export default function ServicesPage() {
 
   const fetchServices = React.useCallback(async () => {
     if (!activeServer) {
-      setError("No server selected");
+      setError(t('extension.noServerSelected'));
       setLoading(false);
       return;
     }
@@ -66,7 +66,7 @@ export default function ServicesPage() {
         : [];
       setServices(serviceList);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch services");
+      setError(err instanceof Error ? err.message : t('extension.failedFetchServices'));
     } finally {
       setLoading(false);
     }
@@ -74,7 +74,7 @@ export default function ServicesPage() {
 
   const fetchFunctions = React.useCallback(async () => {
     if (!activeServer) {
-      setError("No server selected");
+      setError(t('extension.noServerSelected'));
       setLoading(false);
       return;
     }
@@ -87,7 +87,7 @@ export default function ServicesPage() {
       const functionList = Array.isArray(data) ? data : [];
       setFunctions(functionList);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch functions");
+      setError(err instanceof Error ? err.message : t('extension.failedFetchFunctions'));
     } finally {
       setLoading(false);
     }
@@ -111,7 +111,7 @@ export default function ServicesPage() {
       setDeleteService(null);
       fetchServices();
     } catch (err) {
-      toast.error(`Failed to delete service: ${err instanceof Error ? err.message : "Unknown error"}`);
+      toast.error(`Failed to delete service: ${err instanceof Error ? err.message : t('extension.unknownError')}`);
     }
   };
 
@@ -134,14 +134,14 @@ export default function ServicesPage() {
     },
     {
       id: "type",
-      header: "Type",
+      header: t('extension.typeColumn'),
       cell: () => (
         <StatusBadge status="info" label={t('extension.externalService')} showIcon={false} />
       ),
     },
     {
       id: "actions",
-      header: "Actions",
+      header: t('extension.actionsColumn'),
       cell: ({ row }) => {
         const service = row.original;
         return (
@@ -189,7 +189,7 @@ export default function ServicesPage() {
     },
     {
       accessorKey: "serviceName",
-      header: "Service",
+      header: t('extension.serviceColumn'),
       cell: ({ row }) => (
         <span className="text-muted-foreground">
           {row.original.serviceName || "-"}
@@ -198,7 +198,7 @@ export default function ServicesPage() {
     },
     {
       id: "actions",
-      header: "Actions",
+      header: t('extension.actionsColumn'),
       cell: ({ row }) => {
         const func = row.original;
         return (
@@ -258,10 +258,10 @@ export default function ServicesPage() {
                 columns={serviceColumns}
                 data={services}
                 searchKey="name"
-                searchPlaceholder="Search services..."
+                searchPlaceholder={t('extension.searchServices')}
                 loading={loading}
-                emptyMessage="No services registered"
-                emptyDescription="Register an external service to use its functions in eKuiper rules."
+                emptyMessage={t('extension.noServicesRegistered')}
+                emptyDescription={t('extension.registerServiceEmptyHint')}
                 onRefresh={fetchServices}
               />
             )}
@@ -279,10 +279,10 @@ export default function ServicesPage() {
                 columns={functionColumns}
                 data={functions}
                 searchKey="name"
-                searchPlaceholder="Search functions..."
+                searchPlaceholder={t('extension.searchServiceFns')}
                 loading={loading}
-                emptyMessage="No external functions"
-                emptyDescription="External functions are provided by registered services."
+                emptyMessage={t('extension.noExternalFunctionsTitle')}
+                emptyDescription={t('extension.externalFunctionsHint')}
                 onRefresh={fetchFunctions}
               />
             )}

@@ -38,7 +38,7 @@ export default function DataExportPage() {
             const list = await ekuiperClient.listRules();
             setRules(list);
         } catch (err) {
-            toast.error("Failed to fetch rules for selection");
+            toast.error(t('extension.failedFetchRules'));
         } finally {
             setLoading(false);
         }
@@ -54,7 +54,7 @@ export default function DataExportPage() {
         try {
             const blob = await ekuiperClient.exportData();
             downloadBlob(blob, `ekuiper-data-${new Date().toISOString().slice(0, 10)}.json`);
-            toast.success("Configuration export completed");
+            toast.success(t('extension.exportCompleted'));
         } catch (err) {
             toast.error(`Export failed: ${err instanceof Error ? err.message : "Error"}`);
         } finally {
@@ -65,14 +65,14 @@ export default function DataExportPage() {
     const handlePartialExport = async () => {
         if (!activeServer) return;
         if (selectedRules.length === 0) {
-            toast.error("Select at least one rule");
+            toast.error(t('extension.selectAtLeastOneRule'));
             return;
         }
         setExportingPartial(true);
         try {
             const blob = await ekuiperClient.exportRuleset(selectedRules);
             downloadBlob(blob, `ekuiper-ruleset-${new Date().toISOString().slice(0, 10)}.json`);
-            toast.success("Ruleset export completed");
+            toast.success(t('extension.rulesetExportCompleted'));
         } catch (err) {
             toast.error(`Export failed: ${err instanceof Error ? err.message : "Error"}`);
         } finally {
@@ -160,7 +160,7 @@ export default function DataExportPage() {
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm font-medium">{selectedRules.length} selected</span>
                                 <Button variant="ghost" size="sm" onClick={toggleAll} className="h-8 text-xs">
-                                    {selectedRules.length === rules.length ? "Deselect All" : "Select All"}
+                                    {selectedRules.length === rules.length ? t('extension.deselectAll') : t('extension.selectAll')}
                                 </Button>
                             </div>
                             {loading ? (
