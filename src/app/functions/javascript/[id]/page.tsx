@@ -145,7 +145,7 @@ export default function JSUDFEditorPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => router.push("/functions")}
-                            aria-label="Back to functions"
+                            aria-label={t('extension.backToFunctions')}
                         >
                             <ArrowLeft className="size-5" aria-hidden="true" />
                         </Button>
@@ -163,9 +163,7 @@ export default function JSUDFEditorPage() {
                     </div>
                     <Button onClick={handleSave} disabled={saving}>
                         {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
-                        <Save className="mr-2 size-4" />
-                        Save Function
-                    </Button>
+                        <Save className="mr-2 size-4" />{t('extension.saveFunction')}</Button>
                 </div>
 
                 {/* Editor Layout */}
@@ -173,8 +171,8 @@ export default function JSUDFEditorPage() {
                     {/* Sidebar / Config */}
                     <Card className="h-fit">
                         <CardHeader>
-                            <CardTitle>Configuration</CardTitle>
-                            <CardDescription>Function metadata</CardDescription>
+                            <CardTitle>{t('extension.configLabel')}</CardTitle>
+                            <CardDescription>{t('extension.functionMetadata')}</CardDescription>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-4">
                             <div className="flex flex-col gap-2">
@@ -186,25 +184,23 @@ export default function JSUDFEditorPage() {
                                     disabled={!isNew}
                                     placeholder="myCustomFunc"
                                 />
-                                {!isNew && <p className="text-xs text-muted-foreground">ID cannot be changed after creation</p>}
+                                {!isNew && <p className="text-xs text-muted-foreground">{t('extension.idImmutable')}</p>}
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description">{t('extension.descriptionLabel')}</Label>
                                 <Input
                                     id="description"
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
-                                    placeholder="What this function returns"
+                                    placeholder={t('extension.returnValue')}
                                 />
                             </div>
 
                             <div className="flex items-center justify-between rounded-lg border p-3 shadow-beautiful-sm">
                                 <div className="flex flex-col gap-0.5">
-                                    <Label htmlFor="isAgg">Aggregate Function</Label>
-                                    <p className="text-xs text-muted-foreground">
-                                        Enable if this function performs aggregation
-                                    </p>
+                                    <Label htmlFor="isAgg">{t('extension.aggregateFunction')}</Label>
+                                    <p className="text-xs text-muted-foreground">{t('extension.aggregateHint')}</p>
                                 </div>
                                 <Switch
                                     id="isAgg"
@@ -224,9 +220,7 @@ export default function JSUDFEditorPage() {
                                 language="javascript"
                             />
                         </div>
-                        <p className="text-xs text-muted-foreground mt-2">
-                            Write your JavaScript logic above. The function must return a value.
-                        </p>
+                        <p className="text-xs text-muted-foreground mt-2">{t('extension.jsLogicHint')}</p>
                     </div>
                 </div>
             </div>

@@ -60,7 +60,7 @@ export default function NewServicePage() {
       <AppLayout title={t('nav.registerService')}>
         <EmptyState
           title={t('extension.noServerConnected')}
-          description="Connect to an eKuiper server to register services."
+          description={t('extension.connectToRegisterServices')}
         />
       </AppLayout>
     );
@@ -75,19 +75,15 @@ export default function NewServicePage() {
             variant="ghost"
             size="icon"
             onClick={() => router.push("/services")}
-            aria-label="Back to services"
+            aria-label={t('extension.backToServices')}
           >
             <ArrowLeft className="size-5" aria-hidden="true" />
           </Button>
           <div className="flex items-center gap-3">
             <Server className="size-5 text-blue-500" aria-hidden="true" />
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">
-                Register External Service
-              </h2>
-              <p className="text-muted-foreground">
-                Register a new external service for use in eKuiper rules
-              </p>
+              <h2 className="text-2xl font-bold tracking-tight">{t('extension.registerExternalService')}</h2>
+              <p className="text-muted-foreground">{t('extension.registerServiceHint')}</p>
             </div>
           </div>
         </div>
@@ -95,7 +91,7 @@ export default function NewServicePage() {
         {/* Form */}
         <Card>
           <CardHeader>
-            <CardTitle>Service Configuration</CardTitle>
+            <CardTitle>{t('extension.serviceConfig')}</CardTitle>
             <CardDescription>
               eKuiper installs services from a zip package containing the service definition and interfaces.
             </CardDescription>
@@ -121,9 +117,7 @@ export default function NewServicePage() {
                   onChange={(e) => setFile(e.target.value)}
                   placeholder="https://example.com/my-service.zip"
                 />
-                <p className="text-sm text-muted-foreground">
-                  HTTP(S) or file URI that the eKuiper node can read.
-                </p>
+                <p className="text-sm text-muted-foreground">{t('extension.httpOrFileUri')}</p>
               </div>
             </div>
 

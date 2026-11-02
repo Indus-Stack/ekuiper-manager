@@ -111,7 +111,7 @@ export function ImportRuleModal({ open, onOpenChange, onSuccess }: ImportRuleMod
         </DialogHeader>
 
         {/* Tab switch */}
-        <div className="flex items-center gap-1 p-1 bg-muted/60 rounded-lg text-xs font-medium w-fit border border-border/50 select-none" role="tablist" aria-label="Import format">
+        <div className="flex items-center gap-1 p-1 bg-muted/60 rounded-lg text-xs font-medium w-fit border border-border/50 select-none" role="tablist" aria-label={t('connector.importFormat')}>
           <button
             type="button"
             role="tab"
@@ -145,7 +145,7 @@ export function ImportRuleModal({ open, onOpenChange, onSuccess }: ImportRuleMod
             <div
               role="button"
               tabIndex={0}
-              aria-label="Drop ruleset JSON file or browse"
+              aria-label={t('connector.dropRulesetOrBrowse')}
               onDragOver={(e) => {
                 e.preventDefault();
                 setIsDragging(true);
@@ -170,7 +170,7 @@ export function ImportRuleModal({ open, onOpenChange, onSuccess }: ImportRuleMod
                 type="file"
                 accept=".json,application/json"
                 className="hidden"
-                aria-label="Choose ruleset JSON file"
+                aria-label={t('connector.chooseRulesetFile')}
                 onChange={(e) => {
                   const f = e.target.files?.[0];
                   if (f) void readJsonFile(f);
@@ -189,7 +189,7 @@ export function ImportRuleModal({ open, onOpenChange, onSuccess }: ImportRuleMod
                     size="sm"
                     className="h-6 text-[10px] text-muted-foreground hover:text-foreground px-2"
                     onClick={() => setJsonContent('')}
-                    aria-label="Clear JSON definition"
+                    aria-label={t('connector.clearJsonDefinition')}
                   >{t('rule.clear')}</Button>
                 )}
               </div>
@@ -226,14 +226,14 @@ export function ImportRuleModal({ open, onOpenChange, onSuccess }: ImportRuleMod
               <span className="font-medium text-foreground block">{t('rule.partialImport')}</span>
               <span className="text-[11px] text-muted-foreground">{t('rule.skipFailedEntries')}</span>
             </div>
-            <Switch checked={partial} onCheckedChange={setPartial} aria-label="Partial Import" />
+            <Switch checked={partial} onCheckedChange={setPartial} aria-label={t('connector.partialImport')} />
           </div>
           <div className="flex items-center justify-between p-2.5 rounded-lg border border-border/50 bg-muted/20">
             <div>
               <span className="font-medium text-foreground block">{t('rule.stopOnError')}</span>
               <span className="text-[11px] text-muted-foreground">{t('rule.haltOnFirstFailure')}</span>
             </div>
-            <Switch checked={stopOnError} onCheckedChange={setStopOnError} aria-label="Stop on Error" />
+            <Switch checked={stopOnError} onCheckedChange={setStopOnError} aria-label={t('connector.stopOnError')} />
           </div>
         </div>
 

@@ -700,13 +700,13 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                         <CardTitle className="text-sm font-semibold">{t('stream.schemaColumns')}</CardTitle>
                         <CardDescription className="text-xs">
                           {isSchema
-                            ? 'Fields are strongly typed and validated against incoming data.'
-                            : 'Schemaless stream (all JSON keys are accessible via wildcard *).'}
+                            ? t('stream.typedSchemaHint')
+                            : t('stream.schemalessHint')}
                         </CardDescription>
                       </div>
                       <div className="flex items-center gap-2">
                         <Label htmlFor="schema-toggle" className="text-xs text-muted-foreground cursor-pointer">
-                          {isSchema ? 'Typed Schema' : 'Schemaless'}
+                          {isSchema ? t('stream.typedSchema') : t('stream.schemaless')}
                         </Label>
                         <Switch
                           id="schema-toggle"

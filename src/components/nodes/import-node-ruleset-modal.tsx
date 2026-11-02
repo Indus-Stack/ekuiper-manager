@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { CodeEditor } from '@/components/ui/code-editor';
 
+import { useT } from '@/lib/i18n';
 interface ImportNodeRulesetModalProps {
   node: { id: string; name: string } | null;
   open: boolean;
@@ -28,6 +29,7 @@ export function ImportNodeRulesetModal({
   onOpenChange,
   onSuccess,
 }: ImportNodeRulesetModalProps) {
+  const t = useT();
   const [content, setContent] = React.useState('');
   const [importing, setImporting] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
@@ -114,7 +116,7 @@ export function ImportNodeRulesetModal({
           <div
             role="button"
             tabIndex={0}
-            aria-label="Upload ruleset JSON file"
+            aria-label={t('connector.uploadRulesetJson')}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -139,30 +141,27 @@ export function ImportNodeRulesetModal({
               type="file"
               accept=".json,application/json"
               className="hidden"
-              aria-label="Choose ruleset JSON file"
+              aria-label={t('connector.chooseRulesetFile')}
               onChange={(e) => {
                 const f = e.target.files?.[0];
                 if (f) void readJsonFile(f);
               }}
             />
-            <p className="text-xs text-muted-foreground">
-              Drop ruleset <span className="font-mono text-foreground">.json</span> file here or click to browse
+            <p className="text-xs text-muted-foreground">{t('connector.dropRuleset')}<span className="font-mono text-foreground">.json</span> file here or click to browse
             </p>
           </div>
 
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between items-center">
-              <Label className="text-xs font-medium">Ruleset JSON Content</Label>
+              <Label className="text-xs font-medium">{t('connector.rulesetJsonContent')}</Label>
               {content && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  aria-label="Clear JSON ruleset content"
+                  aria-label={t('connector.clearRulesetContent')}
                   className="h-6 text-[10px] text-muted-foreground hover:text-foreground px-2"
                   onClick={() => setContent('')}
-                >
-                  Clear
-                </Button>
+                >{t('connector.clear')}</Button>
               )}
             </div>
             <div className="h-[200px] rounded-md border border-border/80 overflow-hidden font-mono text-xs">
@@ -176,9 +175,7 @@ export function ImportNodeRulesetModal({
         </div>
 
         <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={importing} className="touch-manipulation">
-            Cancel
-          </Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={importing} className="touch-manipulation">{t('common.cancel')}</Button>
           <Button onClick={() => void handleImport()} disabled={importing || !content.trim()} className="touch-manipulation">
             {importing && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}
             {importing ? 'Importing…' : 'Restore Ruleset'}

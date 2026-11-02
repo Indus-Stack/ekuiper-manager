@@ -95,6 +95,10 @@ const stream: Record<keyof typeof en, string> = {
   sqlStatementDescription: 'eKuiper 返回的定义。',
   resolvedDefinition: '解析后的定义',
   resolvedDefinitionDescription: 'eKuiper 节点返回的原始 JSON。',
+  typedSchema: '强类型模式',
+  schemaless: '无模式',
+  typedSchemaHint: '字段为强类型，并会针对流入数据做校验。',
+  schemalessHint: '无模式流（所有 JSON 键均可通过通配符 * 访问）。',
 };
 
 export default stream;

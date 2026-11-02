@@ -56,7 +56,7 @@ export default function FunctionDetailPage() {
             <AppLayout title={`Function: ${name}`}>
                 <ErrorState
                     title={t('extension.noServerConnected')}
-                    description="Please connect to an eKuiper server to view function details."
+                    description={t('extension.connectToViewFunction')}
                 />
             </AppLayout>
         );
@@ -65,7 +65,7 @@ export default function FunctionDetailPage() {
     if (loading) {
         return (
             <AppLayout title={`Function: ${name}`}>
-                <LoadingPage label="Finding function details..." />
+                <LoadingPage label={t('extension.findingFunctionDetails')} />
             </AppLayout>
         );
     }
@@ -81,7 +81,7 @@ export default function FunctionDetailPage() {
                         <h2 className="text-3xl font-bold tracking-tight">{name}</h2>
                     </div>
                     <ErrorState
-                        title="Function Not Found"
+                        title={t('extension.functionNotFound')}
                         description={error || "Could not load this external function."}
                         onRetry={fetchFunctionDetails}
                     />
@@ -102,27 +102,23 @@ export default function FunctionDetailPage() {
                             </Button>
                             <h2 className="text-3xl font-bold tracking-tight">{name}</h2>
                         </div>
-                        <p className="text-muted-foreground ml-12">
-                            External service function
-                        </p>
+                        <p className="text-muted-foreground ml-12">{t('extension.externalServiceFunction')}</p>
                     </div>
-                    <StatusBadge status="available" label="Available" />
+                    <StatusBadge status="available" label={t('extension.available')} />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Zap className="size-5 text-yellow-500" />
-                                Function Info
-                            </CardTitle>
+                                <Zap className="size-5 text-yellow-500" />{t('extension.functionInfo')}</CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-4">
                             <div className="grid grid-cols-2 gap-2 text-sm">
-                                <span className="text-muted-foreground">Name:</span>
+                                <span className="text-muted-foreground">{t('extension.nameLabel')}</span>
                                 <span className="font-medium">{details.name}</span>
 
-                                <span className="text-muted-foreground">Method:</span>
+                                <span className="text-muted-foreground">{t('extension.methodLabel')}</span>
                                 <Badge variant="outline">{details.methodName || "Not reported"}</Badge>
                             </div>
                         </CardContent>
@@ -131,21 +127,19 @@ export default function FunctionDetailPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Server className="size-5 text-blue-500" />
-                                Service Provider
-                            </CardTitle>
+                                <Server className="size-5 text-blue-500" />{t('extension.serviceProvider')}</CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-4">
                             <div className="grid grid-cols-2 gap-2 text-sm">
-                                <span className="text-muted-foreground">Service:</span>
+                                <span className="text-muted-foreground">{t('extension.serviceLabel')}</span>
                                 <Button variant="link" className="p-0 h-auto font-medium justify-start" onClick={() => router.push(`/services/${encodeURIComponent(details.serviceName)}`)}>
                                     {details.serviceName}
                                 </Button>
 
-                                <span className="text-muted-foreground">Interface:</span>
+                                <span className="text-muted-foreground">{t('extension.interfaceLabel')}</span>
                                 <span className="font-medium">{details.interfaceName}</span>
 
-                                <span className="text-muted-foreground">Address:</span>
+                                <span className="text-muted-foreground">{t('extension.address')}</span>
                                 <span className="font-mono text-xs bg-muted p-1 rounded">{details.address || "Not reported"}</span>
                             </div>
                         </CardContent>
@@ -155,20 +149,14 @@ export default function FunctionDetailPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <FileCode className="size-5 text-purple-500" />
-                            Usage Example
-                        </CardTitle>
-                        <CardDescription>
-                            How to call this function in SQL
-                        </CardDescription>
+                            <FileCode className="size-5 text-purple-500" />{t('extension.usageExample')}</CardTitle>
+                        <CardDescription>{t('extension.howToCall')}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm font-mono">
                             {`SELECT ${details.name}(col1) FROM stream1`}
                         </pre>
-                        <p className="text-sm text-muted-foreground mt-4">
-                            Note: The actual arguments depend on the function definition in the schema file.
-                        </p>
+                        <p className="text-sm text-muted-foreground mt-4">{t('extension.argsDependOnSchema')}</p>
                     </CardContent>
                 </Card>
 

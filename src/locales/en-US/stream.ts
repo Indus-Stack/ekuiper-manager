@@ -99,4 +99,8 @@ export default {
   sqlStatementDescription: 'The definition reported by eKuiper.',
   resolvedDefinition: 'Resolved definition',
   resolvedDefinitionDescription: 'Raw JSON returned by eKuiper node.',
+  typedSchema: 'Typed Schema',
+  schemaless: 'Schemaless',
+  typedSchemaHint: 'Fields are strongly typed and validated against incoming data.',
+  schemalessHint: 'Schemaless stream (all JSON keys are accessible via wildcard *).',
 };

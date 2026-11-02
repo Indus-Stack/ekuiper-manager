@@ -196,7 +196,7 @@ export default function PluginDetailPage() {
     return (
       <Badge variant={isRunning ? "default" : "secondary"} className="ml-2">
         {isRunning ? (
-          <><CheckCircle2 className="mr-1 size-3" /> Running</>
+          <><CheckCircle2 className="mr-1 size-3" />{t('extension.running')}</>
         ) : (
           <><AlertTriangle className="mr-1 size-3" /> {status}</>
         )}
@@ -217,7 +217,7 @@ export default function PluginDetailPage() {
       <AppLayout title={`Plugin: ${name}`}>
         <EmptyState
           title={t('extension.noServerConnected')}
-          description="Connect to an eKuiper server to view plugin details."
+          description={t('extension.connectToViewPlugin')}
         />
       </AppLayout>
     );
@@ -237,7 +237,7 @@ export default function PluginDetailPage() {
     return (
       <AppLayout title={`Plugin: ${name}`}>
         <EmptyState
-          title="Error Loading Plugin"
+          title={t('extension.errorLoadingPlugin')}
           description={error}
           actionLabel="Retry"
           onAction={fetchPluginDetails}
@@ -279,14 +279,12 @@ export default function PluginDetailPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={fetchPluginDetails} aria-label="Refresh plugin">
+            <Button variant="outline" size="icon" onClick={fetchPluginDetails} aria-label={t('extension.refreshPlugin')}>
               <RefreshCw className="size-4" aria-hidden="true" />
             </Button>
             {type !== "udfs" && <>
               <Button variant="outline" onClick={() => setShowUpdateDialog(true)}>
-                <Upload className="mr-2 size-4" aria-hidden="true" />
-                Update
-              </Button>
+                <Upload className="mr-2 size-4" aria-hidden="true" />{t('extension.update')}</Button>
               <Button variant="destructive" onClick={() => setShowDeleteDialog(true)}>
                 <Trash2 className="mr-2 size-4" aria-hidden="true" />{t('extension.delete')}</Button>
             </>}
@@ -298,23 +296,21 @@ export default function PluginDetailPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Activity className="size-5" aria-hidden="true" />
-                Runtime Status
-              </CardTitle>
+                <Activity className="size-5" aria-hidden="true" />{t('extension.runtimeStatus')}</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-3">
               <div>
-                <p className="text-sm text-muted-foreground">Status</p>
+                <p className="text-sm text-muted-foreground">{t('extension.statusColumn')}</p>
                 <p className="font-medium flex items-center gap-2">
                   {plugin.status === "running" ? (
-                    <><CheckCircle2 className="size-4 text-green-500" aria-hidden="true" /> Running</>
+                    <><CheckCircle2 className="size-4 text-green-500" aria-hidden="true" />{t('extension.running')}</>
                   ) : (
                     <><AlertTriangle className="size-4 text-amber-500" aria-hidden="true" /> {plugin.status}</>
                   )}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Process ID</p>
+                <p className="text-sm text-muted-foreground">{t('extension.processId')}</p>
                 <p className="font-medium">{plugin.pid || "N/A"}</p>
               </div>
               <div>
@@ -323,7 +319,7 @@ export default function PluginDetailPage() {
               </div>
               {plugin.refCount && Object.keys(plugin.refCount).length > 0 && (
                 <div className="col-span-3">
-                  <p className="text-sm text-muted-foreground mb-2">Rule References</p>
+                  <p className="text-sm text-muted-foreground mb-2">{t('extension.ruleReferences')}</p>
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(plugin.refCount).map(([rule, count]) => (
                       <Badge key={rule} variant="secondary">
@@ -345,14 +341,10 @@ export default function PluginDetailPage() {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <ListTree className="size-5" />{t('extension.functions')}</CardTitle>
-                  <CardDescription>
-                    Register exported functions from this plugin
-                  </CardDescription>
+                  <CardDescription>{t('extension.registerExportedHint')}</CardDescription>
                 </div>
                 <Button size="sm" onClick={() => setShowRegisterDialog(true)}>
-                  <Code2 className="mr-2 size-4" />
-                  Register Functions
-                </Button>
+                  <Code2 className="mr-2 size-4" />{t('extension.registerFunctions')}</Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -376,10 +368,8 @@ export default function PluginDetailPage() {
         {/* Plugin Details */}
         <Card>
           <CardHeader>
-            <CardTitle>Plugin Details</CardTitle>
-            <CardDescription>
-              Raw plugin information from eKuiper
-            </CardDescription>
+            <CardTitle>{t('extension.pluginDetails')}</CardTitle>
+            <CardDescription>{t('extension.rawPluginInfo')}</CardDescription>
           </CardHeader>
           <CardContent>
             <pre className="bg-muted rounded-lg p-4 overflow-x-auto text-sm">
@@ -404,9 +394,7 @@ export default function PluginDetailPage() {
                   checked={stopRulesOnDelete}
                   onCheckedChange={(checked) => setStopRulesOnDelete(checked as boolean)}
                 />
-                <label htmlFor="stopRules" className="text-sm">
-                  Stop eKuiper after deletion (required for native plugins to take effect)
-                </label>
+                <label htmlFor="stopRules" className="text-sm">{t('extension.stopAfterDelete')}</label>
               </div>
             )}
           </div>
@@ -420,14 +408,12 @@ export default function PluginDetailPage() {
       <Dialog open={showUpdateDialog} onOpenChange={setShowUpdateDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Update Plugin</DialogTitle>
-            <DialogDescription>
-              Provide a URL to the new version of the plugin zip file
-            </DialogDescription>
+            <DialogTitle>{t('extension.updatePlugin')}</DialogTitle>
+            <DialogDescription>{t('extension.providePluginZipUrl')}</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="plugin-update-url">Plugin URL</Label>
+              <Label htmlFor="plugin-update-url">{t('extension.pluginUrl')}</Label>
               <Input
                 id="plugin-update-url"
                 value={updateUrl}
@@ -437,9 +423,7 @@ export default function PluginDetailPage() {
             </div>
             {type !== "portables" && (
               <div className="p-3 bg-amber-500/10 rounded-lg text-sm">
-                <AlertTriangle className="inline size-4 mr-1" aria-hidden="true" />
-                Native plugins require an eKuiper restart to take effect.
-              </div>
+                <AlertTriangle className="inline size-4 mr-1" aria-hidden="true" />{t('extension.nativeRestart')}</div>
             )}
           </div>
           <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
@@ -456,23 +440,21 @@ export default function PluginDetailPage() {
       <Dialog open={showRegisterDialog} onOpenChange={setShowRegisterDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Register Functions</DialogTitle>
+            <DialogTitle>{t('extension.registerFunctions')}</DialogTitle>
             <DialogDescription>
               Register exported functions from the plugin &quot;{name}&quot;
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="plugin-functions-register">Function Names (comma-separated)</Label>
+              <Label htmlFor="plugin-functions-register">{t('extension.functionNames')}</Label>
               <Input
                 id="plugin-functions-register"
                 value={functionsToRegister}
                 onChange={(e) => setFunctionsToRegister(e.target.value)}
                 placeholder="func1, func2, func3"
               />
-              <p className="text-sm text-muted-foreground">
-                Enter the names of functions exported by this plugin
-              </p>
+              <p className="text-sm text-muted-foreground">{t('extension.enterExportedNames')}</p>
             </div>
           </div>
           <DialogFooter className="flex-col-reverse sm:flex-row gap-2">

@@ -23,6 +23,7 @@ import { UploadFileModal } from "./upload-file-modal";
 import { ChevronDown, File, Plus, UploadCloud, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { useT } from '@/lib/i18n';
 export interface FileAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
@@ -44,6 +45,7 @@ export function FileAutocomplete({
   modalTitle = "Upload File",
   className,
 }: FileAutocompleteProps) {
+  const t = useT();
   const [uploads, setUploads] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [uploadModalOpen, setUploadModalOpen] = React.useState(false);
@@ -95,14 +97,14 @@ export function FileAutocomplete({
                   variant="ghost"
                   size="icon"
                   className="size-6 text-muted-foreground hover:text-foreground"
-                  aria-label="Select uploaded file"
+                  aria-label={t('connector.selectUploadedFile')}
                 >
                   <ChevronDown className="size-3.5" aria-hidden="true" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-64 max-h-64 overflow-y-auto">
                 <DropdownMenuLabel className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider flex items-center justify-between">
-                  <span>Uploaded Files</span>
+                  <span>{t('connector.uploadedFiles')}</span>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -111,7 +113,7 @@ export function FileAutocomplete({
                       e.stopPropagation();
                       void fetchUploads();
                     }}
-                    aria-label="Refresh uploaded files list"
+                    aria-label={t('connector.refreshFileList')}
                   >
                     <RefreshCw className={cn("size-3", loading && "animate-spin")} aria-hidden="true" />
                   </Button>
@@ -146,13 +148,9 @@ export function FileAutocomplete({
               onClick={() => setUploadModalOpen(true)}
               className="h-8 px-2.5 text-xs font-mono shrink-0 gap-1 border-border hover:bg-muted/50"
             >
-              <UploadCloud className="h-3.5 w-3.5 text-muted-foreground" />
-              Upload
-            </Button>
+              <UploadCloud className="h-3.5 w-3.5 text-muted-foreground" />{t('connector.upload')}</Button>
           </TooltipTrigger>
-          <TooltipContent side="top" className="text-xs">
-            Upload file or paste content directly to server
-          </TooltipContent>
+          <TooltipContent side="top" className="text-xs">{t('connector.uploadOrPaste')}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
 
