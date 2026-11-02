@@ -69,11 +69,11 @@ export default function SchemasPage() {
 
     try {
       await ekuiperClient.deleteSchema(deleteParams.type, deleteParams.name);
-      toast.success(`Schema "${deleteParams.name}" deleted successfully`);
+      toast.success(t('page.schemaDeleted', { name: deleteParams.name }));
       setDeleteParams(null);
       fetchData();
     } catch (err) {
-      toast.error(`Failed to delete schema: ${err instanceof Error ? err.message : "Unknown error"}`);
+      toast.error(t('page.schemaDeleteFailed', { error: err instanceof Error ? err.message : t('page.unknownError') }));
     }
   };
 
@@ -84,9 +84,7 @@ export default function SchemasPage() {
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Schema Name
-          <ArrowUpDown className="ml-2 size-4" />
+        >{t('page.schemaName')}<ArrowUpDown className="ml-2 size-4" />
         </Button>
       ),
       cell: ({ row }) => (
@@ -98,11 +96,11 @@ export default function SchemasPage() {
     },
     {
       id: "actions",
-      header: "Actions",
+      header: t("common.operations"),
       cell: ({ row }) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label={`Actions for ${row.original.name}`}>
+            <Button variant="ghost" size="icon" aria-label={t('page.actionsFor', { name: row.original.name })}>
               <MoreHorizontal className="size-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -111,16 +109,12 @@ export default function SchemasPage() {
               <DropdownMenuItem
                 onClick={() => router.push(`/schemas/${activeTab}/${encodeURIComponent(row.original.name)}`)}
               >
-                <FileType className="mr-2 size-4" />
-                View / Edit
-              </DropdownMenuItem>
+                <FileType className="mr-2 size-4" />{t('page.viewEdit')}</DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive"
                 onClick={() => setDeleteParams({ type: activeTab, name: row.original.name })}
               >
-                <Trash2 className="mr-2 size-4" />
-                Delete
-              </DropdownMenuItem>
+                <Trash2 className="mr-2 size-4" />{t('common.delete')}</DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -131,7 +125,7 @@ export default function SchemasPage() {
   if (!activeServer) {
     return (
       <AppLayout title={t('nav.schemas')}>
-        <EmptyState title="No Server Connected" description="Connect to an eKuiper server to manage schemas." />
+        <EmptyState title={t('page.noServerConnected')} description={t('page.connectToManageSchemas')} />
       </AppLayout>
     );
   }
@@ -141,34 +135,30 @@ export default function SchemasPage() {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Schemas</h2>
-            <p className="text-muted-foreground">
-              Manage Protobuf and custom schemas
-            </p>
+            <h2 className="text-2xl font-bold tracking-tight">{t('nav.schemas')}</h2>
+            <p className="text-muted-foreground">{t('page.schemasHint')}</p>
           </div>
           <Button onClick={() => router.push(`/schemas/new?type=${activeTab}`)}>
-            <Plus className="mr-2 size-4" />
-            Create Schema
-          </Button>
+            <Plus className="mr-2 size-4" />{t('nav.createSchema')}</Button>
         </div>
 
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "protobuf" | "custom")}>
           <TabsList>
-            <TabsTrigger value="protobuf">Protobuf</TabsTrigger>
-            <TabsTrigger value="custom">Custom</TabsTrigger>
+            <TabsTrigger value="protobuf">{t('page.schemaTypeProtobuf')}</TabsTrigger>
+            <TabsTrigger value="custom">{t('page.schemaTypeCustom')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value={activeTab} className="mt-4">
             {error ? (
-              <ErrorState title="Error" description={error} onRetry={fetchData} />
+              <ErrorState title={t('common.error')} description={error} onRetry={fetchData} />
             ) : (
               <DataTable
                 columns={columns}
                 data={data}
                 searchKey="name"
-                searchPlaceholder={`Search ${activeTab} schemas...`}
+                searchPlaceholder={t('page.searchSchemas', { tab: activeTab })}
                 loading={loading}
-                emptyMessage={`No ${activeTab} schemas found`}
+                emptyMessage={t('page.noSchemasFound', { tab: activeTab })}
               />
             )}
           </TabsContent>
@@ -177,8 +167,8 @@ export default function SchemasPage() {
         <ConfirmDialog
           open={!!deleteParams}
           onOpenChange={(open) => !open && setDeleteParams(null)}
-          title="Delete Schema"
-          description={`Are you sure you want to delete schema "${deleteParams?.name}"? Streams using this schema may fail.`}
+          title={t('page.deleteSchema')}
+          description={t('page.deleteSchemaDescription', { name: deleteParams?.name ?? '' })}
           onConfirm={handleDelete}
           variant="danger"
         />

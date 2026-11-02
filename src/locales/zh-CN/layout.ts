@@ -45,6 +45,8 @@ const layout: Record<keyof typeof en, string> = {
   previousPage: '上一页',
   nextPage: '下一页',
   lastPage: '最后一页',
+  columns: '列',
+  pageOf: '第 {page} / {total} 页',
 
   // 命令面板
   commandPlaceholder: '输入命令或搜索…',

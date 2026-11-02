@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Activity, ArrowRight, Database, RefreshCw, Server, Table2, Workflow } from 'lucide-react';
 import { AppLayout } from '@/components/layout';
 import { useT } from '@/lib/i18n';
+import { ruleStatusKey } from '@/lib/i18n/translate';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -78,9 +79,9 @@ export default function DashboardPage() {
         <Card className="mx-auto max-w-xl border-dashed">
           <CardContent className="flex flex-col items-center py-14 text-center">
             <Server className="mb-4 size-10 text-muted-foreground" />
-            <h2 className="text-lg font-semibold">Add an eKuiper node</h2>
+            <h2 className="text-lg font-semibold">{t('page.addNode')}</h2>
             <p className="mt-1 text-sm text-muted-foreground">The Manager needs one registered node before it can display or change eKuiper resources.</p>
-            <Button asChild className="mt-5"><Link href="/nodes">Manage nodes</Link></Button>
+            <Button asChild className="mt-5"><Link href="/nodes">{t('page.manageNodes')}</Link></Button>
           </CardContent>
         </Card>
       </AppLayout>
@@ -97,11 +98,11 @@ export default function DashboardPage() {
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-2xl font-semibold tracking-tight">{activeNode.name}</h2>
-              <Badge variant={activeNode.status === 'connected' ? 'default' : 'secondary'}>{activeNode.status === 'connected' ? 'Online' : activeNode.status}</Badge>
+              <Badge variant={activeNode.status === 'connected' ? 'default' : 'secondary'}>{activeNode.status === 'connected' ? t('page.nodeOnline') : t('page.nodeOffline')}</Badge>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">{activeNode.url}</p>
           </div>
-          <Button variant="outline" onClick={() => { void fetchServers(); void load(); }} disabled={loading}><RefreshCw className={`mr-2 size-4 ${loading ? 'animate-spin' : ''}`} />Refresh</Button>
+          <Button variant="outline" onClick={() => { void fetchServers(); void load(); }} disabled={loading}><RefreshCw className={`mr-2 size-4 ${loading ? 'animate-spin' : ''}`} />{t('page.refreshDashboard')}</Button>
         </div>
 
         {error && (
@@ -111,27 +112,27 @@ export default function DashboardPage() {
         )}
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Streams</CardTitle><Database className="size-4 text-muted-foreground" /></CardHeader><CardContent><p className="text-3xl font-semibold tabular-nums">{data?.streams ?? '—'}</p><Button asChild variant="link" className="mt-1 h-auto p-0"><Link href="/streams">Open streams <ArrowRight className="ml-1 size-3" /></Link></Button></CardContent></Card>
-          <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Tables</CardTitle><Table2 className="size-4 text-muted-foreground" /></CardHeader><CardContent><p className="text-3xl font-semibold tabular-nums">{data?.tables ?? '—'}</p><Button asChild variant="link" className="mt-1 h-auto p-0"><Link href="/tables">Open tables <ArrowRight className="ml-1 size-3" /></Link></Button></CardContent></Card>
-          <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Rules</CardTitle><Workflow className="size-4 text-muted-foreground" /></CardHeader><CardContent><p className="text-3xl font-semibold tabular-nums">{data?.rules.length ?? '—'}</p><p className="mt-1 text-xs text-muted-foreground">{running} running · {stopped} stopped</p></CardContent></Card>
-          <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">Uptime</CardTitle><Activity className="size-4 text-muted-foreground" /></CardHeader><CardContent><p className="text-3xl font-semibold tabular-nums">{formatUptime(data?.info.upTimeSeconds)}</p><p className="mt-1 text-xs text-muted-foreground">eKuiper {data?.info.version ?? activeNode.version ?? '—'}</p></CardContent></Card>
+          <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">{t('page.streamsLabel')}</CardTitle><Database className="size-4 text-muted-foreground" /></CardHeader><CardContent><p className="text-3xl font-semibold tabular-nums">{data?.streams ?? '—'}</p><Button asChild variant="link" className="mt-1 h-auto p-0"><Link href="/streams">{t('page.openStreams')}<ArrowRight className="ml-1 size-3" /></Link></Button></CardContent></Card>
+          <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">{t('page.tablesLabel')}</CardTitle><Table2 className="size-4 text-muted-foreground" /></CardHeader><CardContent><p className="text-3xl font-semibold tabular-nums">{data?.tables ?? '—'}</p><Button asChild variant="link" className="mt-1 h-auto p-0"><Link href="/tables">{t('page.openTables')}<ArrowRight className="ml-1 size-3" /></Link></Button></CardContent></Card>
+          <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">{t('page.rulesLabel')}</CardTitle><Workflow className="size-4 text-muted-foreground" /></CardHeader><CardContent><p className="text-3xl font-semibold tabular-nums">{data?.rules.length ?? '—'}</p><p className="mt-1 text-xs text-muted-foreground">{t('page.runningStopped', { running, stopped })}</p></CardContent></Card>
+          <Card><CardHeader className="flex flex-row items-center justify-between pb-2"><CardTitle className="text-sm font-medium">{t('page.uptime')}</CardTitle><Activity className="size-4 text-muted-foreground" /></CardHeader><CardContent><p className="text-3xl font-semibold tabular-nums">{formatUptime(data?.info.upTimeSeconds)}</p><p className="mt-1 text-xs text-muted-foreground">eKuiper {data?.info.version ?? activeNode.version ?? '—'}</p></CardContent></Card>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-3">
           <Card className="lg:col-span-2">
-            <CardHeader><CardTitle>Rule state</CardTitle><CardDescription>Authoritative status reported by the selected eKuiper node.</CardDescription></CardHeader>
+            <CardHeader><CardTitle>{t('page.ruleState')}</CardTitle><CardDescription>{t('page.authoritativeStatus')}</CardDescription></CardHeader>
             <CardContent>
-              {!data?.rules.length ? <p className="py-8 text-center text-sm text-muted-foreground">No rules configured.</p> : <div className="divide-y">{data.rules.slice(0, 8).map((rule) => <Link key={rule.id} href={`/rules/${encodeURIComponent(rule.id)}`} className="flex items-center justify-between py-3 hover:text-primary"><span className="truncate font-medium" title={rule.id}>{rule.id}</span><Badge variant={rule.status?.toLowerCase() === 'running' ? 'default' : 'outline'}>{rule.status ?? 'unknown'}</Badge></Link>)}</div>}
+              {!data?.rules.length ? <p className="py-8 text-center text-sm text-muted-foreground">{t('page.noRulesConfigured')}</p> : <div className="divide-y">{data.rules.slice(0, 8).map((rule) => <Link key={rule.id} href={`/rules/${encodeURIComponent(rule.id)}`} className="flex items-center justify-between py-3 hover:text-primary"><span className="truncate font-medium" title={rule.id}>{rule.id}</span><Badge variant={rule.status?.toLowerCase() === 'running' ? 'default' : 'outline'}>{t(ruleStatusKey(rule.status))}</Badge></Link>)}</div>}
               {data && data.rules.length > 8 && <Button asChild variant="link" className="mt-3 px-0"><Link href="/rules">View all {data.rules.length} rules</Link></Button>}
             </CardContent>
           </Card>
           <Card>
-            <CardHeader><CardTitle>System</CardTitle><CardDescription>Current engine information.</CardDescription></CardHeader>
+            <CardHeader><CardTitle>{t('page.systemLabel')}</CardTitle><CardDescription>{t('page.engineInfo')}</CardDescription></CardHeader>
             <CardContent className="flex flex-col gap-4 text-sm">
-              <div><p className="text-xs text-muted-foreground">Version</p><p className="font-medium">{data?.info.version ?? '—'}</p></div>
-              <div><p className="text-xs text-muted-foreground">Platform</p><p className="font-medium">{[data?.info.os, data?.info.arch].filter(Boolean).join(' / ') || '—'}</p></div>
-              <div><p className="text-xs text-muted-foreground">CPU</p><p className="font-medium">{data?.info.cpuUsage ?? 'Not reported'}</p></div>
-              <div><p className="text-xs text-muted-foreground">Memory</p><p className="font-medium">{data?.info.memoryUsed ?? 'Not reported'}{data?.info.memoryTotal ? ` / ${data.info.memoryTotal}` : ''}</p></div>
+              <div><p className="text-xs text-muted-foreground">{t('page.version')}</p><p className="font-medium">{data?.info.version ?? '—'}</p></div>
+              <div><p className="text-xs text-muted-foreground">{t('page.platform')}</p><p className="font-medium">{[data?.info.os, data?.info.arch].filter(Boolean).join(' / ') || '—'}</p></div>
+              <div><p className="text-xs text-muted-foreground">{t('page.cpu')}</p><p className="font-medium">{data?.info.cpuUsage ?? 'Not reported'}</p></div>
+              <div><p className="text-xs text-muted-foreground">{t('page.memory')}</p><p className="font-medium">{data?.info.memoryUsed ?? 'Not reported'}{data?.info.memoryTotal ? ` / ${data.info.memoryTotal}` : ''}</p></div>
             </CardContent>
           </Card>
         </div>

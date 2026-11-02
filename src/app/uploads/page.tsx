@@ -73,11 +73,11 @@ export default function UploadsPage() {
 
     try {
       await ekuiperClient.deleteUpload(deleteName);
-      toast.success(`File "${deleteName}" deleted successfully`);
+      toast.success(t('page.fileDeleted', { name: deleteName }));
       setDeleteName(null);
       fetchData();
     } catch (err) {
-      toast.error(`Failed to delete file: ${err instanceof Error ? err.message : "Unknown error"}`);
+      toast.error(t('page.fileDeleteFailed', { error: err instanceof Error ? err.message : t('page.unknownError') }));
     }
   };
 
@@ -89,10 +89,10 @@ export default function UploadsPage() {
 
     try {
       await ekuiperClient.uploadFile(formData);
-      toast.success(`File "${file.name}" uploaded successfully`);
+      toast.success(t('page.fileUploaded', { name: file.name }));
       fetchData();
     } catch (err) {
-      toast.error(`Upload failed: ${err instanceof Error ? err.message : "Unknown error"}`);
+      toast.error(t('page.uploadFailed', { error: err instanceof Error ? err.message : t('page.unknownError') }));
     } finally {
       setUploading(false);
     }
@@ -132,9 +132,7 @@ export default function UploadsPage() {
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          File Name
-          <ArrowUpDown className="ml-2 size-4" />
+        >{t('page.fileName')}<ArrowUpDown className="ml-2 size-4" />
         </Button>
       ),
       cell: ({ row }) => (
@@ -146,7 +144,7 @@ export default function UploadsPage() {
     },
     {
       id: "actions",
-      header: "Actions",
+      header: t("common.operations"),
       cell: ({ row }) => (
         <div className="flex justify-end gap-1">
           <DropdownMenu>
@@ -163,16 +161,12 @@ export default function UploadsPage() {
                     toast.success(`Copied path: file://${row.original.name}`);
                   }}
                 >
-                  <Copy className="mr-2 size-4" />
-                  Copy File Path
-                </DropdownMenuItem>
+                  <Copy className="mr-2 size-4" />{t('page.copyFilePath')}</DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-destructive"
                   onClick={() => setDeleteName(row.original.name)}
                 >
-                  <Trash2 className="mr-2 size-4" />
-                  Delete
-                </DropdownMenuItem>
+                  <Trash2 className="mr-2 size-4" />{t('common.delete')}</DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -184,7 +178,7 @@ export default function UploadsPage() {
   if (!activeServer) {
     return (
       <AppLayout title={t('nav.filesFull')}>
-        <EmptyState title="No Server Connected" description="Connect to an eKuiper server to manage uploads." />
+        <EmptyState title={t('page.noServerConnected')} description={t('page.connectToManageUploads')} />
       </AppLayout>
     );
   }
@@ -194,13 +188,11 @@ export default function UploadsPage() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">File Uploads</h2>
-            <p className="text-muted-foreground">Upload and remove files stored by the selected eKuiper node.</p>
+            <h2 className="text-2xl font-bold tracking-tight">{t('nav.filesFull')}</h2>
+            <p className="text-muted-foreground">{t('page.filesHint')}</p>
           </div>
           <Button onClick={() => setCreateModalOpen(true)} className="gap-1.5 shrink-0">
-            <Plus className="size-4" />
-            Create / Upload File
-          </Button>
+            <Plus className="size-4" />{t('page.createUploadFile')}</Button>
         </div>
 
         {/* Drag & Drop Zone */}
@@ -222,7 +214,7 @@ export default function UploadsPage() {
           }}
           role="button"
           tabIndex={uploading ? -1 : 0}
-          aria-label="Upload a file to eKuiper"
+          aria-label={t('page.uploadFileToEkuiper')}
           aria-disabled={uploading}
         >
           <input
@@ -236,21 +228,19 @@ export default function UploadsPage() {
             <UploadCloud className={cn("size-8", isDragging ? "text-primary" : "text-muted-foreground")} />
           </div>
           <h3 className="font-semibold text-lg mb-1">
-            {uploading ? "Uploading..." : "Click or drag file to upload"}
+            {uploading ? t('page.uploading') : t('page.clickOrDragUpload')}
           </h3>
-          <p className="text-sm text-muted-foreground">
-            Supports all file types (JSON, CSV, JAR, SO)
-          </p>
+          <p className="text-sm text-muted-foreground">{t('page.supportedFileTypes')}</p>
         </div>
 
         {error ? (
-          <ErrorState title="Error" description={error} onRetry={fetchData} />
+          <ErrorState title={t('common.error')} description={error} onRetry={fetchData} />
         ) : (
           <DataTable
             columns={columns}
             data={data}
             searchKey="name"
-            searchPlaceholder="Search files..."
+            searchPlaceholder={t('page.searchFiles')}
             loading={loading}
             emptyMessage="No files found"
           />
@@ -259,7 +249,7 @@ export default function UploadsPage() {
         <ConfirmDialog
           open={!!deleteName}
           onOpenChange={(open) => !open && setDeleteName(null)}
-          title="Delete File"
+          title={t('page.deleteFile')}
           description={`Are you sure you want to delete "${deleteName}"? Configurations relying on this file path will break.`}
           onConfirm={handleDelete}
           variant="danger"

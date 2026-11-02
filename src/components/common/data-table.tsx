@@ -132,7 +132,7 @@ export function DataTable<TData, TValue>({
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <Columns className="mr-2 size-4" aria-hidden="true" />
-                Columns
+                {t("layout.columns")}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -237,8 +237,10 @@ export function DataTable<TData, TValue>({
 
         <div className="flex items-center gap-2">
           <div className="text-sm text-muted-foreground">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            {t("layout.pageOf", {
+              page: table.getState().pagination.pageIndex + 1,
+              total: table.getPageCount(),
+            })}
           </div>
 
           <div className="flex items-center gap-1">

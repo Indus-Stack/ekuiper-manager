@@ -200,9 +200,9 @@ export default function ConnectionsPage() {
     try {
       const res = await ekuiperClient.testConnection('connections', conn.typ, conn.props || {});
       if (res.success) {
-        toast.success(`Connection "${conn.id}" is reachable`);
+        toast.success(t('page.connectionReachable', { id: conn.id }));
       } else {
-        toast.error(`Connection "${conn.id}" test failed: ${res.error || res.message || 'Unknown error'}`);
+        toast.error(t('page.connectionTestFailed', { id: conn.id, error: res.error || res.message || t('page.unknownError') }));
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Connection test request failed');
@@ -215,7 +215,7 @@ export default function ConnectionsPage() {
     if (!deleteConn) return;
     try {
       await ekuiperClient.deleteConnection(deleteConn.id);
-      toast.success(`Shared connection "${deleteConn.id}" deleted`);
+      toast.success(t('page.sharedConnectionDeleted', { id: deleteConn.id }));
       setDeleteConn(null);
       await loadData();
     } catch (err) {
@@ -291,15 +291,13 @@ export default function ConnectionsPage() {
         <div className="flex flex-col justify-between gap-4 border-b pb-5 sm:flex-row sm:items-center">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-semibold tracking-tight text-foreground">
-                Connections & Connectors
-              </h1>
+              <h1 className="text-xl font-semibold tracking-tight text-foreground">{t('page.connectionsTitle')}</h1>
               <Badge variant="outline" className="text-xs font-mono">
                 {active?.name ?? 'eKuiper'}
               </Badge>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              Manage shared connections, named configuration keys, sink delivery templates, and connector metadata.
+              {t('page.connectionsSubtitle')}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -310,26 +308,18 @@ export default function ConnectionsPage() {
               disabled={loading}
               className="gap-1.5"
             >
-              <RefreshCw className={`size-3.5 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
+              <RefreshCw className={`size-3.5 ${loading ? 'animate-spin' : ''}`} />{t('page.refreshDashboard')}</Button>
             {activeTab === 'connections' && (
               <Button size="sm" onClick={handleOpenCreateConn} className="gap-1.5">
-                <Plus className="size-4" />
-                New Shared Connection
-              </Button>
+                <Plus className="size-4" />{t('page.newSharedConnection')}</Button>
             )}
             {activeTab === 'conf-sources' && (
               <Button size="sm" onClick={() => handleOpenAddConfKey('sources')} className="gap-1.5">
-                <Plus className="size-4" />
-                New Source ConfKey
-              </Button>
+                <Plus className="size-4" />{t('page.newSourceConfKey')}</Button>
             )}
             {activeTab === 'conf-sinks' && (
               <Button size="sm" onClick={() => handleOpenAddConfKey('sinks')} className="gap-1.5">
-                <Plus className="size-4" />
-                New Sink Template
-              </Button>
+                <Plus className="size-4" />{t('page.newSinkTemplate')}</Button>
             )}
           </div>
         </div>
@@ -339,23 +329,23 @@ export default function ConnectionsPage() {
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
             <TabsTrigger value="connections" className="gap-2">
               <Network className="size-4" />
-              Shared Connections ({connections.length})
+              {t('page.tabSharedConnections')} ({connections.length})
             </TabsTrigger>
             <TabsTrigger value="conf-sources" className="gap-2">
               <Sliders className="size-4" />
-              Source ConfKeys ({sourceConfKeys.length})
+              {t('page.tabSourceConfKeys')} ({sourceConfKeys.length})
             </TabsTrigger>
             <TabsTrigger value="conf-sinks" className="gap-2">
               <Send className="size-4" />
-              Sink Templates ({sinkConfKeys.length})
+              {t('page.tabSinkTemplates')} ({sinkConfKeys.length})
             </TabsTrigger>
             <TabsTrigger value="catalog-sources" className="gap-2">
               <Download className="size-4" />
-              Source Connectors ({sources.length})
+              {t('page.tabSourceConnectors')} ({sources.length})
             </TabsTrigger>
             <TabsTrigger value="catalog-sinks" className="gap-2">
               <Layers className="size-4" />
-              Sink Connectors ({sinks.length})
+              {t('page.tabSinkConnectors')} ({sinks.length})
             </TabsTrigger>
           </TabsList>
 
@@ -365,9 +355,9 @@ export default function ConnectionsPage() {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-base font-medium">Configured Shared Connections</CardTitle>
+                    <CardTitle className="text-base font-medium">{t('page.configuredShared')}</CardTitle>
                     <CardDescription className="text-xs">
-                      Shared connection instances allow multiple streams, tables, or rules to pool client connections.
+                      {t('page.sharedInstancesHint')}
                     </CardDescription>
                   </div>
                 </div>
@@ -376,14 +366,12 @@ export default function ConnectionsPage() {
                 {connections.length === 0 ? (
                   <div className="flex flex-col items-center justify-center p-12 text-center">
                     <Network className="size-10 text-muted-foreground/40 mb-3" />
-                    <p className="text-sm font-medium text-foreground">No shared connections defined</p>
+                    <p className="text-sm font-medium text-foreground">{t('page.noSharedConnections')}</p>
                     <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                      Shared connections decouple authentication and network transport configuration from individual streams and sinks.
+                      {t('page.sharedDecoupleHint')}
                     </p>
                     <Button size="sm" onClick={handleOpenCreateConn} className="mt-4 gap-1.5">
-                      <Plus className="size-3.5" />
-                      Create First Connection
-                    </Button>
+                      <Plus className="size-3.5" />{t('page.createFirstConnection')}</Button>
                   </div>
                 ) : (
                   <div className="divide-y border-t text-sm">
@@ -446,18 +434,14 @@ export default function ConnectionsPage() {
                             onClick={() => void handleTestConnection(conn)}
                             disabled={testingConnId === conn.id}
                           >
-                            <Play className={`size-3.5 ${testingConnId === conn.id ? 'animate-spin' : ''}`} />
-                            Test
-                          </Button>
+                            <Play className={`size-3.5 ${testingConnId === conn.id ? 'animate-spin' : ''}`} />{t('page.test')}</Button>
                           <Button
                             variant="ghost"
                             size="sm"
                             className="h-8 gap-1.5 text-xs"
                             onClick={() => void handleOpenEditConn(conn)}
                           >
-                            <Edit2 className="size-3.5" />
-                            Edit
-                          </Button>
+                            <Edit2 className="size-3.5" />{t('common.edit')}</Button>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -484,7 +468,7 @@ export default function ConnectionsPage() {
                   <div className="relative flex-1">
                     <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
                     <Input
-                      placeholder={`Search ${activeTab === 'conf-sources' ? 'source configuration' : 'sink template'} name or connector...`}
+                      placeholder={t('page.searchConfigPlaceholder', { what: t(activeTab === 'conf-sources' ? 'page.whatSourceConfig' : 'page.whatSinkTemplate') })}
                       value={confKeySearch}
                       onChange={(e) => setConfKeySearch(e.target.value)}
                       className="pl-9 text-sm"
@@ -494,10 +478,10 @@ export default function ConnectionsPage() {
                     <select
                       value={confKeyTypeFilter}
                       onChange={(e) => setConfKeyTypeFilter(e.target.value)}
-                      aria-label="Filter by connector type"
+                      aria-label={t('page.filterByConnectorType')}
                       className="h-9 rounded-md border border-input bg-background px-3 text-xs shadow-beautiful-sm focus:outline-none focus:ring-1 focus:ring-ring"
                     >
-                      <option value="all">All Connectors</option>
+                      <option value="all">{t('page.allConnectors')}</option>
                       {availableConfKeyTypes.map((t) => (
                         <option key={t} value={t}>
                           {t}
@@ -526,7 +510,7 @@ export default function ConnectionsPage() {
                       <p className="text-sm font-medium text-foreground">
                         {confKeySearch || confKeyTypeFilter !== 'all'
                           ? 'No configurations match the filter'
-                          : `No ${activeTab === 'conf-sources' ? 'source configuration keys' : 'sink templates'} found`}
+                          : t('page.noConfigFound', { what: t(activeTab === 'conf-sources' ? 'page.whatSourceConfigKeys' : 'page.whatSinkTemplates') })}
                       </p>
                       <p className="text-xs text-muted-foreground mt-1 max-w-sm">
                         {activeTab === 'conf-sources'
@@ -540,9 +524,7 @@ export default function ConnectionsPage() {
                         }
                         className="mt-4 gap-1.5"
                       >
-                        <Plus className="size-3.5" />
-                        Create Configuration
-                      </Button>
+                        <Plus className="size-3.5" />{t('page.createConfiguration')}</Button>
                     </div>
                   ) : (
                     <div className="divide-y border-t text-sm">
@@ -574,8 +556,7 @@ export default function ConnectionsPage() {
                                   {item.type}
                                 </Badge>
                               </div>
-                              <p className="text-xs text-muted-foreground">
-                                Connector: <span className="font-medium text-foreground">{item.type}</span>
+                              <p className="text-xs text-muted-foreground">{t('page.connectorLabel')}<span className="font-medium text-foreground">{item.type}</span>
                               </p>
                             </div>
                           </div>
@@ -587,9 +568,7 @@ export default function ConnectionsPage() {
                               className="h-8 gap-1.5 text-xs"
                               onClick={() => handleOpenEditConfKey(item)}
                             >
-                              <Edit2 className="size-3.5" />
-                              Configure
-                            </Button>
+                              <Edit2 className="size-3.5" />{t('page.configure')}</Button>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -614,7 +593,7 @@ export default function ConnectionsPage() {
               <div className="relative max-w-sm flex-1">
                 <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search source connectors..."
+                  placeholder={t('page.searchSourceConnectors')}
                   value={catalogSearch}
                   onChange={(e) => setCatalogSearch(e.target.value)}
                   className="pl-9 text-sm"
@@ -624,7 +603,7 @@ export default function ConnectionsPage() {
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredSources.map((source, index) => {
-                const name = String(source.name ?? source.type ?? `Source ${index + 1}`);
+                const name = String(source.name ?? source.type ?? t('page.sourceLabel', { index: index + 1 }));
                 const desc = i18nLabel(source.about?.description ?? '');
                 const helpUrl = i18nLabel(source.about?.helpUrl ?? '');
                 const isInstalled = source.about?.installed !== false;
@@ -663,11 +642,9 @@ export default function ConnectionsPage() {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          <ExternalLink className="size-3.5" />
-                          Docs
-                        </a>
+                          <ExternalLink className="size-3.5" />{t('page.docs')}</a>
                       ) : (
-                        <span className="text-muted-foreground">Internal</span>
+                        <span className="text-muted-foreground">{t('page.internal')}</span>
                       )}
                       <Button
                         variant="secondary"
@@ -675,9 +652,7 @@ export default function ConnectionsPage() {
                         className="h-7 text-xs gap-1"
                         onClick={() => handleOpenAddConfKey('sources', name)}
                       >
-                        <Plus className="size-3" />
-                        Configure
-                      </Button>
+                        <Plus className="size-3" />{t('page.configure')}</Button>
                     </CardContent>
                   </Card>
                 );
@@ -696,7 +671,7 @@ export default function ConnectionsPage() {
               <div className="relative max-w-sm flex-1">
                 <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search sink connectors..."
+                  placeholder={t('page.searchSinkConnectors')}
                   value={catalogSearch}
                   onChange={(e) => setCatalogSearch(e.target.value)}
                   className="pl-9 text-sm"
@@ -706,7 +681,7 @@ export default function ConnectionsPage() {
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredSinks.map((sink, index) => {
-                const name = String(sink.name ?? sink.type ?? `Sink ${index + 1}`);
+                const name = String(sink.name ?? sink.type ?? t('page.sinkLabel', { index: index + 1 }));
                 const desc = i18nLabel(sink.about?.description ?? '');
                 const helpUrl = i18nLabel(sink.about?.helpUrl ?? '');
                 const isInstalled = sink.about?.installed !== false;
@@ -745,11 +720,9 @@ export default function ConnectionsPage() {
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          <ExternalLink className="size-3.5" />
-                          Docs
-                        </a>
+                          <ExternalLink className="size-3.5" />{t('page.docs')}</a>
                       ) : (
-                        <span className="text-muted-foreground">Internal</span>
+                        <span className="text-muted-foreground">{t('page.internal')}</span>
                       )}
                       <Button
                         variant="secondary"
@@ -757,9 +730,7 @@ export default function ConnectionsPage() {
                         className="h-7 text-xs gap-1"
                         onClick={() => handleOpenAddConfKey('sinks', name)}
                       >
-                        <Plus className="size-3" />
-                        Template
-                      </Button>
+                        <Plus className="size-3" />{t('page.template')}</Button>
                     </CardContent>
                   </Card>
                 );
@@ -797,8 +768,8 @@ export default function ConnectionsPage() {
       <ConfirmDialog
         open={Boolean(deleteConn)}
         onOpenChange={(open) => !open && setDeleteConn(null)}
-        title="Delete shared connection?"
-        description={`Delete shared connection "${deleteConn?.id}" from eKuiper? Streams, tables, and rules referencing this connection may fail.`}
+        title={t('page.deleteSharedConnection')}
+        description={t('page.deleteSharedConnectionDescription', { id: deleteConn?.id ?? '' })}
         confirmLabel="Delete Connection"
         variant="danger"
         onConfirm={handleDeleteConn}
@@ -808,8 +779,8 @@ export default function ConnectionsPage() {
       <ConfirmDialog
         open={Boolean(deleteConfKey)}
         onOpenChange={(open) => !open && setDeleteConfKey(null)}
-        title={`Delete ${deleteConfKey?.category === 'sources' ? 'configuration key' : 'sink template'}?`}
-        description={`Delete "${deleteConfKey?.name}" (${deleteConfKey?.type}) from eKuiper metadata? Active resources relying on this configuration key will stop working.`}
+        title={t('page.deleteConfigTitle', { what: t(deleteConfKey?.category === 'sources' ? 'page.whatConfigurationKey' : 'page.whatSinkTemplate') })}
+        description={t('page.deleteConfigDescription', { name: deleteConfKey?.name ?? '', type: deleteConfKey?.type ?? '' })}
         confirmLabel="Delete Configuration"
         variant="danger"
         onConfirm={handleDeleteConfKey}

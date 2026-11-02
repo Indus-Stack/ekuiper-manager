@@ -47,6 +47,8 @@ export default {
   previousPage: 'Previous page',
   nextPage: 'Next page',
   lastPage: 'Last page',
+  columns: 'Columns',
+  pageOf: 'Page {page} of {total}',
 
   // Command palette
   commandPlaceholder: 'Type a command or search…',
