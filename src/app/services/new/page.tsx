@@ -93,7 +93,7 @@ export default function NewServicePage() {
           <CardHeader>
             <CardTitle>{t('extension.serviceConfig')}</CardTitle>
             <CardDescription>
-              eKuiper installs services from a zip package containing the service definition and interfaces.
+              {t('extension.serviceConfigHint')}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-6">
@@ -129,7 +129,7 @@ export default function NewServicePage() {
               >{t('common.cancel')}</Button>
               <Button onClick={handleCreate} disabled={creating || !name.trim() || !file.trim()}>
                 {creating && <Loader2 className="mr-2 size-4 animate-spin" />}
-                Register Service
+                {t('extension.registerService')}
               </Button>
             </div>
           </CardContent>

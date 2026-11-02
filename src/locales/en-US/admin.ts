@@ -182,4 +182,7 @@ export default {
   dragDropRulesetFile: 'Drag & drop ruleset file',
   orClickToBrowse: 'or click to browse from your computer',
   importRulesetTo: 'Import Ruleset to {node}',
+  leaveBlankToKeep: 'Leave blank to keep current value',
+  selectConfigFile: 'Select configuration JSON file',
+  selectRulesetFile: 'Select ruleset JSON file',
 };

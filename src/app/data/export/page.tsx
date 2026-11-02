@@ -121,7 +121,7 @@ export default function DataExportPage() {
             <div className="flex flex-col gap-6">
                 <div>
                     <h2 className="text-2xl font-bold tracking-tight">{t('admin.exportConfig')}</h2>
-                    <p className="text-muted-foreground">Download configuration from the selected node. Manager users and registered nodes are not included.</p>
+                    <p className="text-muted-foreground">{t('extension.exportConfigHint')}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -131,7 +131,7 @@ export default function DataExportPage() {
                             <CardTitle className="flex items-center gap-2">
                                 <Archive className="size-5" />{t('admin.configExport')}</CardTitle>
                             <CardDescription>
-                                Export the configuration returned by eKuiper into a single JSON file for migration or reuse.
+                                {t('extension.exportFileHint')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -153,7 +153,7 @@ export default function DataExportPage() {
                             <CardTitle className="flex items-center gap-2">
                                 <CheckCircle2 className="size-5" />{t('admin.selectiveExport')}</CardTitle>
                             <CardDescription>
-                                Export the selected rules using eKuiper&apos;s selective data export endpoint.
+                                {t('extension.selectiveExportHint')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="flex-1 min-h-0 flex flex-col">

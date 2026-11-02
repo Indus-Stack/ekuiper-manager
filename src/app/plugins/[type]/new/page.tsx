@@ -61,6 +61,10 @@ export default function InstallPluginPage() {
   const params = useParams();
   const typeParam = String(params.type);
   const type = isInstallablePluginType(typeParam) ? typeParam : null;
+  // `type` is an internal routing key; the heading needs its localized label.
+  const pluginTypeLabel = type
+    ? { sources: t('extension.sources'), sinks: t('extension.sinks'), functions: t('extension.functions'), portables: t('extension.portables') }[type]
+    : typeParam;
 
   const { servers, activeServerId } = useServerStore();
   const activeServer = servers.find((s) => s.id === activeServerId);
@@ -222,10 +226,12 @@ export default function InstallPluginPage() {
             {getPluginIcon()}
             <div>
               <h2 className="text-2xl font-bold tracking-tight capitalize">
-                {t('extension.installPluginOfType')}
+                {type === 'portables'
+                  ? t('extension.installPortableTitle')
+                  : t('extension.installPluginOfType', { type: pluginTypeLabel })}
               </h2>
               <p className="text-muted-foreground text-xs">
-                Install a prebuilt extension or local package into the eKuiper edge runtime.
+                {t('extension.installPluginPageHint')}
               </p>
             </div>
           </div>
@@ -256,7 +262,7 @@ export default function InstallPluginPage() {
               <div className="flex items-center justify-between p-3 rounded-lg border border-border/70 bg-muted/30 text-xs">
                 <div className="flex flex-col gap-0.5">
                   <div className="font-medium text-foreground">{t('extension.portableTemplate')}</div>
-                  <div className="text-[11px] text-muted-foreground">Download reference portable plugin structure (.zip) with sample JSON manifest and runtime.</div>
+                  <div className="text-[11px] text-muted-foreground">{t('extension.portableTemplateHint')}</div>
                 </div>
                 <a
                   href="/template/portable-sample.zip"
@@ -316,30 +322,30 @@ export default function InstallPluginPage() {
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="plugin-name" className="text-xs font-medium">
-                  Plugin Name *
+                  {t('extension.pluginNameLabel')} *
                 </Label>
                 <Input
                   id="plugin-name"
                   value={pluginName}
                   onChange={(e) => setPluginName(e.target.value)}
-                  placeholder="e.g. tdengine, echo, zmq"
+                  placeholder={t('extension.pluginNamePlaceholder')}
                   className="h-8 text-xs font-mono"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="plugin-url" className="text-xs font-medium">
-                  Package File (.zip) or Remote URL *
+                  {t('extension.pluginSourceLabel')} *
                 </Label>
                 <FileAutocomplete
                   value={fileUrl}
                   onChange={setFileUrl}
-                  placeholder="file:///tmp/plugins/my_plugin.zip or http://..."
+                  placeholder={t('extension.pluginSourcePlaceholder')}
                   accept=".zip"
                   modalTitle={t('extension.uploadPluginZip')}
                 />
                 <p className="text-[11px] text-muted-foreground">
-                  Reference an uploaded file with <code className="font-mono text-foreground">file://</code> or a downloadable HTTP link.
+                  {t('extension.uploadedFileRef')} <code className="font-mono text-foreground">file://</code>
                 </p>
               </div>
             </div>
@@ -379,7 +385,7 @@ export default function InstallPluginPage() {
                         <HelpCircle className="size-3.5 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent side="top" className="text-xs max-w-xs">
-                        Extra CLI arguments passed to the install script (e.g. configuration path flags).
+                        {t('extension.extraCliArgsHint')}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -393,7 +399,7 @@ export default function InstallPluginPage() {
                     onClick={() => setShellParasText("-c, /etc/taos")}
                   >
                     <Sparkles className="size-3 mr-1" />
-                    Preset TDengine: -c, /etc/taos
+                    {t('extension.presetTdengine')}
                   </Button>
                 )}
               </div>
@@ -401,7 +407,7 @@ export default function InstallPluginPage() {
                 id="plugin-shell-paras"
                 value={shellParasText}
                 onChange={(e) => setShellParasText(e.target.value)}
-                placeholder="e.g. -c, /etc/taos"
+                placeholder={t('extension.shellParasPlaceholder')}
                 className="h-8 text-xs font-mono"
               />
             </div>

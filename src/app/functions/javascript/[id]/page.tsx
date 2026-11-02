@@ -81,17 +81,17 @@ export default function JSUDFEditorPage() {
         if (!activeServer) return;
 
         if (!funcId.trim()) {
-            toast.error("Function ID is required");
+            toast.error(t('extension.functionIdRequired'));
             return;
         }
 
         if (!script.trim()) {
-            toast.error("Script content is required");
+            toast.error(t('extension.scriptRequired'));
             return;
         }
 
         if (!description.trim()) {
-            toast.error("Description is required");
+            toast.error(t('extension.descriptionRequired'));
             return;
         }
 
@@ -122,7 +122,7 @@ export default function JSUDFEditorPage() {
 
     if (!activeServer) {
         return (
-            <AppLayout title={isNew ? t('extension.createFunction') : "Edit Function"}>
+            <AppLayout title={isNew ? t('extension.createFunction') : t('extension.editFunction')}>
                 <EmptyState
                     title={t('extension.noServerConnected')}
                     description={t('extension.connectToManageFunctions')}
@@ -136,7 +136,7 @@ export default function JSUDFEditorPage() {
     }
 
     return (
-        <AppLayout title={isNew ? t('extension.createFunction') : "Edit Function"}>
+        <AppLayout title={isNew ? t('extension.createFunction') : t('extension.editFunction')}>
             <div className="flex flex-col h-[calc(100vh-140px)] gap-6">
                 {/* Header */}
                 <div className="flex items-center justify-between shrink-0">
@@ -153,10 +153,10 @@ export default function JSUDFEditorPage() {
                             <Code2 className="size-6 text-yellow-500" aria-hidden="true" />
                             <div>
                                 <h2 className="text-2xl font-bold tracking-tight">
-                                    {isNew ? "Create JavaScript UDF" : funcId}
+                                    {isNew ? t('extension.createJsUdf') : funcId}
                                 </h2>
                                 <p className="text-muted-foreground">
-                                    {isNew ? "Define a new custom function using JavaScript" : "Edit function logic"}
+                                    {isNew ? t('extension.createJsUdfHint') : t('extension.editFunctionHint')}
                                 </p>
                             </div>
                         </div>

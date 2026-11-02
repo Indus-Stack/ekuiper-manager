@@ -174,7 +174,7 @@ export default function DataImportPage() {
                                     }}
                                     role="button"
                                     tabIndex={0}
-                                    aria-label={`Select ${activeTab === "data" ? "configuration" : "ruleset"} JSON file`}
+                                    aria-label={activeTab === 'data' ? t('admin.selectConfigFile') : t('admin.selectRulesetFile')}
                                 >
                                     <div className="p-4 rounded-full bg-primary/10 mb-4">
                                         {activeTab === 'data' ? <UploadCloud className="size-8 text-primary" /> : <FileJson className="size-8 text-primary" />}
@@ -219,7 +219,7 @@ export default function DataImportPage() {
                     <TabsContent value="rules" className="mt-4">
                         <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg flex items-start gap-3 text-sm text-blue-700 dark:text-blue-300">
                             <AlertTriangle className="size-5 shrink-0" />
-                            <p>Ruleset import expects a specific JSON structure containing only rules. This is useful for migrating logic between instances.</p>
+                            <p>{t('extension.importRulesetHint')}</p>
                         </div>
                     </TabsContent>
                 </Tabs>

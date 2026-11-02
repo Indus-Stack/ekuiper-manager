@@ -180,6 +180,9 @@ const admin: Record<keyof typeof en, string> = {
   importHint: '从规则集文件导入 eKuiper 资源。',
   exportHint: '将 eKuiper 资源导出为规则集文件。',
   importRulesetTo: '导入规则集到 {node}',
+  leaveBlankToKeep: '留空则保持当前值',
+  selectConfigFile: '选择配置 JSON 文件',
+  selectRulesetFile: '选择规则集 JSON 文件',
 };
 
 export default admin;

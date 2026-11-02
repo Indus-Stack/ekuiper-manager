@@ -322,13 +322,13 @@ export default function NodesPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editing ? t('admin.editNode') : t('admin.addNodeTitle')}</DialogTitle>
-            <DialogDescription>The address is validated and stored by the Manager. It is never accepted from ordinary API calls.</DialogDescription>
+            <DialogDescription>{t('extension.nodeAddressHint')}</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-2">
             <div className="flex flex-col gap-2"><Label htmlFor="node-name">{t('admin.name')}</Label><Input id="node-name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder={t('admin.productionEkuiper')} /></div>
             <div className="flex flex-col gap-2"><Label htmlFor="node-url">{t('admin.restUrl')}</Label><Input id="node-url" value={form.baseUrl} onChange={(event) => setForm({ ...form, baseUrl: event.target.value })} placeholder="https://ekuiper.example.com:9081" /></div>
             <div className="flex flex-col gap-2"><Label htmlFor="node-description">{t('admin.description')}</Label><Textarea id="node-description" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} rows={3} /></div>
-            <div className="flex flex-col gap-2"><Label htmlFor="node-authorization">{t('admin.authorizationValue')}</Label><Input id="node-authorization" type="password" autoComplete="off" value={form.authorization} onChange={(event) => setForm({ ...form, authorization: event.target.value })} placeholder={editing?.hasAuthorization ? 'Leave blank to keep current value' : 'Optional'} /><p className="text-xs text-muted-foreground">Enter the raw eKuiper Authorization header value when authentication is enabled.</p></div>
+            <div className="flex flex-col gap-2"><Label htmlFor="node-authorization">{t('admin.authorizationValue')}</Label><Input id="node-authorization" type="password" autoComplete="off" value={form.authorization} onChange={(event) => setForm({ ...form, authorization: event.target.value })} placeholder={editing?.hasAuthorization ? t('admin.leaveBlankToKeep') : t('extension.optional')} /><p className="text-xs text-muted-foreground">{t('extension.authValueHint')}</p></div>
           </div>
           <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
             <Button variant="outline" onClick={() => setDialogOpen(false)} className="touch-manipulation">{t('common.cancel')}</Button>
