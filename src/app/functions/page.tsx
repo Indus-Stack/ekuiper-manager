@@ -102,9 +102,7 @@ export default function FunctionsPage() {
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Function ID
-                    <ArrowUpDown className="ml-2 size-4" />
+                >{t('extension.functionId')}<ArrowUpDown className="ml-2 size-4" />
                 </Button>
             ),
             cell: ({ row }) => (
@@ -130,16 +128,12 @@ export default function FunctionsPage() {
                                 <DropdownMenuItem
                                     onClick={() => router.push(`/functions/javascript/${encodeURIComponent(row.original.id)}`)}
                                 >
-                                    <FileCode className="mr-2 size-4" />
-                                    Edit
-                                </DropdownMenuItem>
+                                    <FileCode className="mr-2 size-4" />{t('common.edit')}</DropdownMenuItem>
                                 <DropdownMenuItem
                                     className="text-destructive"
                                     onClick={() => setDeleteId(row.original.id)}
                                 >
-                                    <Trash2 className="mr-2 size-4" />
-                                    Delete
-                                </DropdownMenuItem>
+                                    <Trash2 className="mr-2 size-4" />{t('extension.delete')}</DropdownMenuItem>
                             </DropdownMenuGroup>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -168,7 +162,7 @@ export default function FunctionsPage() {
         },
         {
             accessorKey: "interfaceName",
-            header: "Interface",
+            header: t('extension.interfaceColumn'),
         },
         {
             id: "actions",
@@ -189,8 +183,8 @@ export default function FunctionsPage() {
         return (
             <AppLayout title={t('nav.functions')}>
                 <EmptyState
-                    title="No Server Connected"
-                    description="Connect to an eKuiper server to manage functions."
+                    title={t('extension.noServerConnected')}
+                    description={t('extension.connectToManageFunctions')}
                 />
             </AppLayout>
         );
@@ -201,38 +195,28 @@ export default function FunctionsPage() {
             <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-bold tracking-tight">Functions</h2>
-                        <p className="text-muted-foreground">
-                            Manage custom and built-in functions
-                        </p>
+                        <h2 className="text-2xl font-bold tracking-tight">{t('extension.functions')}</h2>
+                        <p className="text-muted-foreground">{t('extension.functionsHint')}</p>
                     </div>
                     {activeTab === "javascript" && (
                         <Button onClick={() => router.push("/functions/javascript/new")}>
-                            <Plus className="mr-2 size-4" />
-                            Create Function
-                        </Button>
+                            <Plus className="mr-2 size-4" />{t('extension.createFunction')}</Button>
                     )}
                 </div>
 
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                     <TabsList>
                         <TabsTrigger value="javascript">
-                            <Code2 className="mr-2 size-4" />
-                            JavaScript UDFs
-                        </TabsTrigger>
+                            <Code2 className="mr-2 size-4" />{t('extension.javascriptUdFs')}</TabsTrigger>
                         <TabsTrigger value="services">
-                            <Network className="mr-2 size-4" />
-                            Service Functions
-                        </TabsTrigger>
+                            <Network className="mr-2 size-4" />{t('extension.serviceFunctions')}</TabsTrigger>
                         <TabsTrigger value="reference">
-                            <BookOpen className="mr-2 size-4" />
-                            Built-in Reference
-                        </TabsTrigger>
+                            <BookOpen className="mr-2 size-4" />{t('extension.builtinReference')}</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="javascript">
                         {error ? (
-                            <ErrorState title="Error" description={error} onRetry={fetchData} />
+                            <ErrorState title={t('common.error')} description={error} onRetry={fetchData} />
                         ) : (
                             <DataTable
                                 columns={jsColumns}
@@ -247,7 +231,7 @@ export default function FunctionsPage() {
 
                     <TabsContent value="services">
                         {error ? (
-                            <ErrorState title="Error" description={error} onRetry={fetchData} />
+                            <ErrorState title={t('common.error')} description={error} onRetry={fetchData} />
                         ) : (
                             <DataTable
                                 columns={extColumns}
@@ -262,7 +246,7 @@ export default function FunctionsPage() {
 
                     <TabsContent value="reference">
                         {error ? (
-                            <ErrorState title="Error" description={error} onRetry={fetchData} />
+                            <ErrorState title={t('common.error')} description={error} onRetry={fetchData} />
                         ) : (
                             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                                 {Object.entries(builtinFuncs).map(([category, funcs]) => (
@@ -281,7 +265,7 @@ export default function FunctionsPage() {
                                 ))}
                                 {Object.keys(builtinFuncs).length === 0 && !loading && (
                                     <div className="col-span-full">
-                                        <EmptyState title="No Built-in Functions Found" description="Could not load built-in function reference." />
+                                        <EmptyState title={t('extension.noBuiltinFunctions')} description={t('extension.builtinReferenceFailed')} />
                                     </div>
                                 )}
                             </div>
@@ -292,7 +276,7 @@ export default function FunctionsPage() {
                 <ConfirmDialog
                     open={!!deleteId}
                     onOpenChange={(open) => !open && setDeleteId(null)}
-                    title="Delete Function"
+                    title={t('extension.deleteFunction')}
                     description={`Are you sure you want to delete function "${deleteId}"? Rules using this function may stop working.`}
                     onConfirm={handleDeleteJSUDF}
                     variant="danger"

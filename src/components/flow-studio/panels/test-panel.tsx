@@ -5,6 +5,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { useT } from '@/lib/i18n';
 export interface TestPanelProps {
   flowId: string;
   /**
@@ -76,6 +77,7 @@ function toDisplayEntry(value: unknown, kind: "event" | "error"): TestOutputEntr
  * fed into node components (deferred to FS-0110).
  */
 export function TestPanel({ flowId, ruleTestSupported, className }: TestPanelProps) {
+  const t = useT();
   const [running, setRunning] = React.useState(false);
   const [entries, setEntries] = React.useState<TestOutputEntry[]>([]);
   const [droppedCount, setDroppedCount] = React.useState(0);
@@ -178,9 +180,7 @@ export function TestPanel({ flowId, ruleTestSupported, className }: TestPanelPro
           onClick={handleCancel}
           disabled={!running}
           data-testid="flow-test-cancel-button"
-        >
-          Cancel
-        </Button>
+        >{}</Button>
         <span
           className="text-xs text-muted-foreground"
           data-testid="flow-test-summary"
@@ -200,9 +200,7 @@ export function TestPanel({ flowId, ruleTestSupported, className }: TestPanelPro
           className="text-xs text-muted-foreground"
           data-testid="flow-test-unsupported"
         >
-          The connected eKuiper target cannot run bounded trial tests from
-          Flow Studio (rule-test transport unreachable under the current
-          registered-node policy; see docs/FLOW_STUDIO_RULE_TEST_NOTES.md).
+          {t('flow.testUnavailable')}
         </p>
       ) : null}
 

@@ -19,7 +19,9 @@ import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Schema } from "@/lib/ekuiper/types";
 
+import { useT } from '@/lib/i18n';
 export default function SchemaDetailPage() {
+  const t = useT();
     const router = useRouter();
     const params = useParams() as { type: string; name: string };
     const { type, name: encodedName } = params;
@@ -82,8 +84,8 @@ export default function SchemaDetailPage() {
         return (
             <AppLayout title={`Schema: ${name}`}>
                 <EmptyState
-                    title="No Server Connected"
-                    description="Connect to an eKuiper server."
+                    title={t('extension.noServerConnected')}
+                    description={t('admin.connectToSchemas')}
                 />
             </AppLayout>
         );
@@ -109,7 +111,7 @@ export default function SchemaDetailPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => router.push("/schemas")}
-                            aria-label="Back to schemas"
+                            aria-label={t('admin.backToSchemas')}
                         >
                             <ArrowLeft className="size-5" aria-hidden="true" />
                         </Button>
@@ -123,9 +125,7 @@ export default function SchemaDetailPage() {
                     </div>
                     <Button onClick={handleSave} disabled={saving}>
                         {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
-                        <Save className="mr-2 size-4" />
-                        Save Changes
-                    </Button>
+                        <Save className="mr-2 size-4" />{t('admin.saveChanges')}</Button>
                 </div>
 
                 {/* Content */}
@@ -133,15 +133,13 @@ export default function SchemaDetailPage() {
                     {type === "custom" ? (
                         <div className="p-6 flex flex-col gap-4">
                             <div className="flex flex-col gap-2">
-                                <Label>File URL</Label>
+                                <Label>{t('admin.fileUrl')}</Label>
                                 <Input
                                     value={fileUrl}
                                     onChange={(e) => setFileUrl(e.target.value)}
                                     placeholder="file:///path/to/file"
                                 />
-                                <p className="text-sm text-muted-foreground">
-                                    Location of the binary file on the server.
-                                </p>
+                                <p className="text-sm text-muted-foreground">{t('admin.fileUrlHint')}</p>
                             </div>
                         </div>
                     ) : (

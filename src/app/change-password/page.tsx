@@ -9,7 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+import { useT } from '@/lib/i18n';
 export default function ChangePasswordPage() {
+  const t = useT();
   const router = useRouter();
   const [currentPassword, setCurrentPassword] = React.useState('');
   const [newPassword, setNewPassword] = React.useState('');
@@ -46,21 +48,21 @@ export default function ChangePasswordPage() {
     <main className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
       <Card className="w-full max-w-md shadow-beautiful-md">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><KeyRound className="size-5" />Change password</CardTitle>
-          <CardDescription>Your new password must contain at least 12 characters.</CardDescription>
+          <CardTitle className="flex items-center gap-2"><KeyRound className="size-5" />{t('admin.changePassword')}</CardTitle>
+          <CardDescription>{t('admin.newPasswordHint')}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={submit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="current-password">Current password</Label>
+              <Label htmlFor="current-password">{t('admin.currentPassword')}</Label>
               <Input id="current-password" type="password" autoComplete="current-password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} required autoFocus />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="new-password">New password</Label>
+              <Label htmlFor="new-password">{t('admin.newPassword')}</Label>
               <Input id="new-password" type="password" autoComplete="new-password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} minLength={12} required />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="confirm-new-password">Confirm new password</Label>
+              <Label htmlFor="confirm-new-password">{t('admin.confirmNewPassword')}</Label>
               <Input id="confirm-new-password" type="password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} required />
             </div>
             {error && (

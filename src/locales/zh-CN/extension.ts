@@ -1,0 +1,95 @@
+/** 译名依据 docs/GLOSSARY.md。注意 Service 译为「外部服务」，避免与 Node（节点）混淆。 */
+import type en from '../en-US/extension';
+
+const extension: Record<keyof typeof en, string> = {
+  // 共用
+  noServerConnected: '未连接服务器',
+  delete: '删除',
+  name: '名称',
+  view: '查看',
+  viewDetails: '查看详情',
+  back: '返回',
+
+  // 插件
+  plugins: '插件',
+  pluginsHint: '管理 eKuiper 的源、目标、函数与可移植插件',
+  connectToManagePlugins: '请连接到 eKuiper 服务器以管理插件。',
+  errorLoadingPlugins: '加载插件失败',
+  installPlugin: '安装插件',
+  deletePlugin: '删除插件',
+  sources: '源',
+  sinks: '目标',
+  portables: '可移植插件',
+
+  // 安装插件
+  backToPlugins: '返回插件列表',
+  installPluginHint: '在此安装源、目标、函数或可移植插件。',
+  connectToInstallPlugins: '请连接到 eKuiper 服务器以安装插件。',
+  customFileUrl: '自定义文件 / URL',
+  exportedFunctions: '导出的函数（逗号分隔）',
+  exportedFunctionsHint: '二进制文件导出的函数符号名称。',
+  noPrebuiltBinaries: '当前 eKuiper 版本未列出官方预编译二进制。',
+  pluginParameters: '插件参数',
+  portableTemplate: '可移植插件模板',
+  prebuiltCatalog: '预编译目录',
+  selectPrebuilt: '选择预编译插件',
+  shellParameters: 'Shell 参数（shellParas）',
+  unsupportedPluginType: '不支持的插件类型',
+  unsupportedPluginTypeHint: '当前插件类别不受支持。',
+  referenceUploadedFile: '引用已上传的文件：',
+  sampleZip: '示例 .zip',
+  documentation: '文档',
+  configurePluginHint: '配置包来源、执行参数与对外导出的符号。',
+
+  // 函数
+  functions: '函数',
+  functionsHint: '管理自定义与内置函数',
+  connectToManageFunctions: '请连接到 eKuiper 服务器以管理函数。',
+  createFunction: '创建函数',
+  deleteFunction: '删除函数',
+  functionId: '函数 ID',
+  javascriptUdFs: 'JavaScript UDF',
+  serviceFunctions: '外部服务函数',
+  builtinReference: '内置函数参考',
+  noBuiltinFunctions: '未找到内置函数',
+  builtinReferenceFailed: '无法加载内置函数参考。',
+
+  // 外部服务
+  services: '外部服务',
+  externalService: '外部服务',
+  servicesHint: '管理外部服务及其函数（gRPC、REST、msgpack-rpc）',
+  connectToManageServices: '请连接到 eKuiper 服务器以管理外部服务。',
+  registerService: '注册服务',
+  deleteService: '删除服务',
+  errorLoadingServices: '加载服务失败',
+  errorLoadingFunctions: '加载函数失败',
+
+  // 服务详情
+  aboutService: '关于此服务',
+  serviceDetailHint: '由服务作者提供的详情与元数据',
+  details: '详情',
+  externalServiceIntegration: '外部服务集成',
+  failedToLoadService: '加载服务失败',
+  functionColumn: '函数',
+  goBack: '返回',
+  helpUrl: '帮助链接',
+  interfaceColumn: '接口',
+  interfaces: '接口',
+  loadingServiceDetails: '正在加载服务详情…',
+  noServiceFunctions: '此服务未对外暴露任何函数',
+  noServiceInterfaces: '此服务未定义任何接口',
+  options: '参数：',
+  connectToViewService: '请先连接到 eKuiper 服务器以查看服务详情。',
+  servicePackageUri: '服务包 URI',
+  updatePackage: '更新包',
+  updatePackageHint: '提供一个当前所选 eKuiper 节点可读取的新 zip 包 URI。',
+  updateServicePackage: '更新服务包',
+  serviceName: '服务名称',
+  registered: '已注册',
+  schemaFile: '模式文件：',
+  schemaType: '模式类型：',
+  author: '作者',
+  website: '网站',
+};
+
+export default extension;

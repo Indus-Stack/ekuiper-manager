@@ -1259,12 +1259,10 @@ export function FlowStudioPage({ flowId, initialDocument }: { flowId: string; in
         return (
           <Card>
             <CardContent className="flex flex-col items-center py-14 text-center">
-              <h3 className="font-semibold">Flow not found</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                This flow does not exist or you do not have access to it.
-              </p>
+              <h3 className="font-semibold">{}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{}</p>
               <Button asChild className="mt-5">
-                <Link href="/rules">Back to rules</Link>
+                <Link href="/rules">{}</Link>
               </Button>
             </CardContent>
           </Card>
@@ -1277,9 +1275,7 @@ export function FlowStudioPage({ flowId, initialDocument }: { flowId: string; in
               {flowQuery.error instanceof Error ? flowQuery.error.message : 'Failed to load flow'}
             </AlertDescription>
           </Alert>
-          <Button variant="outline" onClick={() => void flowQuery.refetch()}>
-            Retry
-          </Button>
+          <Button variant="outline" onClick={() => void flowQuery.refetch()}>{}</Button>
         </div>
       );
     }
@@ -1300,9 +1296,7 @@ export function FlowStudioPage({ flowId, initialDocument }: { flowId: string; in
               {draftQuery.error instanceof Error ? draftQuery.error.message : 'Failed to load draft'}
             </AlertDescription>
           </Alert>
-          <Button variant="outline" onClick={() => void draftQuery.refetch()}>
-            Retry
-          </Button>
+          <Button variant="outline" onClick={() => void draftQuery.refetch()}>{}</Button>
         </div>
       );
     }
@@ -1434,9 +1428,7 @@ export function FlowStudioPage({ flowId, initialDocument }: { flowId: string; in
                         onClick={handlePaletteOpen}
                         aria-haspopup="dialog"
                         data-testid="flow-command-palette-open"
-                      >
-                        Commands
-                      </Button>
+                      >{}</Button>
                       <Button
                         type="button"
                         variant="ghost"

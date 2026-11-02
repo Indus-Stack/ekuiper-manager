@@ -6,6 +6,7 @@ import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from "
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { useT } from '@/lib/i18n';
 export interface FlowStudioShellProps {
   header?: React.ReactNode;
   palette?: React.ReactNode;
@@ -55,6 +56,7 @@ export function FlowStudioShell({
   children,
   className,
 }: FlowStudioShellProps) {
+  const t = useT();
   const canvasContent = canvas ?? children;
 
   // Start expanded on the server and on first paint, then adopt the stored preference, so the
@@ -88,7 +90,7 @@ export function FlowStudioShell({
       data-testid="flow-studio-shell"
     >
       <header
-        aria-label="Flow Studio header"
+        aria-label={t('flow.flowStudioHeader')}
         className="flex h-14 shrink-0 items-center border-b flow-studio-panel px-4"
       >
         <div className="flex min-w-0 flex-1 items-center gap-3">{header}</div>
@@ -104,8 +106,8 @@ export function FlowStudioShell({
               onClick={() => toggle("palette")}
               aria-expanded={false}
               aria-controls="flow-studio-palette"
-              aria-label="Show node palette"
-              title="Show node palette"
+              aria-label={t('flow.showNodePalette')}
+              title={t('flow.showNodePalette')}
               data-testid="flow-studio-palette-toggle"
             >
               <PanelLeftOpen className="h-4 w-4" aria-hidden="true" />
@@ -114,7 +116,7 @@ export function FlowStudioShell({
         ) : (
           <aside
             id="flow-studio-palette"
-            aria-label="Node palette"
+            aria-label={t('flow.nodePalette')}
             className="hidden w-64 shrink-0 flex-col overflow-hidden border-r flow-studio-panel md:flex"
           >
             <div className="flex shrink-0 items-center justify-end px-1 pt-1">
@@ -125,8 +127,8 @@ export function FlowStudioShell({
                 onClick={() => toggle("palette")}
                 aria-expanded
                 aria-controls="flow-studio-palette"
-                aria-label="Hide node palette"
-                title="Hide node palette"
+                aria-label={t('flow.hideNodePalette')}
+                title={t('flow.hideNodePalette')}
                 data-testid="flow-studio-palette-toggle"
               >
                 <PanelLeftClose className="h-4 w-4" aria-hidden="true" />
@@ -137,7 +139,7 @@ export function FlowStudioShell({
         )}
 
         <main
-          aria-label="Flow canvas"
+          aria-label={t('flow.flowCanvas')}
           className="relative min-w-0 flex-1 overflow-hidden flow-studio-canvas"
         >
           {canvasContent}
@@ -152,8 +154,8 @@ export function FlowStudioShell({
               onClick={() => toggle("inspector")}
               aria-expanded={false}
               aria-controls="flow-studio-inspector"
-              aria-label="Show node inspector"
-              title="Show node inspector"
+              aria-label={t('flow.showNodeInspector')}
+              title={t('flow.showNodeInspector')}
               data-testid="flow-studio-inspector-toggle"
             >
               <PanelRightOpen className="h-4 w-4" aria-hidden="true" />
@@ -162,7 +164,7 @@ export function FlowStudioShell({
         ) : (
           <aside
             id="flow-studio-inspector"
-            aria-label="Node inspector"
+            aria-label={t('flow.nodeInspector')}
             className="hidden w-80 shrink-0 flex-col overflow-hidden border-l flow-studio-panel lg:flex"
           >
             <div className="flex shrink-0 items-center px-1 pt-1">
@@ -173,8 +175,8 @@ export function FlowStudioShell({
                 onClick={() => toggle("inspector")}
                 aria-expanded
                 aria-controls="flow-studio-inspector"
-                aria-label="Hide node inspector"
-                title="Hide node inspector"
+                aria-label={t('flow.hideNodeInspector')}
+                title={t('flow.hideNodeInspector')}
                 data-testid="flow-studio-inspector-toggle"
               >
                 <PanelRightClose className="h-4 w-4" aria-hidden="true" />

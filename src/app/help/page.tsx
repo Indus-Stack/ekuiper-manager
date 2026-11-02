@@ -76,7 +76,7 @@ export default function HelpPage() {
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
             <HelpCircle className="size-5 text-primary" />
-            <h2 className="text-2xl font-semibold tracking-tight">Documentation & Reference</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">{t('admin.docsRef')}</h2>
           </div>
           <p className="text-sm text-muted-foreground">
             Architectural reference, streaming SQL manuals, and edge operations guidance for LF Edge eKuiper.
@@ -111,9 +111,7 @@ export default function HelpPage() {
                   size="sm"
                   className="w-full justify-between text-xs transition-transform duration-150 active:scale-[0.97]"
                 >
-                  <a href={doc.url} target="_blank" rel="noopener noreferrer">
-                    Open documentation
-                    <ArrowRight className="size-3.5" />
+                  <a href={doc.url} target="_blank" rel="noopener noreferrer">{t('admin.openDocs')}<ArrowRight className="size-3.5" />
                   </a>
                 </Button>
               </CardContent>
@@ -232,11 +230,9 @@ export default function HelpPage() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Terminal className="size-4 text-primary" />
-              <CardTitle className="text-sm font-semibold tracking-tight">CLI Quick Commands</CardTitle>
+              <CardTitle className="text-sm font-semibold tracking-tight">{t('admin.cliQuickCommands')}</CardTitle>
             </div>
-            <CardDescription className="text-xs">
-              Common commands executed on the target edge host or container.
-            </CardDescription>
+            <CardDescription className="text-xs">{t('admin.cliQuickCommandsHint')}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
             {cliSnippets.map((snippet) => (
@@ -276,9 +272,7 @@ export default function HelpPage() {
               size="sm"
               className="h-8 gap-2 text-xs transition-transform duration-150 active:scale-[0.97]"
             >
-              <Link href="/nodes">
-                Manage Nodes
-                <ArrowRight className="size-3.5" />
+              <Link href="/nodes">{t('admin.manageNodesTitle')}<ArrowRight className="size-3.5" />
               </Link>
             </Button>
           </div>

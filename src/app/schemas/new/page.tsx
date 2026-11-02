@@ -116,8 +116,8 @@ function CreateSchemaContent() {
     return (
       <AppLayout title={t('nav.createSchema')}>
         <EmptyState
-          title="No Server Connected"
-          description="Connect to an eKuiper server to manage schemas."
+          title={t('extension.noServerConnected')}
+          description={t('page.connectToManageSchemas')}
         />
       </AppLayout>
     );
@@ -133,12 +133,12 @@ function CreateSchemaContent() {
               variant="ghost"
               size="icon"
               onClick={() => router.push("/schemas")}
-              aria-label="Back to schemas"
+              aria-label={t('admin.backToSchemas')}
             >
               <ArrowLeft className="size-5" />
             </Button>
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">Create Schema</h2>
+              <h2 className="text-2xl font-bold tracking-tight">{t('nav.createSchema')}</h2>
               <p className="text-muted-foreground">
                 Register a Protobuf or custom dynamic-library schema for binary stream decoding
               </p>
@@ -156,40 +156,30 @@ function CreateSchemaContent() {
           <div className="lg:col-span-4 flex flex-col gap-4">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold">Schema Metadata</CardTitle>
-                <CardDescription className="text-xs">
-                  Basic definition parameters for eKuiper catalog
-                </CardDescription>
+                <CardTitle className="text-sm font-semibold">{t('admin.schemaMetadata')}</CardTitle>
+                <CardDescription className="text-xs">{t('admin.basicDefinitionHint')}</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="schema-type" className="text-xs font-medium">
-                    Schema Type
-                  </Label>
+                  <Label htmlFor="schema-type" className="text-xs font-medium">{t('admin.schemaTypeLabel')}</Label>
                   <Select
                     value={type}
                     onValueChange={(v) => setType(v as "protobuf" | "custom")}
                   >
                     <SelectTrigger id="schema-type" className="h-8 text-xs font-mono">
-                      <SelectValue placeholder="Select type" />
+                      <SelectValue placeholder={t('admin.selectType')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="protobuf" className="text-xs">
-                          Protobuf (Protocol Buffers)
-                        </SelectItem>
-                        <SelectItem value="custom" className="text-xs">
-                          Custom (.so Binary Plugin)
-                        </SelectItem>
+                        <SelectItem value="protobuf" className="text-xs">{t('admin.protobufOption')}</SelectItem>
+                        <SelectItem value="custom" className="text-xs">{t('admin.customSoPlugin')}</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="schema-name" className="text-xs font-medium">
-                    Schema Name
-                  </Label>
+                  <Label htmlFor="schema-name" className="text-xs font-medium">{t('page.schemaName')}</Label>
                   <Input
                     id="schema-name"
                     value={name}
@@ -228,9 +218,7 @@ function CreateSchemaContent() {
             <Card className="bg-muted/20 border-border">
               <CardContent className="p-3.5 flex flex-col gap-2">
                 <div className="flex items-center gap-2 text-xs font-medium text-foreground">
-                  <Info className="size-4 text-primary shrink-0" />
-                  Stream Integration
-                </div>
+                  <Info className="size-4 text-primary shrink-0" />{t('admin.streamIntegration')}</div>
                 <p className="text-[11px] text-muted-foreground leading-relaxed">
                   After creating this schema, you can bind it to any stream or table by setting
                   <code className="mx-1 px-1 py-0.5 rounded bg-muted font-mono text-[10px]">
@@ -260,16 +248,12 @@ function CreateSchemaContent() {
                         value="text"
                         className="text-xs px-2.5 h-6 data-[state=active]:bg-background flex items-center gap-1.5"
                       >
-                        <FileText className="size-3" />
-                        Inline Definition
-                      </TabsTrigger>
+                        <FileText className="size-3" />{t('admin.inlineDefinition')}</TabsTrigger>
                       <TabsTrigger
                         value="file"
                         className="text-xs px-2.5 h-6 data-[state=active]:bg-background flex items-center gap-1.5"
                       >
-                        <FileCode className="size-3" />
-                        File Reference
-                      </TabsTrigger>
+                        <FileCode className="size-3" />{t('admin.fileReference')}</TabsTrigger>
                     </TabsList>
                   </Tabs>
 
@@ -280,9 +264,7 @@ function CreateSchemaContent() {
                       onClick={() => setProtoContent(DEFAULT_PROTO_TEMPLATE)}
                       className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground"
                     >
-                      <Sparkles className="size-3.5" />
-                      Reset to Starter
-                    </Button>
+                      <Sparkles className="size-3.5" />{t('admin.resetToStarter')}</Button>
                   )}
                 </div>
 
@@ -297,9 +279,7 @@ function CreateSchemaContent() {
                 ) : (
                   <div className="p-6 flex flex-col gap-4">
                     <div className="flex flex-col gap-1.5">
-                      <Label className="text-xs font-medium">
-                        Proto File Path / URI (.proto)
-                      </Label>
+                      <Label className="text-xs font-medium">{t('admin.protoFileUri')}</Label>
                       <FileAutocomplete
                         value={protoFileUri}
                         onChange={setProtoFileUri}
@@ -307,9 +287,7 @@ function CreateSchemaContent() {
                         accept=".proto"
                         modalTitle="Upload .proto File"
                       />
-                      <p className="text-xs text-muted-foreground">
-                        Select an uploaded proto file from the node or enter a file:// URI.
-                      </p>
+                      <p className="text-xs text-muted-foreground">{t('admin.selectProtoHint')}</p>
                     </div>
 
                     <div className="rounded-lg border border-dashed p-6 text-center text-xs text-muted-foreground bg-muted/10 flex flex-col gap-2">
@@ -327,7 +305,7 @@ function CreateSchemaContent() {
                   <FileBox className="size-8" />
                 </div>
                 <div className="max-w-md flex flex-col gap-1.5">
-                  <h3 className="font-semibold text-base">Custom Binary Plugin Schema</h3>
+                  <h3 className="font-semibold text-base">{t('admin.customBinarySchema')}</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     Custom schemas bypass protobuf reflection and use a compiled Go/C shared object (.so) for raw high-speed binary deserialization. Configure the .so file path in the left panel.
                   </p>

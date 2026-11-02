@@ -113,9 +113,7 @@ export function ExpressionEditor({
         onClick={() => {
           setEnhanced(false);
         }}
-      >
-        Use plain text
-      </button>
+      >{}</button>
     </div>
   );
 }

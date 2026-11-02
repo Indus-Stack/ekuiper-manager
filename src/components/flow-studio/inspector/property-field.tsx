@@ -14,6 +14,7 @@ import type { FlowOptionItem, FlowPropertyDefinition } from "@/lib/flows/registr
 import { mergeFlowPropertyOptions } from "@/lib/flows/registry/node-definition";
 import type { ExpressionEditorProps } from "./expression-editor";
 
+import { useT } from '@/lib/i18n';
 /**
  * FS-0128: expression editing is lazy. The Monaco-backed editor lives in
  * `./expression-editor` and is split into its own client chunk so flows
@@ -308,6 +309,7 @@ function SelectField({
   descriptionId: string | undefined;
   targetNodeId?: string;
 }) {
+  const t = useT();
   // FS-0147: a named provider id (never a URL) whose live options are
   // merged with the static options below. The provider id comes from the
   // registry-authored definition and is path-encoded; the server resolves
@@ -516,7 +518,7 @@ function SelectField({
                 type="text"
                 autoComplete="off"
                 spellCheck={false}
-                placeholder="Type to filter…"
+                placeholder={t('flow.typeToFilter')}
                 aria-label={`${definition.label} filter`}
                 aria-controls={listboxId}
                 aria-activedescendant={filtered.length > 0 ? `${listboxId}-option-${activeIndex}` : undefined}
@@ -536,7 +538,7 @@ function SelectField({
               className="max-h-60 overflow-y-auto p-1"
             >
               {filtered.length === 0 ? (
-                <p className="px-2 py-6 text-center text-sm text-muted-foreground">No matches found.</p>
+                <p className="px-2 py-6 text-center text-sm text-muted-foreground">{}</p>
               ) : (
                 filtered.map((option, index) => {
                   const selected = matched !== undefined && Object.is(option.value, matched.value);
@@ -576,9 +578,7 @@ function SelectField({
                   className="relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm text-muted-foreground outline-none hover:bg-accent hover:text-accent-foreground"
                   onClick={clearSelection}
                   data-testid={`property-field-clear-${definition.key}`}
-                >
-                  Clear selection
-                </button>
+                >{}</button>
               ) : null}
             </div>
           </div>
@@ -598,7 +598,7 @@ function SelectField({
             autoComplete="off"
             spellCheck={false}
             aria-label={`${definition.label} manual entry`}
-            placeholder="Type a value manually…"
+            placeholder={t('flow.typeValueManually')}
             value={manualText}
             onChange={(event) => {
               const raw = event.target.value;
@@ -613,7 +613,7 @@ function SelectField({
         </React.Fragment>
       ) : null}
       {showUnmatchedNote ? (
-        <p className="text-xs text-muted-foreground">Saved value is preserved but is not a known option.</p>
+        <p className="text-xs text-muted-foreground">{}</p>
       ) : null}
     </React.Fragment>
   );

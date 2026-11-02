@@ -122,9 +122,7 @@ export default function ServicesPage() {
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 size-4" />
+        >{t('extension.name')}<ArrowUpDown className="ml-2 size-4" />
         </Button>
       ),
       cell: ({ row }) => (
@@ -138,7 +136,7 @@ export default function ServicesPage() {
       id: "type",
       header: "Type",
       cell: () => (
-        <StatusBadge status="info" label="External Service" showIcon={false} />
+        <StatusBadge status="info" label={t('extension.externalService')} showIcon={false} />
       ),
     },
     {
@@ -158,16 +156,12 @@ export default function ServicesPage() {
                 <DropdownMenuItem
                   onClick={() => router.push(`/services/${encodeURIComponent(service.name)}`)}
                 >
-                  <Eye className="mr-2 size-4" />
-                  View Details
-                </DropdownMenuItem>
+                  <Eye className="mr-2 size-4" />{t('extension.viewDetails')}</DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-destructive"
                   onClick={() => setDeleteService(service.name)}
                 >
-                  <Trash2 className="mr-2 size-4" />
-                  Delete
-                </DropdownMenuItem>
+                  <Trash2 className="mr-2 size-4" />{t('extension.delete')}</DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -183,9 +177,7 @@ export default function ServicesPage() {
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 size-4" />
+        >{t('extension.name')}<ArrowUpDown className="ml-2 size-4" />
         </Button>
       ),
       cell: ({ row }) => (
@@ -215,9 +207,7 @@ export default function ServicesPage() {
             size="sm"
             onClick={() => router.push(`/services/functions/${encodeURIComponent(func.name)}`)}
           >
-            <Eye className="mr-2 size-4" />
-            View
-          </Button>
+            <Eye className="mr-2 size-4" />{t('extension.view')}</Button>
         );
       },
     },
@@ -227,8 +217,8 @@ export default function ServicesPage() {
     return (
       <AppLayout title={t('nav.services')}>
         <EmptyState
-          title="No Server Connected"
-          description="Connect to an eKuiper server to manage external services."
+          title={t('extension.noServerConnected')}
+          description={t('extension.connectToManageServices')}
         />
       </AppLayout>
     );
@@ -240,34 +230,26 @@ export default function ServicesPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">External Services</h2>
-            <p className="text-muted-foreground">
-              Manage external services and their functions (gRPC, REST, msgpack-rpc)
-            </p>
+            <h2 className="text-2xl font-bold tracking-tight">{t('extension.services')}</h2>
+            <p className="text-muted-foreground">{t('extension.servicesHint')}</p>
           </div>
           <Button onClick={() => router.push("/services/new")}>
-            <Plus className="mr-2 size-4" />
-            Register Service
-          </Button>
+            <Plus className="mr-2 size-4" />{t('extension.registerService')}</Button>
         </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "services" | "functions")}>
           <TabsList>
             <TabsTrigger value="services">
-              <Server className="mr-2 size-4" />
-              Services
-            </TabsTrigger>
+              <Server className="mr-2 size-4" />{t('extension.services')}</TabsTrigger>
             <TabsTrigger value="functions">
-              <Zap className="mr-2 size-4" />
-              Functions
-            </TabsTrigger>
+              <Zap className="mr-2 size-4" />{t('extension.functions')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="services">
             {error ? (
               <ErrorState
-                title="Error Loading Services"
+                title={t('extension.errorLoadingServices')}
                 description={error}
                 onRetry={fetchServices}
               />
@@ -288,7 +270,7 @@ export default function ServicesPage() {
           <TabsContent value="functions">
             {error ? (
               <ErrorState
-                title="Error Loading Functions"
+                title={t('extension.errorLoadingFunctions')}
                 description={error}
                 onRetry={fetchFunctions}
               />
@@ -312,9 +294,9 @@ export default function ServicesPage() {
       <ConfirmDialog
         open={!!deleteService}
         onOpenChange={(open) => !open && setDeleteService(null)}
-        title="Delete Service"
+        title={t('extension.deleteService')}
         description={`Are you sure you want to delete the service "${deleteService}"? All functions provided by this service will be unavailable.`}
-        confirmLabel="Delete"
+        confirmLabel={t('extension.delete')}
         variant="danger"
         onConfirm={handleDeleteService}
       />

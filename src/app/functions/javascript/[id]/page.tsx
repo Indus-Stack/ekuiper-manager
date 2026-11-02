@@ -20,6 +20,7 @@ import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { CodeEditor } from "@/components/ui/code-editor";
 
+import { useT } from '@/lib/i18n';
 const DEFAULT_SCRIPT = `/**
  * Custom JavaScript UDF
  * @param {any[]} args - The arguments passed to the function
@@ -32,6 +33,7 @@ function main(...args) {
 `;
 
 export default function JSUDFEditorPage() {
+  const t = useT();
     const router = useRouter();
     const params = useParams() as { id: string };
     const { servers, activeServerId } = useServerStore();
@@ -120,10 +122,10 @@ export default function JSUDFEditorPage() {
 
     if (!activeServer) {
         return (
-            <AppLayout title={isNew ? "Create Function" : "Edit Function"}>
+            <AppLayout title={isNew ? t('extension.createFunction') : "Edit Function"}>
                 <EmptyState
-                    title="No Server Connected"
-                    description="Connect to an eKuiper server to manage functions."
+                    title={t('extension.noServerConnected')}
+                    description={t('extension.connectToManageFunctions')}
                 />
             </AppLayout>
         );
@@ -134,7 +136,7 @@ export default function JSUDFEditorPage() {
     }
 
     return (
-        <AppLayout title={isNew ? "Create Function" : "Edit Function"}>
+        <AppLayout title={isNew ? t('extension.createFunction') : "Edit Function"}>
             <div className="flex flex-col h-[calc(100vh-140px)] gap-6">
                 {/* Header */}
                 <div className="flex items-center justify-between shrink-0">
@@ -176,7 +178,7 @@ export default function JSUDFEditorPage() {
                         </CardHeader>
                         <CardContent className="flex flex-col gap-4">
                             <div className="flex flex-col gap-2">
-                                <Label htmlFor="funcId">Function ID</Label>
+                                <Label htmlFor="funcId">{t('extension.functionId')}</Label>
                                 <Input
                                     id="funcId"
                                     value={funcId}

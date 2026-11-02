@@ -5,6 +5,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import type { FlowSemanticChange } from '@/lib/flows/model/flow-diff';
 
+import { useT } from '@/lib/i18n';
 /**
  * FS-0096: presentational semantic diff between two Flow specs/revisions.
  *
@@ -83,9 +84,7 @@ function TruncatedValue({ value }: { value: unknown }) {
         {truncated}
       </code>{' '}
       <details className="mt-1">
-        <summary className="cursor-pointer text-[11px] text-muted-foreground">
-          Show full value
-        </summary>
+        <summary className="cursor-pointer text-[11px] text-muted-foreground">{}</summary>
         <pre className="mt-1 max-h-32 max-w-full overflow-auto whitespace-pre-wrap break-all rounded bg-muted p-2 font-mono text-[11px]">
           {full}
         </pre>
@@ -154,7 +153,7 @@ function describeChange(
         </span>
       );
     case 'options-changed':
-      return <span>Changed flow rule options</span>;
+      return <span>{}</span>;
     case 'edge-added':
       return (
         <span>
@@ -183,6 +182,7 @@ export function RevisionDiff({
   nodeNames,
   className,
 }: RevisionDiffProps) {
+  const t = useT();
   if (changes.length === 0) {
     return (
       <p
@@ -197,7 +197,7 @@ export function RevisionDiff({
 
   return (
     <ul
-      aria-label="Semantic changes"
+      aria-label={t('flow.semanticChanges')}
       className={cn('flex flex-col gap-2', className)}
       data-testid="revision-diff-list"
     >
@@ -246,7 +246,7 @@ export function RevisionDiff({
             {change.kind === 'options-changed' ? (
               <ul
                 className="mt-1.5 flex flex-col gap-1.5"
-                aria-label="Changed flow options"
+                aria-label={t('flow.changedFlowOptions')}
               >
                 {change.changes.map((property) => (
                   <li

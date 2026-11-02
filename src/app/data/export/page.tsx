@@ -109,8 +109,8 @@ export default function DataExportPage() {
         return (
             <AppLayout title={t('nav.dataExportFull')}>
                 <EmptyState
-                    title="No Server Connected"
-                    description="Connect to an eKuiper server to export data."
+                    title={t('extension.noServerConnected')}
+                    description={t('admin.connectToExport')}
                 />
             </AppLayout>
         );
@@ -120,7 +120,7 @@ export default function DataExportPage() {
         <AppLayout title={t('nav.dataExportFull')}>
             <div className="flex flex-col gap-6">
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight">Export eKuiper configuration</h2>
+                    <h2 className="text-2xl font-bold tracking-tight">{t('admin.exportConfig')}</h2>
                     <p className="text-muted-foreground">Download configuration from the selected node. Manager users and registered nodes are not included.</p>
                 </div>
 
@@ -129,9 +129,7 @@ export default function DataExportPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Archive className="size-5" />
-                                Configuration Export
-                            </CardTitle>
+                                <Archive className="size-5" />{t('admin.configExport')}</CardTitle>
                             <CardDescription>
                                 Export the configuration returned by eKuiper into a single JSON file for migration or reuse.
                             </CardDescription>
@@ -139,17 +137,13 @@ export default function DataExportPage() {
                         <CardContent>
                             <div className="h-32 flex items-center justify-center bg-muted/20 rounded-md border border-dashed">
                                 <div className="text-center text-sm text-muted-foreground">
-                                    <CheckCircle2 className="size-8 mx-auto mb-2 text-green-500/50" />
-                                    Selected node configuration
-                                </div>
+                                    <CheckCircle2 className="size-8 mx-auto mb-2 text-green-500/50" />{t('admin.selectedNodeConfig')}</div>
                             </div>
                         </CardContent>
                         <CardFooter>
                             <Button className="w-full" onClick={handleFullExport} disabled={exportingFull}>
                                 {exportingFull && <Loader2 className="mr-2 size-4 animate-spin" />}
-                                <Download className="mr-2 size-4" />
-                                Download Configuration
-                            </Button>
+                                <Download className="mr-2 size-4" />{t('admin.downloadConfig')}</Button>
                         </CardFooter>
                     </Card>
 
@@ -157,9 +151,7 @@ export default function DataExportPage() {
                     <Card className="flex flex-col">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <CheckCircle2 className="size-5" />
-                                Selective Ruleset Export
-                            </CardTitle>
+                                <CheckCircle2 className="size-5" />{t('admin.selectiveExport')}</CardTitle>
                             <CardDescription>
                                 Export the selected rules using eKuiper&apos;s selective data export endpoint.
                             </CardDescription>
@@ -177,7 +169,7 @@ export default function DataExportPage() {
                                 <div className="border rounded-md flex-1 min-h-[12rem] bg-card">
                                     <ScrollArea className="h-48">
                                         <div className="p-4 flex flex-col gap-2">
-                                            {rules.length === 0 && <div className="text-sm text-muted-foreground text-center">No rules found</div>}
+                                            {rules.length === 0 && <div className="text-sm text-muted-foreground text-center">{t('admin.noRulesFound')}</div>}
                                             {rules.map(rule => (
                                                 <div key={rule.id} className="flex items-center gap-2">
                                                     <Checkbox
@@ -201,9 +193,7 @@ export default function DataExportPage() {
                         <CardFooter>
                             <Button className="w-full" variant="outline" onClick={handlePartialExport} disabled={exportingPartial || selectedRules.length === 0}>
                                 {exportingPartial && <Loader2 className="mr-2 size-4 animate-spin" />}
-                                <Download className="mr-2 size-4" />
-                                Export Ruleset
-                            </Button>
+                                <Download className="mr-2 size-4" />{t('admin.exportRulesetBtn')}</Button>
                         </CardFooter>
                     </Card>
                 </div>

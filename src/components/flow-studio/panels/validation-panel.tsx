@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { FlowDiagnostic } from "@/lib/flows/model/diagnostic";
 
+import { useT } from '@/lib/i18n';
 export interface ValidationPanelProps {
   flowId: string;
   clientDiagnostics: FlowDiagnostic[];
@@ -58,9 +59,7 @@ function DiagnosticList({
 }) {
   if (diagnostics.length === 0) {
     return (
-      <p className="text-xs text-muted-foreground" data-testid={`${testId}-empty`}>
-        No issues found.
-      </p>
+      <p className="text-xs text-muted-foreground" data-testid={`${testId}-empty`}>{}</p>
     );
   }
   return (
@@ -105,6 +104,7 @@ export function ValidationPanel({
   clientDiagnostics,
   className,
 }: ValidationPanelProps) {
+  const t = useT();
   const [server, setServer] = React.useState<ServerValidationState>({
     valid: null,
     diagnostics: [],
@@ -208,15 +208,15 @@ export function ValidationPanel({
       ) : null}
 
       <div className="grid min-h-0 flex-1 gap-3 overflow-y-auto md:grid-cols-2">
-        <section aria-label="Client diagnostics">
-          <h4 className="mb-1.5 text-xs font-semibold">Client checks</h4>
+        <section aria-label={t('flow.clientDiagnostics')}>
+          <h4 className="mb-1.5 text-xs font-semibold">{}</h4>
           <DiagnosticList
             diagnostics={clientDiagnostics}
             testId="flow-validation-client-diagnostic"
           />
         </section>
-        <section aria-label="Server diagnostics">
-          <h4 className="mb-1.5 text-xs font-semibold">Server validation</h4>
+        <section aria-label={t('flow.serverDiagnostics')}>
+          <h4 className="mb-1.5 text-xs font-semibold">{}</h4>
           {server.valid === null && !error ? (
             <p
               className="text-xs text-muted-foreground"

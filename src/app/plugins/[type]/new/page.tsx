@@ -183,9 +183,9 @@ export default function InstallPluginPage() {
     return (
       <AppLayout title={t('nav.installPlugin')}>
         <EmptyState
-          title="Unsupported plugin type"
-          description="Install source, sink, function, or portable plugins here."
-          actionLabel="Back to plugins"
+          title={t('extension.unsupportedPluginType')}
+          description={t('extension.installPluginHint')}
+          actionLabel={t('extension.backToPlugins')}
           onAction={() => router.push("/plugins")}
         />
       </AppLayout>
@@ -196,8 +196,8 @@ export default function InstallPluginPage() {
     return (
       <AppLayout title={t('nav.installPlugin')}>
         <EmptyState
-          title="No Server Connected"
-          description="Connect to an eKuiper server to install plugins."
+          title={t('extension.noServerConnected')}
+          description={t('extension.connectToInstallPlugins')}
         />
       </AppLayout>
     );
@@ -214,7 +214,7 @@ export default function InstallPluginPage() {
             variant="ghost"
             size="icon"
             onClick={() => router.push("/plugins")}
-            aria-label="Back to plugins"
+            aria-label={t('extension.backToPlugins')}
           >
             <ArrowLeft className="size-5" />
           </Button>
@@ -236,10 +236,8 @@ export default function InstallPluginPage() {
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-base font-semibold">Plugin Parameters</CardTitle>
-                <CardDescription className="text-xs">
-                  Configure package source, execution arguments, and exposed symbols.
-                </CardDescription>
+                <CardTitle className="text-base font-semibold">{t('extension.pluginParameters')}</CardTitle>
+                <CardDescription className="text-xs">{t('extension.configurePluginHint')}</CardDescription>
               </div>
               {(pluginName || selectedPrebuild) && (
                 <a
@@ -248,9 +246,7 @@ export default function InstallPluginPage() {
                   rel="noopener noreferrer"
                   className="text-xs text-primary hover:underline flex items-center gap-1 font-medium"
                 >
-                  <ExternalLink className="size-3.5" />
-                  Documentation
-                </a>
+                  <ExternalLink className="size-3.5" />{t('extension.documentation')}</a>
               )}
             </div>
           </CardHeader>
@@ -259,7 +255,7 @@ export default function InstallPluginPage() {
             {type === "portables" && (
               <div className="flex items-center justify-between p-3 rounded-lg border border-border/70 bg-muted/30 text-xs">
                 <div className="flex flex-col gap-0.5">
-                  <div className="font-medium text-foreground">Portable Plugin Template</div>
+                  <div className="font-medium text-foreground">{t('extension.portableTemplate')}</div>
                   <div className="text-[11px] text-muted-foreground">Download reference portable plugin structure (.zip) with sample JSON manifest and runtime.</div>
                 </div>
                 <a
@@ -267,9 +263,7 @@ export default function InstallPluginPage() {
                   download="portable-sample.zip"
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-background border border-border rounded shadow-beautiful-sm hover:bg-accent active:scale-[0.97] transition-all shrink-0"
                 >
-                  <Download className="size-3.5" />
-                  Sample .zip
-                </a>
+                  <Download className="size-3.5" />{t('extension.sampleZip')}</a>
               </div>
             )}
             {type !== "portables" && (
@@ -283,21 +277,17 @@ export default function InstallPluginPage() {
                     value="prebuild"
                     className="text-xs font-medium data-[state=active]:bg-background flex items-center gap-1.5"
                   >
-                    <Download className="size-3.5" />
-                    Prebuilt Catalog
-                  </TabsTrigger>
+                    <Download className="size-3.5" />{t('extension.prebuiltCatalog')}</TabsTrigger>
                   <TabsTrigger
                     value="custom"
                     className="text-xs font-medium data-[state=active]:bg-background flex items-center gap-1.5"
                   >
-                    <Upload className="size-3.5" />
-                    Custom File / URL
-                  </TabsTrigger>
+                    <Upload className="size-3.5" />{t('extension.customFileUrl')}</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="prebuild" className="flex flex-col gap-4 mt-4 m-0 focus-visible:outline-none">
                   <div className="flex flex-col gap-1.5">
-                    <Label className="text-xs font-medium">Select Prebuilt Plugin</Label>
+                    <Label className="text-xs font-medium">{t('extension.selectPrebuilt')}</Label>
                     <Select value={selectedPrebuild} onValueChange={handlePrebuildChange}>
                       <SelectTrigger className="h-8 text-xs font-mono">
                         <SelectValue
@@ -315,9 +305,7 @@ export default function InstallPluginPage() {
                       </SelectContent>
                     </Select>
                     {prebuildPlugins.length === 0 && !loadingPrebuild && (
-                      <p className="text-xs text-muted-foreground">
-                        No official prebuild binaries listed by this eKuiper version.
-                      </p>
+                      <p className="text-xs text-muted-foreground">{t('extension.noPrebuiltBinaries')}</p>
                     )}
                   </div>
                 </TabsContent>
@@ -360,17 +348,13 @@ export default function InstallPluginPage() {
             {type === "functions" && (
               <div className="flex flex-col gap-1.5 pt-2 border-t border-border">
                 <div className="flex items-center gap-1.5">
-                  <Label htmlFor="plugin-functions" className="text-xs font-medium">
-                    Exported Functions (comma-separated)
-                  </Label>
+                  <Label htmlFor="plugin-functions" className="text-xs font-medium">{t('extension.exportedFunctions')}</Label>
                   <TooltipProvider delayDuration={200}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <HelpCircle className="size-3.5 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent side="top" className="text-xs max-w-xs">
-                        Names of function symbols exported by the binary.
-                      </TooltipContent>
+                      <TooltipContent side="top" className="text-xs max-w-xs">{t('extension.exportedFunctionsHint')}</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
@@ -388,9 +372,7 @@ export default function InstallPluginPage() {
             <div className="flex flex-col gap-1.5 pt-2 border-t border-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <Label htmlFor="plugin-shell-paras" className="text-xs font-medium">
-                    Shell Parameters (shellParas)
-                  </Label>
+                  <Label htmlFor="plugin-shell-paras" className="text-xs font-medium">{t('extension.shellParameters')}</Label>
                   <TooltipProvider delayDuration={200}>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -431,12 +413,10 @@ export default function InstallPluginPage() {
                 size="sm"
                 onClick={() => router.push("/plugins")}
                 disabled={installing}
-              >
-                Cancel
-              </Button>
+              >{t('common.cancel')}</Button>
               <Button size="sm" onClick={handleInstall} disabled={installing} className="gap-1.5">
                 {installing ? <Loader2 className="size-3.5 animate-spin" /> : <Plug className="size-3.5" />}
-                {installing ? "Installing..." : "Install Plugin"}
+                {installing ? "Installing..." : t('extension.installPlugin')}
               </Button>
             </div>
           </CardContent>

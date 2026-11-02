@@ -111,9 +111,7 @@ export default function PluginsPage() {
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 size-4" />
+        >{t('extension.name')}<ArrowUpDown className="ml-2 size-4" />
         </Button>
       ),
       cell: ({ row }) => (
@@ -147,16 +145,12 @@ export default function PluginsPage() {
                 <DropdownMenuItem
                   onClick={() => router.push(`/plugins/${activeTab}/${encodeURIComponent(plugin.name)}`)}
                 >
-                  <Eye className="mr-2 size-4" />
-                  View Details
-                </DropdownMenuItem>
+                  <Eye className="mr-2 size-4" />{t('extension.viewDetails')}</DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-destructive"
                   onClick={() => setDeletePlugin({ name: plugin.name, type: activeTab })}
                 >
-                  <Trash2 className="mr-2 size-4" />
-                  Delete
-                </DropdownMenuItem>
+                  <Trash2 className="mr-2 size-4" />{t('extension.delete')}</DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -169,8 +163,8 @@ export default function PluginsPage() {
     return (
       <AppLayout title={t('nav.plugins')}>
         <EmptyState
-          title="No Server Connected"
-          description="Connect to an eKuiper server to manage plugins."
+          title={t('extension.noServerConnected')}
+          description={t('extension.connectToManagePlugins')}
         />
       </AppLayout>
     );
@@ -182,43 +176,31 @@ export default function PluginsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Plugins</h2>
-            <p className="text-muted-foreground">
-              Manage eKuiper source, sink, function, and portable plugins
-            </p>
+            <h2 className="text-2xl font-bold tracking-tight">{t('extension.plugins')}</h2>
+            <p className="text-muted-foreground">{t('extension.pluginsHint')}</p>
           </div>
           <Button onClick={() => router.push(`/plugins/${activeTab}/new`)}>
-            <Plus className="mr-2 size-4" />
-            Install Plugin
-          </Button>
+            <Plus className="mr-2 size-4" />{t('extension.installPlugin')}</Button>
         </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as InstallablePluginType)}>
           <TabsList>
             <TabsTrigger value="sources">
-              <Plug className="mr-2 size-4" />
-              Sources
-            </TabsTrigger>
+              <Plug className="mr-2 size-4" />{t('extension.sources')}</TabsTrigger>
             <TabsTrigger value="sinks">
-              <Plug className="mr-2 size-4" />
-              Sinks
-            </TabsTrigger>
+              <Plug className="mr-2 size-4" />{t('extension.sinks')}</TabsTrigger>
             <TabsTrigger value="functions">
-              <Code2 className="mr-2 size-4" />
-              Functions
-            </TabsTrigger>
+              <Code2 className="mr-2 size-4" />{t('extension.functions')}</TabsTrigger>
             <TabsTrigger value="portables">
-              <Box className="mr-2 size-4" />
-              Portables
-            </TabsTrigger>
+              <Box className="mr-2 size-4" />{t('extension.portables')}</TabsTrigger>
           </TabsList>
 
           {(["sources", "sinks", "functions", "portables"] as InstallablePluginType[]).map((type) => (
             <TabsContent key={type} value={type}>
               {error ? (
                 <ErrorState
-                  title="Error Loading Plugins"
+                  title={t('extension.errorLoadingPlugins')}
                   description={error}
                   onRetry={() => fetchPlugins(activeTab)}
                 />
@@ -243,9 +225,9 @@ export default function PluginsPage() {
       <ConfirmDialog
         open={!!deletePlugin}
         onOpenChange={(open) => !open && setDeletePlugin(null)}
-        title="Delete Plugin"
+        title={t('extension.deletePlugin')}
         description={`Are you sure you want to delete the plugin "${deletePlugin?.name}"? This action cannot be undone.`}
-        confirmLabel="Delete"
+        confirmLabel={t('extension.delete')}
         variant="danger"
         onConfirm={handleDeletePlugin}
       />

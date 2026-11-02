@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+import { useT } from '@/lib/i18n';
 interface AuthStatus {
   setupRequired: boolean;
   authenticated: boolean;
@@ -20,6 +21,7 @@ function errorMessage(payload: unknown): string {
 }
 
 export default function WelcomePage() {
+  const t = useT();
   const router = useRouter();
   const [status, setStatus] = React.useState<AuthStatus | null>(null);
   const [username, setUsername] = React.useState('');
@@ -79,7 +81,7 @@ export default function WelcomePage() {
           </span>
           <div>
             <h1 className="text-xl font-semibold">eKuiper Manager</h1>
-            <p className="text-sm text-muted-foreground">A focused workspace for your eKuiper nodes</p>
+            <p className="text-sm text-muted-foreground">{t('admin.welcomeSubtitle')}</p>
           </div>
         </div>
         <Card className="shadow-beautiful-md">
@@ -94,7 +96,7 @@ export default function WelcomePage() {
           <CardContent>
             <form onSubmit={submit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">{t('admin.username')}</Label>
                 <Input
                   id="username"
                   autoComplete="username"
@@ -106,7 +108,7 @@ export default function WelcomePage() {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('admin.password')}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -118,12 +120,12 @@ export default function WelcomePage() {
                   required
                 />
                 {status?.setupRequired && (
-                  <p className="text-xs text-muted-foreground">Use at least 12 characters.</p>
+                  <p className="text-xs text-muted-foreground">{t('admin.minTwelve')}</p>
                 )}
               </div>
               {status?.setupRequired && (
                 <div className="flex flex-col gap-2">
-                  <Label htmlFor="confirm-password">Confirm password</Label>
+                  <Label htmlFor="confirm-password">{t('admin.confirmPassword')}</Label>
                   <Input
                     id="confirm-password"
                     type="password"
@@ -148,8 +150,7 @@ export default function WelcomePage() {
           </CardContent>
         </Card>
         <p className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-          <ShieldCheck className="size-4" /> Credentials remain in this installation.
-        </p>
+          <ShieldCheck className="size-4" />{t('admin.credentialsLocal')}</p>
       </div>
     </main>
   );

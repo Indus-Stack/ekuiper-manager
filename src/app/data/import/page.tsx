@@ -124,7 +124,7 @@ export default function DataImportPage() {
     if (!activeServer) {
         return (
             <AppLayout title={t('nav.dataImportFull')}>
-                <EmptyState title="No Server Connected" description="Connect to an eKuiper server to import data." />
+                <EmptyState title={t('extension.noServerConnected')} description={t('admin.connectToImport')} />
             </AppLayout>
         );
     }
@@ -133,14 +133,14 @@ export default function DataImportPage() {
         <AppLayout title={t('nav.dataImportFull')}>
             <div className="max-w-3xl mx-auto flex flex-col gap-6">
                 <div className="flex flex-col gap-2">
-                    <h1 className="text-3xl font-bold">Import eKuiper configuration</h1>
+                    <h1 className="text-3xl font-bold">{t('admin.importConfig')}</h1>
                     <p className="text-muted-foreground">Import configuration or a ruleset into the selected node. Manager users and nodes are not included.</p>
                 </div>
 
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="data">Configuration</TabsTrigger>
-                        <TabsTrigger value="rules">Ruleset Only</TabsTrigger>
+                        <TabsTrigger value="data">{t('admin.configuration')}</TabsTrigger>
+                        <TabsTrigger value="rules">{t('admin.rulesetOnly')}</TabsTrigger>
                     </TabsList>
 
                     <Card className="mt-6 border-dashed border-2">
@@ -149,7 +149,7 @@ export default function DataImportPage() {
                                 <div className="flex flex-col items-center justify-center py-10 gap-4">
                                     <Loader2 className="size-10 animate-spin text-primary" />
                                     <div className="flex flex-col gap-2 text-center w-full max-w-md">
-                                        <h3 className="font-semibold text-lg">Importing...</h3>
+                                        <h3 className="font-semibold text-lg">{t('admin.importing')}</h3>
                                         <p className="text-sm text-muted-foreground">{importStatus?.message || "Processing..."}</p>
                                         {importStatus && (
                                             <Progress value={(importStatus.progress || 0) * 100} className="w-full h-2" />
@@ -185,9 +185,7 @@ export default function DataImportPage() {
                                     <p className="text-muted-foreground text-sm mb-4">
                                         or click to browse from your computer
                                     </p>
-                                    <p className="text-xs text-muted-foreground/70">
-                                        Accepts .json files
-                                    </p>
+                                    <p className="text-xs text-muted-foreground/70">{t('admin.acceptsJson')}</p>
                                     <input
                                         ref={fileInputRef}
                                         type="file"
@@ -203,16 +201,16 @@ export default function DataImportPage() {
                     <TabsContent value="data" className="mt-4">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Import Options</CardTitle>
+                                <CardTitle>{t('admin.importOptions')}</CardTitle>
                             </CardHeader>
                             <CardContent className="flex flex-col gap-4">
                                 <div className="flex items-center gap-2">
                                     <Checkbox id="stop" checked={optionStop} onCheckedChange={(c) => setOptionStop(!!c)} />
-                                    <Label htmlFor="stop" className="cursor-pointer">Stop eKuiper before import</Label>
+                                    <Label htmlFor="stop" className="cursor-pointer">{t('admin.stopBeforeImport')}</Label>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Checkbox id="partial" checked={optionPartial} onCheckedChange={(c) => setOptionPartial(!!c)} />
-                                    <Label htmlFor="partial" className="cursor-pointer">Partial import (skip existing items)</Label>
+                                    <Label htmlFor="partial" className="cursor-pointer">{t('admin.partialImport')}</Label>
                                 </div>
                             </CardContent>
                         </Card>
@@ -230,8 +228,7 @@ export default function DataImportPage() {
                     <Card className="border-destructive/50 bg-destructive/10">
                         <CardHeader>
                             <CardTitle className="text-destructive flex items-center gap-2">
-                                <XCircle className="size-5" /> Import Errors
-                            </CardTitle>
+                                <XCircle className="size-5" />{t('admin.importErrors')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <ul className="list-disc list-inside text-sm text-destructive font-medium">

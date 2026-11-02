@@ -3,7 +3,9 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+import { useT } from '@/lib/i18n';
 export default function Home() {
+  const t = useT();
   const router = useRouter();
 
   useEffect(() => {
@@ -13,7 +15,7 @@ export default function Home() {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="text-center">
-        <h1 className="text-2xl font-bold mb-2">Redirecting to Dashboard...</h1>
+        <h1 className="text-2xl font-bold mb-2">{t('admin.redirecting')}</h1>
         <p className="text-muted-foreground">
           If you are not redirected automatically,{" "}
           <a href="/dashboard" className="text-primary hover:underline">

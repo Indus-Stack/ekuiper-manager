@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
+import { useT } from '@/lib/i18n';
 /**
  * FS-0100: node-neutral runtime status panel.
  *
@@ -142,15 +143,14 @@ export function RuntimePanel({
   isError,
   className,
 }: RuntimePanelProps) {
+  const t = useT();
   const label = resolveRuntimeLabel(runtime);
   const state: FlowRuntimeActualState = runtime?.actualState ?? 'unknown';
 
   let detail: React.ReactNode;
   if (!hasDeployment) {
     detail = (
-      <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-empty">
-        Deploy the flow to see live runtime status.
-      </p>
+      <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-empty">{}</p>
     );
   } else if (isLoading && !runtime) {
     detail = (
@@ -164,9 +164,7 @@ export function RuntimePanel({
         role="alert"
         className="rounded-md border border-destructive/30 bg-destructive/10 px-2.5 py-1.5 text-xs text-destructive"
         data-testid="flow-runtime-panel-error"
-      >
-        Runtime status could not be read.
-      </div>
+      >{}</div>
     );
   } else if (runtime) {
     detail = (
@@ -180,9 +178,7 @@ export function RuntimePanel({
             {runtime.message}
           </p>
         ) : (
-          <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-message-empty">
-            No runtime message.
-          </p>
+          <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-message-empty">{}</p>
         )}
         {isError ? (
           <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-stale">
@@ -193,20 +189,18 @@ export function RuntimePanel({
     );
   } else {
     detail = (
-      <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-empty">
-        Deploy the flow to see live runtime status.
-      </p>
+      <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-empty">{}</p>
     );
   }
 
   return (
     <section
-      aria-label="Flow runtime status"
+      aria-label={t('flow.runtimeStatus')}
       className={cn('border-b px-3 py-2.5', className)}
       data-testid="flow-runtime-panel"
       data-runtime-state={state}
     >
-      <h3 className="text-xs font-semibold">Runtime</h3>
+      <h3 className="text-xs font-semibold">{}</h3>
       <p
         aria-live="polite"
         data-testid="flow-runtime-panel-state"

@@ -18,7 +18,9 @@ import { useParams, useRouter } from "next/navigation";
 import { ekuiperClient } from "@/lib/ekuiper/client";
 import type { ExternalFunction } from "@/lib/ekuiper/types";
 
+import { useT } from '@/lib/i18n';
 export default function FunctionDetailPage() {
+  const t = useT();
     const router = useRouter();
     const params = useParams() as { name: string };
     const name = decodeURIComponent(params.name);
@@ -53,7 +55,7 @@ export default function FunctionDetailPage() {
         return (
             <AppLayout title={`Function: ${name}`}>
                 <ErrorState
-                    title="No Server Connected"
+                    title={t('extension.noServerConnected')}
                     description="Please connect to an eKuiper server to view function details."
                 />
             </AppLayout>
@@ -73,7 +75,7 @@ export default function FunctionDetailPage() {
             <AppLayout title={`Function: ${name}`}>
                 <div className="flex flex-col gap-6">
                     <div className="flex items-center gap-4">
-                        <Button variant="outline" size="icon" onClick={() => router.back()} aria-label="Go back">
+                        <Button variant="outline" size="icon" onClick={() => router.back()} aria-label={t('extension.goBack')}>
                             <ArrowLeft className="size-4" aria-hidden="true" />
                         </Button>
                         <h2 className="text-3xl font-bold tracking-tight">{name}</h2>
@@ -95,7 +97,7 @@ export default function FunctionDetailPage() {
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-4">
-                            <Button variant="outline" size="icon" onClick={() => router.back()} aria-label="Go back">
+                            <Button variant="outline" size="icon" onClick={() => router.back()} aria-label={t('extension.goBack')}>
                                 <ArrowLeft className="size-4" aria-hidden="true" />
                             </Button>
                             <h2 className="text-3xl font-bold tracking-tight">{name}</h2>

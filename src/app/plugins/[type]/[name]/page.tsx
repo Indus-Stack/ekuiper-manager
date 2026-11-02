@@ -37,6 +37,7 @@ import {
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 
+import { useT } from '@/lib/i18n';
 interface PluginDetails {
   name: string;
   version?: string;
@@ -52,6 +53,7 @@ interface PluginDetails {
 const pluginTypes: PluginType[] = ["sources", "sinks", "functions", "portables", "udfs"];
 
 export default function PluginDetailPage() {
+  const t = useT();
   const router = useRouter();
   const params = useParams();
   const typeParam = String(params.type);
@@ -204,8 +206,8 @@ export default function PluginDetailPage() {
 
   if (!type) {
     return (
-      <AppLayout title="Plugin">
-        <EmptyState title="Unsupported plugin type" description="This plugin category is not supported." actionLabel="Back to plugins" onAction={() => router.push("/plugins")} />
+      <AppLayout title={t('extension.plugins')}>
+        <EmptyState title={t('extension.unsupportedPluginType')} description={t('extension.unsupportedPluginTypeHint')} actionLabel={t('extension.backToPlugins')} onAction={() => router.push("/plugins")} />
       </AppLayout>
     );
   }
@@ -214,7 +216,7 @@ export default function PluginDetailPage() {
     return (
       <AppLayout title={`Plugin: ${name}`}>
         <EmptyState
-          title="No Server Connected"
+          title={t('extension.noServerConnected')}
           description="Connect to an eKuiper server to view plugin details."
         />
       </AppLayout>
@@ -254,7 +256,7 @@ export default function PluginDetailPage() {
               variant="ghost"
               size="icon"
               onClick={() => router.push("/plugins")}
-              aria-label="Back to plugins"
+              aria-label={t('extension.backToPlugins')}
             >
               <ArrowLeft className="size-5" aria-hidden="true" />
             </Button>
@@ -286,9 +288,7 @@ export default function PluginDetailPage() {
                 Update
               </Button>
               <Button variant="destructive" onClick={() => setShowDeleteDialog(true)}>
-                <Trash2 className="mr-2 size-4" aria-hidden="true" />
-                Delete
-              </Button>
+                <Trash2 className="mr-2 size-4" aria-hidden="true" />{t('extension.delete')}</Button>
             </>}
           </div>
         </div>
@@ -318,7 +318,7 @@ export default function PluginDetailPage() {
                 <p className="font-medium">{plugin.pid || "N/A"}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Error</p>
+                <p className="text-sm text-muted-foreground">{t('common.error')}</p>
                 <p className="font-medium">{plugin.errMsg || "None"}</p>
               </div>
               {plugin.refCount && Object.keys(plugin.refCount).length > 0 && (
@@ -344,9 +344,7 @@ export default function PluginDetailPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center gap-2">
-                    <ListTree className="size-5" />
-                    Functions
-                  </CardTitle>
+                    <ListTree className="size-5" />{t('extension.functions')}</CardTitle>
                   <CardDescription>
                     Register exported functions from this plugin
                   </CardDescription>
@@ -395,7 +393,7 @@ export default function PluginDetailPage() {
       <ConfirmDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
-        title="Delete Plugin"
+        title={t('extension.deletePlugin')}
         description={
           <div className="flex flex-col gap-4">
             <p>Are you sure you want to delete the plugin &quot;{name}&quot;? This action cannot be undone.</p>
@@ -413,7 +411,7 @@ export default function PluginDetailPage() {
             )}
           </div>
         }
-        confirmLabel={deleting ? "Deleting..." : "Delete"}
+        confirmLabel={deleting ? "Deleting..." : t('extension.delete')}
         variant="danger"
         onConfirm={handleDelete}
       />
@@ -445,9 +443,7 @@ export default function PluginDetailPage() {
             )}
           </div>
           <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setShowUpdateDialog(false)} className="touch-manipulation">
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={() => setShowUpdateDialog(false)} className="touch-manipulation">{t('common.cancel')}</Button>
             <Button onClick={handleUpdate} disabled={updating || !updateUrl} className="touch-manipulation">
               {updating && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}
               Update Plugin
@@ -480,9 +476,7 @@ export default function PluginDetailPage() {
             </div>
           </div>
           <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setShowRegisterDialog(false)} className="touch-manipulation">
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={() => setShowRegisterDialog(false)} className="touch-manipulation">{t('common.cancel')}</Button>
             <Button onClick={handleRegisterFunctions} disabled={registering || !functionsToRegister.trim()} className="touch-manipulation">
               {registering && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}
               Register

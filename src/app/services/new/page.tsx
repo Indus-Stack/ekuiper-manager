@@ -59,7 +59,7 @@ export default function NewServicePage() {
     return (
       <AppLayout title={t('nav.registerService')}>
         <EmptyState
-          title="No Server Connected"
+          title={t('extension.noServerConnected')}
           description="Connect to an eKuiper server to register services."
         />
       </AppLayout>
@@ -104,7 +104,7 @@ export default function NewServicePage() {
             {/* Basic Info */}
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="name">Service Name</Label>
+                <Label htmlFor="name">{t('extension.serviceName')}</Label>
                 <Input
                   id="name"
                   value={name}
@@ -114,7 +114,7 @@ export default function NewServicePage() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <Label htmlFor="file">Service Package URI</Label>
+                <Label htmlFor="file">{t('extension.servicePackageUri')}</Label>
                 <Input
                   id="file"
                   value={file}
@@ -132,9 +132,7 @@ export default function NewServicePage() {
               <Button
                 variant="outline"
                 onClick={() => router.push("/services")}
-              >
-                Cancel
-              </Button>
+              >{t('common.cancel')}</Button>
               <Button onClick={handleCreate} disabled={creating || !name.trim() || !file.trim()}>
                 {creating && <Loader2 className="mr-2 size-4 animate-spin" />}
                 Register Service

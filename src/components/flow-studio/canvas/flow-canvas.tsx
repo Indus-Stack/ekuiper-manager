@@ -28,6 +28,7 @@ import { FlowNode } from "../nodes/flow-node";
 import { FLOW_CANVAS_NODE_TYPE } from "./to-react-flow";
 import { FLOW_PALETTE_DRAG_MIME } from "../palette/node-palette";
 
+import { useT } from '@/lib/i18n';
 /**
  * FS-0124: module-stable node type map.
  *
@@ -122,6 +123,7 @@ export function FlowCanvas({
   nodeTypes = flowNodeTypes,
   className,
 }: FlowCanvasProps) {
+  const t = useT();
   // High-frequency drag/position updates stay in local XYFlow view state.
   // The editor store is only notified once per drag stop (FS-0042), so no
   // semantic hash, autosave, or history work runs per pointer event.
@@ -428,7 +430,7 @@ export function FlowCanvas({
   return (
     <div
       ref={containerRef}
-      aria-label="Flow canvas"
+      aria-label={t('flow.flowCanvas')}
       className={cn("h-full min-h-0 w-full", className)}
       data-testid="flow-canvas"
       onDoubleClick={handleDoubleClick}
@@ -451,7 +453,7 @@ export function FlowCanvas({
       >
         <Background />
         <Controls
-          aria-label="Flow canvas controls"
+          aria-label={t('flow.flowCanvasControls')}
           showZoom
           showFitView
           showInteractive={false}
