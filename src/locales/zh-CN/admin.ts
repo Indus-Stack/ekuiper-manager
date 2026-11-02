@@ -179,6 +179,7 @@ const admin: Record<keyof typeof en, string> = {
   dataExport: '导出',
   importHint: '从规则集文件导入 eKuiper 资源。',
   exportHint: '将 eKuiper 资源导出为规则集文件。',
+  importRulesetTo: '导入规则集到 {node}',
 };
 
 export default admin;

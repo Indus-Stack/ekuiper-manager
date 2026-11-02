@@ -630,7 +630,7 @@ export function RuleList() {
           <DialogHeader>
             <DialogTitle>{t('rule.duplicateRule')}</DialogTitle>
             <DialogDescription>
-              Create a stopped copy of {duplicateSource?.id}. Runtime state and status are not copied.
+              {t('rule.duplicateDraftHint', { id: duplicateSource?.id ?? '' })}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2 py-2">
@@ -786,7 +786,7 @@ export function RuleWorkspace({ id }: { id: string }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('rule.duplicateRule')}</DialogTitle>
-            <DialogDescription>Create a stopped copy of {id}. Runtime metrics and state are reset.</DialogDescription>
+            <DialogDescription>{t('rule.duplicateDraftHint2', { id })}</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2 py-2">
             <Label htmlFor="dup-ws-id">{t('rule.newRuleId')}</Label>

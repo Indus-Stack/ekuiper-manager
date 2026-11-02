@@ -181,4 +181,5 @@ export default {
   dragDropConfigFile: 'Drag & drop configuration file',
   dragDropRulesetFile: 'Drag & drop ruleset file',
   orClickToBrowse: 'or click to browse from your computer',
+  importRulesetTo: 'Import Ruleset to {node}',
 };

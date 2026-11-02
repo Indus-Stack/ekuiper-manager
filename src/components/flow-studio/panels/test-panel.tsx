@@ -251,7 +251,7 @@ export function TestPanel({ flowId, ruleTestSupported, className }: TestPanelPro
                       className="mt-0.5 block opacity-80"
                       data-testid="flow-test-entry-truncated"
                     >
-                      Truncated: payload exceeds {MAX_EVENT_CHARS} characters.
+                      {t('flow.truncatedPayload', { max: MAX_EVENT_CHARS })}
                     </span>
                   ) : null}
                 </li>

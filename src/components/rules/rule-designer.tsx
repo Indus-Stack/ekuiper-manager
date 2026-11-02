@@ -67,6 +67,7 @@ import {
 import type { MetadataDetail, MetadataItem, Rule, RuleOptions, Sink } from '@/lib/ekuiper/types';
 import { useServerStore } from '@/stores/server-store';
 import { useT, useI18n, toShortLang } from '@/lib/i18n';
+import type { MessageKey } from '@/lib/i18n';
 
 type DesignerStep = 'query' | 'actions' | 'options';
 type QueryMode = 'visual' | 'sql';
@@ -82,10 +83,17 @@ const EMPTY_QUERY: QueryDraft = {
   limit: '',
 };
 
-const STEP_ITEMS: Array<{ id: DesignerStep; label: string; description: string; icon: typeof Database }> = [
-  { id: 'query', label: 'Source & query', description: 'Choose data and shape it', icon: Database },
-  { id: 'actions', label: 'Outputs', description: 'Choose where results go', icon: Send },
-  { id: 'options', label: 'Runtime', description: 'Review processing options', icon: Settings2 },
+// Labels are message keys resolved at render time: this lives outside the
+// component, so no hook is available here.
+const STEP_ITEMS: Array<{
+  id: DesignerStep;
+  labelKey: MessageKey;
+  descriptionKey: MessageKey;
+  icon: typeof Database;
+}> = [
+  { id: 'query', labelKey: 'rule.stepQuery', descriptionKey: 'rule.stepQueryHint', icon: Database },
+  { id: 'actions', labelKey: 'rule.stepOutputs', descriptionKey: 'rule.stepOutputsHint', icon: Send },
+  { id: 'options', labelKey: 'rule.stepRuntime', descriptionKey: 'rule.stepRuntimeHint', icon: Settings2 },
 ];
 
 function isObject(value: unknown): value is JsonObject {
@@ -891,19 +899,19 @@ export function RuleDesigner({ id }: { id?: string }) {
   };
 
   return (
-    <AppLayout title={id ? 'Edit rule' : 'Rule designer'}>
+    <AppLayout title={id ? t('rule.editRule') : t('rule.ruleDesignerTitle')}>
       <div className="mx-auto max-w-[1500px] flex flex-col gap-5">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" asChild><Link href={id ? `/rules/${encodeURIComponent(id)}` : '/rules'} aria-label="Back to rules"><ArrowLeft className="size-5" /></Link></Button>
             <div>
               <div className="flex items-center gap-2"><Workflow className="size-6 text-primary" /><h2 className="text-2xl font-semibold tracking-tight">{id ? t('rule.editRule', { id }) : t('rule.ruleDesigner')}</h2></div>
-              <p className="mt-1 text-sm text-muted-foreground">Build visually, inspect the generated rule, and validate it on {active?.name ?? 'the selected node'}.</p>
+              <p className="mt-1 text-sm text-muted-foreground">{t('rule.designerSubtitle', { node: active?.name ?? t('rule.selectedNode') })}</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void validate()} disabled={loading || !active}>{t('rule.validateWithEkuiper')}</Button>
-            <Button onClick={() => void save()} disabled={saving || loading || !active}>{saving ? 'Saving…' : id ? 'Save changes' : 'Create rule'}</Button>
+            <Button onClick={() => void save()} disabled={saving || loading || !active}>{saving ? t('stream.saving') : id ? t('rule.saveChanges') : t('rule.createRule')}</Button>
           </div>
         </div>
 
@@ -937,8 +945,8 @@ export function RuleDesigner({ id }: { id?: string }) {
                       selected ? 'border-primary bg-primary/5 shadow-beautiful-sm' : 'border-border/60 hover:bg-muted/50 hover:border-border'
                     }`}
                   >
-                    <span className="flex items-center gap-2"><span className={`flex size-7 items-center justify-center rounded-full text-xs font-semibold ${selected ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>{index + 1}</span><Icon className="size-4" aria-hidden="true" /><span className="font-medium">{item.label}</span></span>
-                    <span className="mt-1 block pl-9 text-xs text-muted-foreground">{item.description}</span>
+                    <span className="flex items-center gap-2"><span className={`flex size-7 items-center justify-center rounded-full text-xs font-semibold ${selected ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>{index + 1}</span><Icon className="size-4" aria-hidden="true" /><span className="font-medium">{t(item.labelKey)}</span></span>
+                    <span className="mt-1 block pl-9 text-xs text-muted-foreground">{t(item.descriptionKey)}</span>
                   </button>
                 );
               })}
@@ -984,11 +992,11 @@ export function RuleDesigner({ id }: { id?: string }) {
                           <div className="grid max-h-56 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
                             {filteredResources.map((resource) => (
                               <button key={`${resource.kind}-${resource.name}`} type="button" onClick={() => changeQuery('source', resource.name)} aria-pressed={query.source === resource.name} className={`flex items-center justify-between rounded-lg border p-3 text-left transition-colors ${query.source === resource.name ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'}`}>
-                                <span className="min-w-0"><span className="block truncate text-sm font-medium" title={resource.name}>{resource.name}</span><span className="text-xs capitalize text-muted-foreground">{resource.kind}</span></span>
+                                <span className="min-w-0"><span className="block truncate text-sm font-medium" title={resource.name}>{resource.name}</span><span className="text-xs text-muted-foreground">{resource.kind === 'table' ? t('nav.tables') : t('nav.streams')}</span></span>
                                 {query.source === resource.name && <Check className="size-4 text-primary" aria-hidden="true" />}
                               </button>
                             ))}
-                            {!filteredResources.length && <p className="col-span-full rounded-lg border border-dashed p-4 text-sm text-muted-foreground">No matching streams or tables on this node. You can still enter a name below.</p>}
+                            {!filteredResources.length && <p className="col-span-full rounded-lg border border-dashed p-4 text-sm text-muted-foreground">{t('rule.noResourcesMatch')}</p>}
                           </div>
                           <Input aria-label={t('rule.sourceName')} value={query.source} onChange={(event) => changeQuery('source', event.target.value)} placeholder={t('rule.orEnterSourceName')} />
                         </div>
@@ -1079,7 +1087,7 @@ export function RuleDesigner({ id }: { id?: string }) {
                 <Tabs defaultValue="definition">
                   <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="definition">{t('rule.ruleJson')}</TabsTrigger><TabsTrigger value="sql">{t('rule.sql')}</TabsTrigger></TabsList>
                   <TabsContent value="definition" className="flex flex-col gap-2 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-150">
-                    {!revealSensitive && <p className="rounded-md bg-muted p-2 text-xs text-muted-foreground">Sensitive fields are masked and raw editing is locked. Reveal them to edit the full definition.</p>}
+                    {!revealSensitive && <p className="rounded-md bg-muted p-2 text-xs text-muted-foreground">{t('rule.sensitiveMasked')}</p>}
                     <Textarea aria-label={t('rule.ruleJson')} value={definitionText} disabled={!revealSensitive} onChange={(event) => { setDefinitionText(event.target.value); setDefinitionDirty(true); setDefinitionError(''); }} className="min-h-[32rem] resize-y font-mono text-xs leading-5" spellCheck={false} />
                     {definitionError && (
                       <Alert variant="destructive">
@@ -1098,7 +1106,7 @@ export function RuleDesigner({ id }: { id?: string }) {
                   </Button>
                   <Button onClick={() => void save()} disabled={saving || validating || loading || !active} className="touch-manipulation">
                     {saving && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}
-                    {saving ? 'Saving…' : id ? 'Save changes' : 'Create rule'}
+                    {saving ? t('stream.saving') : id ? t('rule.saveChanges') : t('rule.createRule')}
                   </Button>
                 </div>
               </CardContent>

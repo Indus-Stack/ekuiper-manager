@@ -169,6 +169,19 @@ const rule: Record<keyof typeof en, string> = {
   validate: '校验',
   validateWithEkuiper: '使用 eKuiper 校验',
   visual: '可视化',
+  designerSubtitle: '可视化搭建、查看生成的规则，并在 {node} 上校验。',
+  duplicateDraftHint: '创建 {id} 的停止状态副本。运行时状态与统计不会被复制。',
+  duplicateDraftHint2: '创建 {id} 的停止状态副本。运行时指标与状态将被重置。',
+  ruleDesignerTitle: '规则设计器',
+  saveChanges: '保存更改',
+  stepQuery: '源与查询',
+  stepQueryHint: '选择数据并塑造结果',
+  stepOutputs: '输出',
+  stepOutputsHint: '选择结果发往何处',
+  stepRuntime: '运行配置',
+  stepRuntimeHint: '检查处理选项',
+  sensitiveMasked: '敏感字段已打码，原始编辑已锁定。显示后才能编辑完整定义。',
+  noResourcesMatch: '该节点上没有匹配的流或表。你仍可在下方直接输入名称。',
 };
 
 export default rule;

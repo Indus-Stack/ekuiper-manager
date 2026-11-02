@@ -102,7 +102,7 @@ export function ImportNodeRulesetModal({
             </div>
             <div>
               <DialogTitle className="text-lg font-semibold tracking-tight">
-                Import Ruleset to {node?.name}
+                {t('admin.importRulesetTo', { node: node?.name ?? '' })}
               </DialogTitle>
               <DialogDescription className="text-xs text-muted-foreground">
                 Restore or migrate complete streams, tables, rules, and configurations into this node.

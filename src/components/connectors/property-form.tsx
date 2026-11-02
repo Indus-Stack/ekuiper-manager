@@ -788,7 +788,7 @@ function MultiIndexFieldsEditor({
           <div key={idx} className="rounded-md border p-3 bg-background flex flex-col gap-2.5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-foreground">
-                Index Field #{field.name}
+                {t('connector.indexFieldN', { name: field.name })}
               </span>
               {fields.length > 1 && !disabled && (
                 <Button

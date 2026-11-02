@@ -222,7 +222,7 @@ export default function InstallPluginPage() {
             {getPluginIcon()}
             <div>
               <h2 className="text-2xl font-bold tracking-tight capitalize">
-                Install {type.slice(0, -1)} Plugin
+                {t('extension.installPluginOfType')}
               </h2>
               <p className="text-muted-foreground text-xs">
                 Install a prebuilt extension or local package into the eKuiper edge runtime.

@@ -104,6 +104,8 @@ const connector: Record<keyof typeof en, string> = {
   importFormat: '导入格式',
   partialImport: '部分导入',
   stopOnError: '遇错即停',
+  schemaFieldsCount: '模式字段（{count}）',
+  indexFieldN: '索引字段 #{name}',
 };
 
 export default connector;

@@ -185,6 +185,8 @@ const extension: Record<keyof typeof en, string> = {
   installing: '安装中…',
   failedFetchPrebuilts: '获取预编译插件失败：',
   noPluginsFound: '未找到{type}插件',
+  installPluginOfType: '安装{type}插件',
+  noConnectorsMatching: '未找到匹配“{query}”的{kind}连接器',
 };
 
 export default extension;

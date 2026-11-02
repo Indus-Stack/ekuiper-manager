@@ -172,6 +172,8 @@ const page: Record<keyof typeof en, string> = {
   fileDeleteFailed: '删除文件失败：{error}',
   fileUploaded: '文件 "{name}" 上传成功',
   uploadFailed: '上传失败：{error}',
+  refCount: '引用数：{count}',
+  viewAllRules: '查看全部 {count} 条规则',
 };
 
 export default page;

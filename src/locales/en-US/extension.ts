@@ -187,4 +187,6 @@ export default {
   installing: 'Installing…',
   failedFetchPrebuilts: 'Failed to fetch prebuild plugins:',
   noPluginsFound: 'No {type} plugins found',
+  installPluginOfType: 'Install {type} Plugin',
+  noConnectorsMatching: 'No {kind} connectors found matching "{query}"',
 };

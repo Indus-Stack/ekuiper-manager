@@ -416,7 +416,7 @@ export default function ConnectionsPage() {
                               )}
                               {conn.refCount !== undefined && (
                                 <span className="text-xs text-muted-foreground">
-                                  Ref count: {conn.refCount}
+                                  {t('page.refCount', { count: conn.refCount })}
                                 </span>
                               )}
                             </div>
@@ -662,7 +662,7 @@ export default function ConnectionsPage() {
               })}
               {filteredSources.length === 0 && (
                 <div className="col-span-full py-12 text-center text-sm text-muted-foreground">
-                  No source connectors found matching &ldquo;{catalogSearch}&rdquo;
+                  {t('extension.noConnectorsMatching', { kind: t('page.tabSourceConnectors'), query: catalogSearch })}
                 </div>
               )}
             </div>
@@ -740,7 +740,7 @@ export default function ConnectionsPage() {
               })}
               {filteredSinks.length === 0 && (
                 <div className="col-span-full py-12 text-center text-sm text-muted-foreground">
-                  No sink connectors found matching &ldquo;{catalogSearch}&rdquo;
+                  {t('extension.noConnectorsMatching', { kind: t('page.tabSinkConnectors'), query: catalogSearch })}
                 </div>
               )}
             </div>

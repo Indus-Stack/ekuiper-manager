@@ -201,7 +201,7 @@ export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableP
       <div className="flex items-center justify-between">
         <div>
           <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Schema Fields ({countFields(fields)})
+            {t('connector.schemaFieldsCount', { count: countFields(fields) })}
           </Label>
           <p className="text-[11px] text-muted-foreground">{t('connector.explicitTypes')}</p>
         </div>

@@ -123,7 +123,7 @@ export default function DashboardPage() {
             <CardHeader><CardTitle>{t('page.ruleState')}</CardTitle><CardDescription>{t('page.authoritativeStatus')}</CardDescription></CardHeader>
             <CardContent>
               {!data?.rules.length ? <p className="py-8 text-center text-sm text-muted-foreground">{t('page.noRulesConfigured')}</p> : <div className="divide-y">{data.rules.slice(0, 8).map((rule) => <Link key={rule.id} href={`/rules/${encodeURIComponent(rule.id)}`} className="flex items-center justify-between py-3 hover:text-primary"><span className="truncate font-medium" title={rule.id}>{rule.id}</span><Badge variant={rule.status?.toLowerCase() === 'running' ? 'default' : 'outline'}>{t(ruleStatusKey(rule.status))}</Badge></Link>)}</div>}
-              {data && data.rules.length > 8 && <Button asChild variant="link" className="mt-3 px-0"><Link href="/rules">View all {data.rules.length} rules</Link></Button>}
+              {data && data.rules.length > 8 && <Button asChild variant="link" className="mt-3 px-0"><Link href="/rules">{t('page.viewAllRules', { count: data.rules.length })}</Link></Button>}
             </CardContent>
           </Card>
           <Card>

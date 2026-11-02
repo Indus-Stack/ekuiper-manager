@@ -173,7 +173,7 @@ export function RuleStatusSheet({
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-muted-foreground">{t('rule.pipelineOperators')}</span>
-                <span className="text-[11px] text-muted-foreground">{opKeys.length} active node(s)</span>
+                <span className="text-[11px] text-muted-foreground">{t('flow.activeNodes', { count: opKeys.length })}</span>
               </div>
               <div className="divide-y divide-border/60 rounded-lg border border-border/60 bg-card overflow-hidden">
                 {opKeys.map((op) => {

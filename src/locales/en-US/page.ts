@@ -174,4 +174,6 @@ export default {
   fileDeleteFailed: 'Failed to delete file: {error}',
   fileUploaded: 'File "{name}" uploaded successfully',
   uploadFailed: 'Upload failed: {error}',
+  refCount: 'Ref count: {count}',
+  viewAllRules: 'View all {count} rules',
 };

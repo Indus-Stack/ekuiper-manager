@@ -106,4 +106,6 @@ export default {
   importFormat: 'Import format',
   partialImport: 'Partial Import',
   stopOnError: 'Stop on Error',
+  schemaFieldsCount: 'Schema Fields ({count})',
+  indexFieldN: 'Index Field #{name}',
 };

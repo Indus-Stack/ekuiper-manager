@@ -186,6 +186,21 @@ const flow: Record<keyof typeof en, string> = {
   passwordChangeFailed: '修改密码失败',
   savePassword: '保存密码',
   thisAccountControls: '该账户可管理节点，并可添加其他用户。',
+  serverInvalidCount: '服务端校验未通过 — 请先修复 {count} 个错误再部署。',
+  deployedRuleTo: '规则 {ruleId} 已部署到 {nodeId}。',
+  replaceDraftWithRevision: '用修订 {number} 替换当前草稿？未保存的草稿修改将丢失。',
+  truncatedPayload: '已截断：数据超过 {max} 个字符。',
+  droppedOutputs: '另有 {count} 条输出被省略：面板最多保留 {max} 条。',
+  changedTypeOf: '类型已变更：',
+  changedConfigOf: '配置已变更：',
+  addedNode: '新增节点',
+  removedNode: '移除节点',
+  addedConnection: '新增连线',
+  removedConnection: '移除连线',
+  activeNodes: '{count} 个活跃节点',
+  unknownNodeTypeFull: '未知的节点类型「{type}@{version}」。无法编辑配置。已保存的节点会保留。',
+  propertyNotEditable: '属性类型「{type}」暂不支持编辑。已保存的值会保留。',
+  invalidJsonKept: 'JSON 无效：{error} 已保存的值未改变。',
 };
 
 export default flow;
