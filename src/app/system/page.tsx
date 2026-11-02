@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout';
+import { useT } from '@/lib/i18n';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -45,6 +46,7 @@ function formatDetailedUptime(seconds?: number): string {
 }
 
 export default function SystemPage() {
+  const t = useT();
   const { servers, activeServerId } = useServerStore();
   const activeNode = servers.find((node) => node.id === activeServerId);
 
@@ -105,7 +107,7 @@ export default function SystemPage() {
 
   if (!activeNode) {
     return (
-      <AppLayout title="System">
+      <AppLayout title={t('nav.system')}>
         <Card className="mx-auto max-w-xl border-dashed">
           <CardContent className="flex flex-col items-center py-14 text-center">
             <Server className="mb-4 size-10 text-muted-foreground" />
@@ -123,7 +125,7 @@ export default function SystemPage() {
   }
 
   return (
-    <AppLayout title="System">
+    <AppLayout title={t('nav.system')}>
       <div className="mx-auto max-w-7xl flex flex-col gap-6">
         {/* Header bar */}
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">

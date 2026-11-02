@@ -5,6 +5,7 @@ import { useServerStore } from "@/stores/server-store";
 import { ekuiperClient } from "@/lib/ekuiper/client";
 import type { ExternalFunction } from "@/lib/ekuiper/types";
 import { AppLayout } from "@/components/layout";
+import { useT } from '@/lib/i18n';
 import { DataTable } from "@/components/common/data-table";
 import { StatusBadge, EmptyState, ErrorState, ConfirmDialog } from "@/components/common";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ interface Service {
 }
 
 export default function ServicesPage() {
+  const t = useT();
   const router = useRouter();
   const { servers, activeServerId } = useServerStore();
   const activeServer = servers.find((s) => s.id === activeServerId);
@@ -223,7 +225,7 @@ export default function ServicesPage() {
 
   if (!activeServer) {
     return (
-      <AppLayout title="Services">
+      <AppLayout title={t('nav.services')}>
         <EmptyState
           title="No Server Connected"
           description="Connect to an eKuiper server to manage external services."
@@ -233,7 +235,7 @@ export default function ServicesPage() {
   }
 
   return (
-    <AppLayout title="Services">
+    <AppLayout title={t('nav.services')}>
       <div className="flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-center justify-between">

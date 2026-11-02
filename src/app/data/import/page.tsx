@@ -5,6 +5,7 @@ import { useServerStore } from "@/stores/server-store";
 import { ekuiperClient } from "@/lib/ekuiper/client";
 import { ImportStatus } from "@/lib/ekuiper/types";
 import { AppLayout } from "@/components/layout";
+import { useT } from '@/lib/i18n';
 import { EmptyState } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +29,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export default function DataImportPage() {
+  const t = useT();
     const { servers, activeServerId } = useServerStore();
     const activeServer = servers.find((s) => s.id === activeServerId);
 
@@ -121,14 +123,14 @@ export default function DataImportPage() {
 
     if (!activeServer) {
         return (
-            <AppLayout title="Data Import">
+            <AppLayout title={t('nav.dataImportFull')}>
                 <EmptyState title="No Server Connected" description="Connect to an eKuiper server to import data." />
             </AppLayout>
         );
     }
 
     return (
-        <AppLayout title="Data Import">
+        <AppLayout title={t('nav.dataImportFull')}>
             <div className="max-w-3xl mx-auto flex flex-col gap-6">
                 <div className="flex flex-col gap-2">
                     <h1 className="text-3xl font-bold">Import eKuiper configuration</h1>

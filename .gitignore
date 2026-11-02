@@ -62,6 +62,9 @@ next-env.d.ts
 .vercel
 /.claude/
 
+# CodeGraph index (machine-local, rebuild on demand)
+.codegraph/
+
 # AI Planning Docs
 IMPLEMENTATION_PLAN.md
 
@@ -72,6 +75,7 @@ body.json
 response.txt
 !docs/FLOW_STUDIO_UI_COMPONENT_TESTING_DECISION.md
 !docs/FLOW_STUDIO_AUTO_LAYOUT_DECISION.md
+!docs/GLOSSARY.md
 
 # Legacy external flow bundles
 public/flow/

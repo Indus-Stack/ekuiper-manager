@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Copy, KeyRound, Loader2, MoreHorizontal, Plus, Shield, Trash2, UserRound, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout';
+import { useT } from '@/lib/i18n';
 import { ConfirmDialog } from '@/components/common';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -43,6 +44,7 @@ async function getError(response: Response): Promise<string> {
 }
 
 export default function UsersPage() {
+  const t = useT();
   const [users, setUsers] = React.useState<UserRecord[]>([]);
   const [currentUserId, setCurrentUserId] = React.useState('');
   const [allowed, setAllowed] = React.useState<boolean | null>(null);
@@ -118,7 +120,7 @@ export default function UsersPage() {
 
   if (allowed === false) {
     return (
-      <AppLayout title="Users">
+      <AppLayout title={t('nav.users')}>
         <Card className="mx-auto max-w-xl">
           <CardHeader><CardTitle>Owner access required</CardTitle><CardDescription>Only an owner can add, reset, or delete Manager users.</CardDescription></CardHeader>
         </Card>
@@ -127,7 +129,7 @@ export default function UsersPage() {
   }
 
   return (
-    <AppLayout title="Users">
+    <AppLayout title={t('nav.users')}>
       <div className="mx-auto max-w-5xl flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>

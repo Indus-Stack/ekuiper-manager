@@ -4,6 +4,7 @@ import * as React from "react";
 import { useServerStore } from "@/stores/server-store";
 import { ekuiperClient } from "@/lib/ekuiper/client";
 import { AppLayout } from "@/components/layout";
+import { useT } from '@/lib/i18n';
 import { DataTable } from "@/components/common/data-table";
 import { EmptyState, ErrorState, ConfirmDialog } from "@/components/common";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ interface SchemaItem {
 }
 
 export default function SchemasPage() {
+  const t = useT();
   const router = useRouter();
   const { servers, activeServerId } = useServerStore();
   const activeServer = servers.find((s) => s.id === activeServerId);
@@ -128,14 +130,14 @@ export default function SchemasPage() {
 
   if (!activeServer) {
     return (
-      <AppLayout title="Schemas">
+      <AppLayout title={t('nav.schemas')}>
         <EmptyState title="No Server Connected" description="Connect to an eKuiper server to manage schemas." />
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout title="Schemas">
+    <AppLayout title={t('nav.schemas')}>
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>

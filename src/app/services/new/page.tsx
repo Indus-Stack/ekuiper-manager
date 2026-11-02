@@ -4,6 +4,7 @@ import * as React from "react";
 import { useServerStore } from "@/stores/server-store";
 import { ekuiperClient } from "@/lib/ekuiper/client";
 import { AppLayout } from "@/components/layout";
+import { useT } from '@/lib/i18n';
 import { EmptyState } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export default function NewServicePage() {
+  const t = useT();
   const router = useRouter();
   const { servers, activeServerId } = useServerStore();
   const activeServer = servers.find((s) => s.id === activeServerId);
@@ -55,7 +57,7 @@ export default function NewServicePage() {
 
   if (!activeServer) {
     return (
-      <AppLayout title="Register Service">
+      <AppLayout title={t('nav.registerService')}>
         <EmptyState
           title="No Server Connected"
           description="Connect to an eKuiper server to register services."
@@ -65,7 +67,7 @@ export default function NewServicePage() {
   }
 
   return (
-    <AppLayout title="Register Service">
+    <AppLayout title={t('nav.registerService')}>
       <div className="flex flex-col gap-6 max-w-2xl">
         {/* Header */}
         <div className="flex items-center gap-4">

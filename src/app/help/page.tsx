@@ -15,6 +15,7 @@ import {
   Workflow,
 } from 'lucide-react';
 import { AppLayout } from '@/components/layout';
+import { useT } from '@/lib/i18n';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -67,8 +68,9 @@ const cliSnippets = [
 ];
 
 export default function HelpPage() {
+  const t = useT();
   return (
-    <AppLayout title="Documentation & Help">
+    <AppLayout title={t('nav.help')}>
       <div className="mx-auto max-w-5xl flex flex-col gap-8 pb-12">
         {/* Header */}
         <div className="flex flex-col gap-1">

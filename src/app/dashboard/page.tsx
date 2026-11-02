@@ -4,6 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { Activity, ArrowRight, Database, RefreshCw, Server, Table2, Workflow } from 'lucide-react';
 import { AppLayout } from '@/components/layout';
+import { useT } from '@/lib/i18n';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,6 +35,7 @@ function formatUptime(seconds?: number): string {
 }
 
 export default function DashboardPage() {
+  const t = useT();
   const { servers, activeServerId, fetchServers } = useServerStore();
   const activeNode = servers.find((node) => node.id === activeServerId);
   const [data, setData] = React.useState<OverviewData | null>(null);
@@ -72,7 +74,7 @@ export default function DashboardPage() {
 
   if (!activeNode) {
     return (
-      <AppLayout title="Overview">
+      <AppLayout title={t('nav.overview')}>
         <Card className="mx-auto max-w-xl border-dashed">
           <CardContent className="flex flex-col items-center py-14 text-center">
             <Server className="mb-4 size-10 text-muted-foreground" />
@@ -89,7 +91,7 @@ export default function DashboardPage() {
   const stopped = data?.rules.filter((rule) => rule.status?.toLowerCase() === 'stopped').length ?? 0;
 
   return (
-    <AppLayout title="Overview">
+    <AppLayout title={t('nav.overview')}>
       <div className="mx-auto max-w-7xl flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>

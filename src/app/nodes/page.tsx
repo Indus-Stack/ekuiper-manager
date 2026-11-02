@@ -4,6 +4,7 @@ import * as React from 'react';
 import { CheckCircle2, Download, Loader2, MoreHorizontal, Plus, RefreshCw, Server, Star, Trash2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout';
+import { useT } from '@/lib/i18n';
 import { ConfirmDialog } from '@/components/common';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -71,6 +72,7 @@ function statusBadge(node: NodeRecord) {
 }
 
 export default function NodesPage() {
+  const t = useT();
   const { activeServerId, fetchServers: refreshStore, setActiveServer } = useServerStore();
   const [nodes, setNodes] = React.useState<NodeRecord[]>([]);
   const [isOwner, setIsOwner] = React.useState(false);
@@ -213,7 +215,7 @@ export default function NodesPage() {
   };
 
   return (
-    <AppLayout title="Nodes">
+    <AppLayout title={t('nav.nodes')}>
       <div className="mx-auto max-w-6xl flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>

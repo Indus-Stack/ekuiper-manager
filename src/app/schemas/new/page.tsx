@@ -4,6 +4,7 @@ import * as React from "react";
 import { useServerStore } from "@/stores/server-store";
 import { ekuiperClient } from "@/lib/ekuiper/client";
 import { AppLayout } from "@/components/layout";
+import { useT } from '@/lib/i18n';
 import { EmptyState, LoadingSpinner } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +40,7 @@ message Metric {
 `;
 
 function CreateSchemaContent() {
+  const t = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialType = searchParams.get("type") === "custom" ? "custom" : "protobuf";
@@ -112,7 +114,7 @@ function CreateSchemaContent() {
 
   if (!activeServer) {
     return (
-      <AppLayout title="Create Schema">
+      <AppLayout title={t('nav.createSchema')}>
         <EmptyState
           title="No Server Connected"
           description="Connect to an eKuiper server to manage schemas."
@@ -122,7 +124,7 @@ function CreateSchemaContent() {
   }
 
   return (
-    <AppLayout title="Create Schema">
+    <AppLayout title={t('nav.createSchema')}>
       <div className="flex flex-col h-[calc(100vh-140px)] gap-6">
         {/* Header */}
         <div className="flex items-center justify-between shrink-0">

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Loader2, Plus, RefreshCw, Search, Workflow } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout';
+import { useT } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -36,6 +37,7 @@ function formatUpdated(value: string): string {
 }
 
 export default function FlowsPage() {
+  const t = useT();
   const router = useRouter();
   const [flows, setFlows] = React.useState<FlowListRecord[]>([]);
   const [search, setSearch] = React.useState('');
@@ -111,7 +113,7 @@ export default function FlowsPage() {
   );
 
   return (
-    <AppLayout title="Flows">
+    <AppLayout title={t('nav.flows')}>
       <div className="mx-auto max-w-7xl flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>

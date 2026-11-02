@@ -5,6 +5,7 @@ import { useServerStore } from "@/stores/server-store";
 import { ekuiperClient } from "@/lib/ekuiper/client";
 import type { PluginType } from "@/lib/ekuiper/types";
 import { AppLayout } from "@/components/layout";
+import { useT } from '@/lib/i18n';
 import { EmptyState } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +56,7 @@ interface PrebuildPlugin {
 }
 
 export default function InstallPluginPage() {
+  const t = useT();
   const router = useRouter();
   const params = useParams();
   const typeParam = String(params.type);
@@ -179,7 +181,7 @@ export default function InstallPluginPage() {
 
   if (!type) {
     return (
-      <AppLayout title="Install Plugin">
+      <AppLayout title={t('nav.installPlugin')}>
         <EmptyState
           title="Unsupported plugin type"
           description="Install source, sink, function, or portable plugins here."
@@ -192,7 +194,7 @@ export default function InstallPluginPage() {
 
   if (!activeServer) {
     return (
-      <AppLayout title="Install Plugin">
+      <AppLayout title={t('nav.installPlugin')}>
         <EmptyState
           title="No Server Connected"
           description="Connect to an eKuiper server to install plugins."
@@ -204,7 +206,7 @@ export default function InstallPluginPage() {
   const docUrl = `https://ekuiper.org/docs/en/latest/plugins/${type}/${(pluginName || selectedPrebuild).toLowerCase()}.html`;
 
   return (
-    <AppLayout title="Install Plugin">
+    <AppLayout title={t('nav.installPlugin')}>
       <div className="flex flex-col gap-6 max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4">

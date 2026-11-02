@@ -4,6 +4,7 @@ import * as React from "react";
 import { useServerStore } from "@/stores/server-store";
 import { ekuiperClient } from "@/lib/ekuiper/client";
 import { AppLayout } from "@/components/layout";
+import { useT } from '@/lib/i18n';
 import { DataTable } from "@/components/common/data-table";
 import { EmptyState, ErrorState, ConfirmDialog } from "@/components/common";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ interface UploadItem {
 }
 
 export default function UploadsPage() {
+  const t = useT();
   const { servers, activeServerId } = useServerStore();
   const activeServer = servers.find((s) => s.id === activeServerId);
 
@@ -181,14 +183,14 @@ export default function UploadsPage() {
 
   if (!activeServer) {
     return (
-      <AppLayout title="File Uploads">
+      <AppLayout title={t('nav.filesFull')}>
         <EmptyState title="No Server Connected" description="Connect to an eKuiper server to manage uploads." />
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout title="File Uploads">
+    <AppLayout title={t('nav.filesFull')}>
       <div className="flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>

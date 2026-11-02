@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { I18nProvider } from "@/lib/i18n";
 import { Toaster } from "sonner";
 import { useServerStore } from "@/stores/server-store";
 
@@ -32,10 +33,12 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        {children}
-        <Toaster richColors closeButton position="bottom-left" />
-      </TooltipProvider>
+      <I18nProvider>
+        <TooltipProvider>
+          {children}
+          <Toaster richColors closeButton position="bottom-left" />
+        </TooltipProvider>
+      </I18nProvider>
     </QueryClientProvider>
   );
 }

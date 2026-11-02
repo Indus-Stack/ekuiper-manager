@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout';
+import { useT } from '@/lib/i18n';
 import { ConfirmDialog } from '@/components/common';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -113,6 +114,7 @@ function parseConfKeyResources(data: any): { sources: ConfKeyItem[]; sinks: Conf
 }
 
 export default function ConnectionsPage() {
+  const t = useT();
   const { servers, activeServerId } = useServerStore();
   const active = servers.find((node) => node.id === activeServerId);
 
@@ -283,7 +285,7 @@ export default function ConnectionsPage() {
   });
 
   return (
-    <AppLayout title="Connections & Connectors">
+    <AppLayout title={t('nav.connectionsFull')}>
       <div className="mx-auto max-w-7xl flex flex-col gap-6">
         {/* Header */}
         <div className="flex flex-col justify-between gap-4 border-b pb-5 sm:flex-row sm:items-center">

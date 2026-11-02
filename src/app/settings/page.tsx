@@ -3,19 +3,24 @@
 import * as React from 'react';
 import Link from 'next/link';
 import {
+  Check,
   Database,
+  Globe,
   HelpCircle,
   KeyRound,
   Server,
   Users,
 } from 'lucide-react';
 import { AppLayout } from '@/components/layout';
+import { LOCALES, LOCALE_LABELS, useI18n, type Locale } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function SettingsPage() {
+  const { locale, setLocale, t } = useI18n();
+
   return (
-    <AppLayout title="Settings">
+    <AppLayout title={t('nav.settings')}>
       <div className="mx-auto max-w-4xl flex flex-col gap-6 pb-12">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">Manager settings</h2>
@@ -98,6 +103,35 @@ export default function SettingsPage() {
           </Card>
         </div>
 
+
+        {/* Language & Localization */}
+        <Card className="border-border/80 bg-card/60">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Globe className="size-5 text-primary" />
+              {t('common.language')}
+            </CardTitle>
+            <CardDescription className="text-xs">
+              The interface language. The choice is stored in this browser and applies immediately.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {LOCALES.map((option: Locale) => (
+                <Button
+                  key={option}
+                  variant={locale === option ? 'default' : 'outline'}
+                  size="sm"
+                  className="gap-2 text-xs"
+                  onClick={() => setLocale(option)}
+                >
+                  {locale === option && <Check className="size-3.5" aria-hidden="true" />}
+                  {LOCALE_LABELS[option]}
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Persistence & Data Integrity */}
         <Card className="border-border/80 bg-card/40">

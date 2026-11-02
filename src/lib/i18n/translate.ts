@@ -1,0 +1,56 @@
+import type { Messages } from '@/locales/en-US';
+
+import { DEFAULT_LOCALE, type Locale } from './config';
+
+type Catalog = Record<Locale, Messages>;
+
+/**
+ * Dotted key into the message tree, e.g. `common.save`.
+ * Typed against the en-US catalog so a typo fails `tsc`, not the user's screen.
+ */
+export type MessageKey = {
+  [NS in keyof Messages]: `${NS & string}.${keyof Messages[NS] & string}`;
+}[keyof Messages];
+
+export type Translate = (key: MessageKey, vars?: Record<string, string | number>) => string;
+
+const KEY_PATTERN = /^([a-zA-Z0-9_]+)\.([a-zA-Z0-9_]+)$/;
+
+function getByPath(messages: Messages, key: string): string | undefined {
+  const match = KEY_PATTERN.exec(key);
+  if (!match) return undefined;
+
+  const [, namespace, leaf] = match;
+  const group = (messages as unknown as Record<string, Record<string, string> | undefined>)[namespace];
+  return group?.[leaf];
+}
+
+/**
+ * Interpolates `{name}` placeholders. Missing variables are left verbatim so a
+ * broken call is visible in the UI rather than silently rendering "undefined".
+ */
+export function interpolate(template: string, vars?: Record<string, string | number>): string {
+  if (!vars) return template;
+  return template.replace(/\{(\w+)\}/g, (whole, name: string) =>
+    name in vars ? String(vars[name]) : whole,
+  );
+}
+
+export function resolveMessage(messages: Messages, key: string): string | undefined {
+  return getByPath(messages, key);
+}
+
+export function createTranslator(messages: Messages, fallback: Messages): Translate {
+  return (key, vars) => {
+    const template = resolveMessage(messages, key) ?? resolveMessage(fallback, key) ?? key;
+    return interpolate(template, vars);
+  };
+}
+
+export function createCatalog(locales: Record<Locale, Messages>): Record<Locale, Translate> {
+  const fallback = locales[DEFAULT_LOCALE];
+  return {
+    'en-US': createTranslator(locales['en-US'], fallback),
+    'zh-CN': createTranslator(locales['zh-CN'], fallback),
+  };
+}
