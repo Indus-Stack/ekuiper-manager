@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout';
-import { useT } from '@/lib/i18n';
+import { useT, useI18n, toShortLang } from '@/lib/i18n';
 import { ConfirmDialog } from '@/components/common';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -115,6 +115,8 @@ function parseConfKeyResources(data: any): { sources: ConfKeyItem[]; sinks: Conf
 
 export default function ConnectionsPage() {
   const t = useT();
+  const { locale } = useI18n();
+  const lang = toShortLang(locale);
   const { servers, activeServerId } = useServerStore();
   const active = servers.find((node) => node.id === activeServerId);
 
@@ -268,7 +270,8 @@ export default function ConnectionsPage() {
 
   const filteredSources = sources.filter((s) => {
     const name = String(s.name ?? s.type ?? '');
-    const desc = i18nLabel(s.about?.description ?? '');
+    // Search spans both languages: a Chinese user may still type an English term.
+    const desc = `${i18nLabel(s.about?.description ?? '', 'en')} ${i18nLabel(s.about?.description ?? '', 'zh')}`;
     return (
       name.toLowerCase().includes(catalogSearch.toLowerCase()) ||
       desc.toLowerCase().includes(catalogSearch.toLowerCase())
@@ -277,7 +280,7 @@ export default function ConnectionsPage() {
 
   const filteredSinks = sinks.filter((s) => {
     const name = String(s.name ?? s.type ?? '');
-    const desc = i18nLabel(s.about?.description ?? '');
+    const desc = `${i18nLabel(s.about?.description ?? '', 'en')} ${i18nLabel(s.about?.description ?? '', 'zh')}`;
     return (
       name.toLowerCase().includes(catalogSearch.toLowerCase()) ||
       desc.toLowerCase().includes(catalogSearch.toLowerCase())
@@ -604,8 +607,8 @@ export default function ConnectionsPage() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredSources.map((source, index) => {
                 const name = String(source.name ?? source.type ?? t('page.sourceLabel', { index: index + 1 }));
-                const desc = i18nLabel(source.about?.description ?? '');
-                const helpUrl = i18nLabel(source.about?.helpUrl ?? '');
+                const desc = i18nLabel(source.about?.description ?? '', lang);
+                const helpUrl = i18nLabel(source.about?.helpUrl ?? '', lang);
                 const isInstalled = source.about?.installed !== false;
 
                 return (
@@ -682,8 +685,8 @@ export default function ConnectionsPage() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredSinks.map((sink, index) => {
                 const name = String(sink.name ?? sink.type ?? t('page.sinkLabel', { index: index + 1 }));
-                const desc = i18nLabel(sink.about?.description ?? '');
-                const helpUrl = i18nLabel(sink.about?.helpUrl ?? '');
+                const desc = i18nLabel(sink.about?.description ?? '', lang);
+                const helpUrl = i18nLabel(sink.about?.helpUrl ?? '', lang);
                 const isInstalled = sink.about?.installed !== false;
 
                 return (

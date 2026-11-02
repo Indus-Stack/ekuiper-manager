@@ -19,3 +19,11 @@ export const LOCALE_LABELS: Record<Locale, string> = {
 export function isLocale(value: unknown): value is Locale {
   return typeof value === 'string' && (LOCALES as readonly string[]).includes(value);
 }
+
+/**
+ * Metadata labels carry a two-letter `en` / `zh` key (not BCP-47), so the
+ * Translator locale has to be mapped down before lookup.
+ */
+export function toShortLang(locale: Locale): 'en' | 'zh' {
+  return locale === 'zh-CN' ? 'zh' : 'en';
+}

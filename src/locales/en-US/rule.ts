@@ -71,6 +71,7 @@ export default {
   ruleUpdated: 'Rule updated',
   editRule: 'Edit {id}',
   ruleDesigner: 'Rule designer',
+  installedSink: 'Installed eKuiper sink.',
   failedToAction: 'Failed to {action} rule',
   createdCopy: 'Created stopped copy {id}',
   exportedRules: 'Exported {count} rule(s)',

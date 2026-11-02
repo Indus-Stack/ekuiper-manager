@@ -69,6 +69,7 @@ const rule: Record<keyof typeof en, string> = {
   ruleUpdated: '规则已更新',
   editRule: '编辑 {id}',
   ruleDesigner: '规则设计器',
+  installedSink: '已安装的 eKuiper 目标。',
   failedToAction: '{action}规则失败',
   createdCopy: '已创建停止状态的副本 {id}',
   exportedRules: '已导出 {count} 条规则',

@@ -28,6 +28,7 @@ import { PropertyForm, i18nLabel } from '@/components/connectors/property-form';
 import { ConnectorIcon } from '@/components/connectors/connector-icon';
 import { ekuiperClient } from '@/lib/ekuiper/client';
 import type { MetadataItem, MetadataProperty, MetadataDetail } from '@/lib/ekuiper/types';
+import { useI18n, toShortLang, useT } from '@/lib/i18n';
 
 export interface ConnectionModalProps {
   open: boolean;
@@ -42,6 +43,9 @@ export function ConnectionModal({
   editingConnection = null,
   onSaved,
 }: ConnectionModalProps) {
+  const { locale } = useI18n();
+  const lang = toShortLang(locale);
+  const t = useT();
   const isEdit = Boolean(editingConnection);
   const [id, setId] = React.useState('');
   const [type, setType] = React.useState('mqtt');
@@ -210,7 +214,7 @@ export function ConnectionModal({
 
   const handleSave = async () => {
     if (!id.trim()) {
-      toast.error('Connection ID is required');
+      toast.error(t('page.connectionIdRequired'));
       return;
     }
     if (!type.trim()) {
@@ -262,10 +266,10 @@ export function ConnectionModal({
               </div>
               <div>
                 <DialogTitle className="text-base font-semibold">
-                  {isEdit ? 'Edit Shared Connection' : 'Create Shared Connection'}
+                  {isEdit ? t('page.editSharedConnection') : t('page.createSharedConnection')}
                 </DialogTitle>
                 <DialogDescription className="text-xs mt-0.5">
-                  Connections are shared across rules, streams, and sinks to pool credentials and client pools.
+                  {t('page.connectionsSharedHint')}
                 </DialogDescription>
               </div>
             </div>
@@ -291,7 +295,7 @@ export function ConnectionModal({
               className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground"
             >
               {isJsonMode ? <FormInput className="size-3.5" aria-hidden="true" /> : <Code2 className="size-3.5" aria-hidden="true" />}
-              {isJsonMode ? 'Visual Form' : 'JSON Mode'}
+              {isJsonMode ? t('page.visualForm') : t('page.jsonMode')}
             </Button>
           </div>
         </DialogHeader>
@@ -300,7 +304,7 @@ export function ConnectionModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="conn-id" className="text-xs font-medium">
-                Connection ID <span className="text-destructive">*</span>
+                {t('page.connectionId')} <span className="text-destructive">*</span>
               </Label>
               <Input
                 id="conn-id"
@@ -314,7 +318,7 @@ export function ConnectionModal({
 
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="conn-type" className="text-xs font-medium">
-                Connector Type <span className="text-destructive">*</span>
+                {t('page.connectorType')} <span className="text-destructive">*</span>
               </Label>
               <Select
                 value={type}
@@ -335,7 +339,7 @@ export function ConnectionModal({
                             <span>{typeName}</span>
                             {t.about?.label && (
                               <span className="text-muted-foreground text-[11px]">
-                                ({i18nLabel(t.about.label)})
+                                ({i18nLabel(t.about.label, lang)})
                               </span>
                             )}
                           </div>
@@ -366,7 +370,7 @@ export function ConnectionModal({
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between border-b pb-1">
               <Label className="text-xs font-semibold text-muted-foreground">
-                Connection Parameters
+                {t('page.connectionParameters')}
               </Label>
               {loading && (
                 <span className="text-[11px] text-muted-foreground flex items-center gap-1">
@@ -414,7 +418,7 @@ export function ConnectionModal({
             className="text-xs gap-1.5"
           >
             <RefreshCw className={`size-3.5 ${testing ? 'animate-spin' : ''}`} aria-hidden="true" />
-            {testing ? 'Testing…' : 'Test Connection'}
+            {testing ? t('page.testing') : t('page.testConnection')}
           </Button>
 
           <div className="flex items-center gap-2">
@@ -426,7 +430,7 @@ export function ConnectionModal({
               disabled={saving}
               className="text-xs"
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               type="button"
@@ -436,7 +440,7 @@ export function ConnectionModal({
               className="text-xs touch-manipulation"
             >
               {saving && <Loader2 className="mr-1.5 size-3.5 animate-spin" aria-hidden="true" />}
-              {saving ? 'Saving…' : isEdit ? 'Update Connection' : 'Create Connection'}
+              {saving ? t('stream.saving') : isEdit ? t('page.updateConnection') : t('page.createConnection')}
             </Button>
           </div>
         </DialogFooter>

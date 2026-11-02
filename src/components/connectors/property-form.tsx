@@ -24,6 +24,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import type { MetadataProperty, I18nString } from '@/lib/ekuiper/types';
 import { getBuiltinConnectorProperties } from '@/lib/ekuiper/connector-catalog';
+import { useI18n, toShortLang } from '@/lib/i18n';
 
 export function i18nLabel(val: I18nString | undefined | null, lang: 'en' | 'zh' = 'en'): string {
   if (!val) return '';
@@ -69,6 +70,8 @@ export function PropertyForm({
   connectionSelected = false,
   showRawToggle = true,
 }: PropertyFormProps) {
+  const { locale } = useI18n();
+  const lang = toShortLang(locale);
   const [showPasswords, setShowPasswords] = React.useState<Record<string, boolean>>({});
   const [jsonModes, setJsonModes] = React.useState<Record<string, boolean>>({});
   const [rawMode, setRawMode] = React.useState(false);
@@ -191,8 +194,8 @@ export function PropertyForm({
               const isInherited = Boolean(prop.connection_related && connectionSelected);
               const isFieldDisabled = Boolean(disabled || isInherited);
               const val = values?.[prop.name];
-              const labelText = i18nLabel(prop.label) || prop.name;
-              const hintText = i18nLabel(prop.hint);
+              const labelText = i18nLabel(prop.label, lang) || prop.name;
+              const hintText = i18nLabel(prop.hint, lang);
               const isFullWidth =
                 prop.control === 'textarea' ||
                 prop.control === 'list' ||

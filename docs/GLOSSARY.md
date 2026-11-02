@@ -74,3 +74,21 @@
 | Node | 服务 | 节点 | gateway 的「服务」与 external Service 撞名 |
 | Concurrency | 线程数 | 并发度 | eKuiper 为 Go 实现，无「线程数」概念 |
 | Flow | 规则图编辑器 | 流程 | gateway 指整个子应用；ekuiper-manager 中 Flow 是资源实体 |
+
+## 元数据与本地化
+
+连接器属性标签有两个来源，均**已支持中文**：
+
+| 来源 | 位置 | 说明 |
+| --- | --- | --- |
+| 内置目录 | `src/lib/ekuiper/connector-catalog.ts` | 128 条 `label`/`hint` 的 `en`/`zh` 双语 |
+| 节点 API | `GET /metadata/sources`、`GET /metadata/sinks` | eKuiper 返回的元数据 |
+
+使用方式：`i18nLabel(value, lang)`，其中 `lang` 由 `toShortLang(locale)` 从 `'zh-CN'` 映射为 `'zh'`。
+**不传 `lang` 会默认英文**，这是此前的缺陷根因。
+
+### 已删除：metadata_sources.json / metadata_sinks.json
+
+这两个文件在初始提交中即存在，但从**未被任何代码引用**，也不进入构建产物。
+其 `zh` 字段在仓库建立时就已是不可恢复的乱码（UTF-16LE + BOM 存储，中文已被破坏），
+无法通过任何编码转换还原。保留只会误导后来者，故删除。

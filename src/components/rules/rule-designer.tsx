@@ -66,7 +66,7 @@ import {
 } from '@/lib/ekuiper/rule-designer';
 import type { MetadataDetail, MetadataItem, Rule, RuleOptions, Sink } from '@/lib/ekuiper/types';
 import { useServerStore } from '@/stores/server-store';
-import { useT } from '@/lib/i18n';
+import { useT, useI18n, toShortLang } from '@/lib/i18n';
 
 type DesignerStep = 'query' | 'actions' | 'options';
 type QueryMode = 'visual' | 'sql';
@@ -250,6 +250,8 @@ function ActionCard({
   onMove: (direction: -1 | 1) => void;
 }) {
   const t = useT();
+  const { locale } = useI18n();
+  const lang = toShortLang(locale);
   const [activeTab, setActiveTab] = React.useState<'properties' | 'delivery' | 'json'>('properties');
   const [testing, setTesting] = React.useState(false);
   const [sinkConfModalOpen, setSinkConfModalOpen] = React.useState(false);
@@ -277,8 +279,8 @@ function ActionCard({
   const sinkDesc =
     BUILTIN_SINKS.find((sink) => sink.type === action.type)?.description ??
     (metadata?.about?.description
-      ? i18nLabel(metadata.about.description)
-      : 'Installed eKuiper sink.');
+      ? i18nLabel(metadata.about.description, lang)
+      : t('rule.installedSink'));
 
   const sinkBaseOptions: SinkBaseOptions = {
     omitIfEmpty: typeof action.config.omitIfEmpty === 'boolean' ? action.config.omitIfEmpty : undefined,
@@ -423,7 +425,7 @@ function ActionCard({
             </Select>
             {metadata?.about?.helpUrl && (
               <a
-                href={i18nLabel(metadata.about.helpUrl)}
+                href={i18nLabel(metadata.about.helpUrl, lang)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs text-primary hover:underline flex items-center gap-1 ml-2"

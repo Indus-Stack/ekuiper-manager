@@ -46,7 +46,7 @@ import { i18nLabel } from '@/components/connectors/property-form';
 import { ekuiperClient } from '@/lib/ekuiper/client';
 import type { MetadataItem, MetadataDetail, MetadataDataSource } from '@/lib/ekuiper/types';
 import { useServerStore } from '@/stores/server-store';
-import { useT } from '@/lib/i18n';
+import { useT, useI18n, toShortLang } from '@/lib/i18n';
 import { byKind } from '@/lib/i18n/translate';
 
 export type ResourceKind = 'stream' | 'table';
@@ -64,6 +64,8 @@ export function createdResourceName(sql: string, kind: ResourceKind): string | n
 
 export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
   const t = useT();
+  const { locale } = useI18n();
+  const lang = toShortLang(locale);
   const router = useRouter();
   const { servers, activeServerId } = useServerStore();
   const active = servers.find((node) => node.id === activeServerId);
@@ -294,8 +296,8 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
     ? t('stream.dataSourceMqttTopic')
     : connectorType.toLowerCase() === 'file'
     ? t('stream.dataSourceFilePath')
-    : i18nLabel(sourceDetail?.dataSource?.label) || t('stream.dataSourceGeneric');
-  const dsHint = i18nLabel(sourceDetail?.dataSource?.hint) || t('stream.dataSourceHint');
+    : i18nLabel(sourceDetail?.dataSource?.label, lang) || t('stream.dataSourceGeneric');
+  const dsHint = i18nLabel(sourceDetail?.dataSource?.hint, lang) || t('stream.dataSourceHint');
 
   return (
     <TooltipProvider delayDuration={200}>
