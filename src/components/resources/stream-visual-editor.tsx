@@ -46,6 +46,8 @@ import { i18nLabel } from '@/components/connectors/property-form';
 import { ekuiperClient } from '@/lib/ekuiper/client';
 import type { MetadataItem, MetadataDetail, MetadataDataSource } from '@/lib/ekuiper/types';
 import { useServerStore } from '@/stores/server-store';
+import { useT } from '@/lib/i18n';
+import { byKind } from '@/lib/i18n/translate';
 
 export type ResourceKind = 'stream' | 'table';
 
@@ -61,6 +63,7 @@ export function createdResourceName(sql: string, kind: ResourceKind): string | n
 }
 
 export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
+  const t = useT();
   const router = useRouter();
   const { servers, activeServerId } = useServerStore();
   const active = servers.find((node) => node.id === activeServerId);
@@ -288,39 +291,45 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
 
   const selectedSource = sources.find((s) => s.name.toLowerCase() === connectorType.toLowerCase());
   const dsLabel = connectorType.toLowerCase() === 'mqtt'
-    ? 'Data Source (MQTT Topic)'
+    ? t('stream.dataSourceMqttTopic')
     : connectorType.toLowerCase() === 'file'
-    ? 'Data Source (File or directory relative path)'
-    : i18nLabel(sourceDetail?.dataSource?.label) || 'Data Source / Topic';
-  const dsHint = i18nLabel(sourceDetail?.dataSource?.hint) || 'The subscription topic, URL endpoint, or file path.';
+    ? t('stream.dataSourceFilePath')
+    : i18nLabel(sourceDetail?.dataSource?.label) || t('stream.dataSourceGeneric');
+  const dsHint = i18nLabel(sourceDetail?.dataSource?.hint) || t('stream.dataSourceHint');
 
   return (
     <TooltipProvider delayDuration={200}>
-      <AppLayout title={`${name ? 'Edit' : 'Create'} ${kind === 'stream' ? 'Stream' : 'Table'}`}>
+      <AppLayout
+        title={name
+          ? t('stream.titleEdit', { name })
+          : t(byKind(kind, 'stream.titleCreateStream', 'stream.titleCreateTable'))}
+      >
         <div className="mx-auto max-w-5xl flex flex-col gap-6 pb-12">
           {/* Header */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" onClick={() => router.back()} aria-label="Go back">
+              <Button variant="ghost" size="icon" onClick={() => router.back()} aria-label={t('stream.goBack')}>
                 <ArrowLeft className="size-5" aria-hidden="true" />
               </Button>
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-2xl font-semibold tracking-tight">
-                    {name ? `Edit ${name}` : `Create ${kind === 'stream' ? 'Stream' : 'Table'}`}
+                    {name
+                      ? t('stream.titleEdit', { name })
+                      : t(byKind(kind, 'stream.titleCreateStream', 'stream.titleCreateTable'))}
                   </h2>
                   <Badge variant="outline" className="text-xs uppercase">
                     {kind}
                   </Badge>
                 </div>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  Connect incoming edge data to eKuiper streaming SQL queries.
+                  
                 </p>
               </div>
             </div>
 
             {/* Mode Switcher: Visual Form vs SQL Statement */}
-            <div className="flex items-center rounded-lg border bg-muted/30 p-1" role="tablist" aria-label="Editor mode">
+            <div className="flex items-center rounded-lg border bg-muted/30 p-1" role="tablist" aria-label={t('stream.editorMode')}>
               <button
                 type="button"
                 role="tab"
@@ -333,7 +342,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                 }`}
               >
                 <Sparkles className="size-3.5" aria-hidden="true" />
-                Visual Builder
+                {t('stream.visualBuilder')}
               </button>
               <button
                 type="button"
@@ -347,7 +356,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                 }`}
               >
                 <FileCode className="size-3.5" aria-hidden="true" />
-                SQL Statement
+                {t('stream.sqlStatementTab')}
               </button>
             </div>
           </div>
@@ -360,9 +369,9 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                 {/* Identification & Connector */}
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-semibold">Identification & Connector</CardTitle>
+                    <CardTitle className="text-sm font-semibold">{t('stream.sectionIdentification')}</CardTitle>
                     <CardDescription className="text-xs">
-                      Define the name and choose which source connector provides the data.
+                      {t('stream.identificationHint')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-col gap-4">
@@ -370,7 +379,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                       {/* Name */}
                       <div className="flex flex-col gap-1.5">
                         <Label htmlFor="res-name" className="text-xs font-medium">
-                          {kind === 'stream' ? 'Stream Name' : 'Table Name'} <span className="text-destructive">*</span>
+                          {t(byKind(kind, 'stream.streamName', 'stream.tableName'))} <span className="text-destructive">*</span>
                         </Label>
                         <Input
                           id="res-name"
@@ -386,7 +395,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                       <div className="flex flex-col gap-1.5">
                         <div className="flex items-center justify-between">
                           <Label htmlFor="res-type" className="text-xs font-medium">
-                            Connector Type
+                            {t('stream.connectorType')}
                           </Label>
                           {selectedSource?.about?.helpUrl && (
                             <a
@@ -395,7 +404,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                               rel="noopener noreferrer"
                               className="text-[11px] text-primary hover:underline flex items-center gap-1"
                             >
-                              Documentation <ExternalLink className="size-2.5" />
+                              {t('stream.documentation')} <ExternalLink className="size-2.5" />
                             </a>
                           )}
                         </div>
@@ -407,7 +416,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                           }}
                         >
                           <SelectTrigger id="res-type" className="h-9 text-xs font-mono">
-                            <SelectValue placeholder="Select connector type" />
+                            <SelectValue placeholder={t('stream.selectConnectorType')} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectGroup>
@@ -438,7 +447,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                       <div className="flex items-center justify-between rounded-md border p-3 bg-muted/10">
                         <div className="flex flex-col gap-0.5">
                           <Label htmlFor="table-kind" className="text-xs font-medium cursor-pointer">
-                            Lookup Table Mode
+                            {t('stream.lookupTableMode')}
                           </Label>
                           <p className="text-[11px] text-muted-foreground">
                             When enabled, this table acts as a static or periodically reloaded lookup dimension for JOINs.
@@ -469,7 +478,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                         id="res-datasource"
                         value={dataSource}
                         onChange={(e) => setDataSource(e.target.value)}
-                        placeholder="e.g. factory/sensors or /tmp/data.csv"
+                        placeholder={t('stream.dataSourcePlaceholder')}
                         className="h-9 text-xs font-mono"
                       />
                     </div>
@@ -478,7 +487,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                     <div className="flex flex-col gap-1.5">
                       <div className="flex items-center justify-between">
                         <Label htmlFor="res-confkey" className="text-xs font-medium">
-                          Configuration key
+                          {t('stream.configurationKey')}
                         </Label>
                         <div className="flex items-center gap-1.5">
                           <Button
@@ -492,7 +501,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                             className="h-6 text-[11px] text-emerald-600 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
                           >
                             <Plus className="size-3" />
-                            Add configuration key
+                            {t('stream.addConfigurationKey')}
                           </Button>
                           {confKey && (
                             <Button
@@ -506,7 +515,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                               className="h-6 text-[11px] text-emerald-600 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
                             >
                               <Edit3 className="size-3" />
-                              Edit configuration key
+                              {t('stream.editConfigurationKey')}
                             </Button>
                           )}
                         </div>
@@ -516,12 +525,12 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                         onValueChange={(val) => setConfKey(val === '__DEFAULT__' ? '' : val)}
                       >
                         <SelectTrigger id="res-confkey" className="h-9 text-xs font-mono">
-                          <SelectValue placeholder="Default configuration" />
+                          <SelectValue placeholder={t('stream.defaultConfiguration')} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
                             <SelectItem value="__DEFAULT__" className="text-xs italic text-muted-foreground">
-                              Default configuration
+                              {t('stream.defaultConfiguration')}
                             </SelectItem>
                             {confKeys.map((ck) => (
                               <SelectItem key={ck} value={ck} className="text-xs font-mono">
@@ -538,9 +547,9 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                 {/* Serialization & Timing */}
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-semibold">Serialization & Timing</CardTitle>
+                    <CardTitle className="text-sm font-semibold">{t('stream.sectionSerialization')}</CardTitle>
                     <CardDescription className="text-xs">
-                      Configure payload formatting, schemas, timestamps, and connection sharing.
+                      {t('stream.serializationHint')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-col gap-4">
@@ -548,7 +557,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                       {/* Format */}
                       <div className="flex flex-col gap-1.5">
                         <Label htmlFor="res-format" className="text-xs font-medium">
-                          Data Format
+                          {t('stream.dataFormat')}
                         </Label>
                         <Select value={format} onValueChange={(val) => setFormat(val)}>
                           <SelectTrigger id="res-format" className="h-9 text-xs">
@@ -557,11 +566,11 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                           <SelectContent>
                             <SelectGroup>
                               <SelectItem value="json" className="text-xs">JSON</SelectItem>
-                              <SelectItem value="binary" className="text-xs">Binary</SelectItem>
-                              <SelectItem value="delimited" className="text-xs">Delimited (CSV/TSV)</SelectItem>
+                              <SelectItem value="binary" className="text-xs">{t('stream.formatBinary')}</SelectItem>
+                              <SelectItem value="delimited" className="text-xs">{t('stream.delimitedFormat')}</SelectItem>
                               <SelectItem value="protobuf" className="text-xs">Protobuf</SelectItem>
-                              <SelectItem value="custom" className="text-xs">Custom</SelectItem>
-                              <SelectItem value="can" className="text-xs">CAN bus</SelectItem>
+                              <SelectItem value="custom" className="text-xs">{t('stream.formatCustom')}</SelectItem>
+                              <SelectItem value="can" className="text-xs">{t('stream.formatCanBus')}</SelectItem>
                             </SelectGroup>
                           </SelectContent>
                         </Select>
@@ -571,7 +580,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                       {format === 'delimited' && (
                         <div className="flex flex-col gap-1.5">
                           <Label htmlFor="res-delimiter" className="text-xs font-medium">
-                            Delimiter
+                            {t('stream.delimiter')}
                           </Label>
                           <Input
                             id="res-delimiter"
@@ -588,12 +597,12 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                         <>
                           <div className="flex flex-col gap-1.5">
                             <Label htmlFor="res-schema-name" className="text-xs font-medium">
-                              Schema Name
+                              {t('stream.schemaName')}
                             </Label>
                             {schemas.length > 0 ? (
                               <Select value={schemaName} onValueChange={setSchemaName}>
                                 <SelectTrigger id="res-schema-name" className="h-9 text-xs">
-                                  <SelectValue placeholder="Select schema" />
+                                  <SelectValue placeholder={t('stream.selectSchema')} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectGroup>
@@ -618,7 +627,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
 
                           <div className="flex flex-col gap-1.5">
                             <Label htmlFor="res-schema-msg" className="text-xs font-medium">
-                              Schema Message
+                              {t('stream.schemaMessage')}
                             </Label>
                             <Input
                               id="res-schema-msg"
@@ -634,13 +643,13 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                       {/* Timestamp Field */}
                       <div className="flex flex-col gap-1.5">
                         <Label htmlFor="res-timestamp" className="text-xs font-medium">
-                          Timestamp Column
+                          {t('stream.timestampColumn')}
                         </Label>
                         <Input
                           id="res-timestamp"
                           value={timestamp}
                           onChange={(e) => setTimestamp(e.target.value)}
-                          placeholder="e.g. ts or recorded_at"
+                          placeholder={t('stream.timestampFieldPlaceholder')}
                           className="h-9 text-xs font-mono"
                         />
                       </div>
@@ -648,7 +657,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                       {/* Timestamp Format */}
                       <div className="flex flex-col gap-1.5">
                         <Label htmlFor="res-ts-format" className="text-xs font-medium">
-                          Timestamp Format
+                          {t('stream.timestampFormatLabel')}
                         </Label>
                         <Input
                           id="res-ts-format"
@@ -665,10 +674,10 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                       <div className="flex items-center justify-between rounded-md border p-3 bg-muted/10">
                         <div className="flex flex-col gap-0.5">
                           <Label htmlFor="res-shared" className="text-xs font-medium cursor-pointer">
-                            Shared Stream Instance
+                            {t('stream.sharedInstance')}
                           </Label>
                           <p className="text-[11px] text-muted-foreground">
-                            Share one source instance across multiple rules to prevent redundant subscriptions.
+                            {t('stream.sharedInstanceHint')}
                           </p>
                         </div>
                         <Switch
@@ -686,7 +695,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle className="text-sm font-semibold">Schema Columns</CardTitle>
+                        <CardTitle className="text-sm font-semibold">{t('stream.schemaColumns')}</CardTitle>
                         <CardDescription className="text-xs">
                           {isSchema
                             ? 'Fields are strongly typed and validated against incoming data.'
@@ -728,7 +737,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                     onClick={() => router.back()}
                     className="text-xs text-muted-foreground hover:text-foreground"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </Button>
                 </div>
               </div>
@@ -741,10 +750,10 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-xs font-semibold text-primary flex items-center gap-1.5">
                           <Code2 className="size-3.5" />
-                          Generated eKuiper SQL
+                          {t('stream.generatedSql')}
                         </CardTitle>
                         <Badge variant="outline" className="text-[10px] font-mono">
-                          Live
+                          {t('stream.live')}
                         </Badge>
                       </div>
                     </CardHeader>
@@ -772,7 +781,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                         disabled={saving || (!sql.trim() && !resourceName.trim())}
                         className="w-full text-xs"
                       >
-                        {saving ? 'Saving…' : `Save ${kind}`}
+                        {saving ? t('stream.saving') : t(byKind(kind, 'stream.saveStream', 'stream.saveTable'))}
                       </Button>
                     </CardContent>
                   </Card>
@@ -810,10 +819,10 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => router.back()} className="text-xs">
-                    Cancel
+                    {t('common.cancel')}
                   </Button>
                   <Button onClick={() => void save()} disabled={saving || !sql.trim()} className="text-xs">
-                    {saving ? 'Saving…' : `Save ${kind}`}
+                    {saving ? t('stream.saving') : t(byKind(kind, 'stream.saveStream', 'stream.saveTable'))}
                   </Button>
                 </div>
               </CardContent>

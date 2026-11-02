@@ -2,7 +2,7 @@ import enUS from '@/locales/en-US';
 import zhCN from '@/locales/zh-CN';
 
 import { LOCALES, LOCALE_LABELS, isLocale } from '../i18n/config';
-import { createTranslator, interpolate, resolveMessage, type MessageKey } from '../i18n/translate';
+import { byKind, createTranslator, interpolate, resolveMessage, type MessageKey } from '../i18n/translate';
 
 describe('i18n catalogs', () => {
   it('keeps zh-CN structurally identical to en-US', () => {
@@ -26,6 +26,11 @@ describe('resolveMessage', () => {
   it('resolves a dotted key', () => {
     expect(resolveMessage(enUS, 'common.save')).toBe('Save');
     expect(resolveMessage(zhCN, 'common.save')).toBe('保存');
+  });
+
+  it('interpolates the stream delete description', () => {
+    const t = createTranslator(zhCN, enUS);
+    expect(t('stream.deleteStreamDescription', { name: 'demo' })).toContain('demo');
   });
 
   it('resolves keys across namespaces', () => {
@@ -67,6 +72,22 @@ describe('createTranslator', () => {
   it('returns the raw key when neither locale has it', () => {
     const t = createTranslator(zhCN, enUS);
     expect(t('common.unknownKey' as MessageKey)).toBe('common.unknownKey');
+  });
+});
+
+describe('byKind', () => {
+  it('selects the stream key for streams', () => {
+    expect(byKind('stream', 'stream.streamsTitle', 'stream.tablesTitle')).toBe('stream.streamsTitle');
+  });
+
+  it('selects the table key for tables', () => {
+    expect(byKind('table', 'stream.streamsTitle', 'stream.tablesTitle')).toBe('stream.tablesTitle');
+  });
+
+  it('resolves to distinct translations per kind', () => {
+    const t = createTranslator(zhCN, enUS);
+    expect(t(byKind('stream', 'stream.createStream', 'stream.createTable'))).toBe('创建流');
+    expect(t(byKind('table', 'stream.createStream', 'stream.createTable'))).toBe('创建表');
   });
 });
 

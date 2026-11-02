@@ -54,3 +54,12 @@ export function createCatalog(locales: Record<Locale, Messages>): Record<Locale,
     'zh-CN': createTranslator(locales['zh-CN'], fallback),
   };
 }
+
+/**
+ * Picks one of two locale keys by a resource discriminator.
+ * Some screens share a single component across two resource kinds
+ * (stream/table), so the key itself has to be selected at the call site.
+ */
+export function byKind<T extends MessageKey>(kind: 'stream' | 'table', streamKey: T, tableKey: T): T {
+  return kind === 'stream' ? streamKey : tableKey;
+}
