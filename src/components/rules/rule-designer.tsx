@@ -67,7 +67,7 @@ import {
 import type { MetadataDetail, MetadataItem, Rule, RuleOptions, Sink } from '@/lib/ekuiper/types';
 import { useServerStore } from '@/stores/server-store';
 import { useT, useI18n, toShortLang } from '@/lib/i18n';
-import type { MessageKey } from '@/lib/i18n';
+import type { MessageKey, Translate } from '@/lib/i18n';
 
 type DesignerStep = 'query' | 'actions' | 'options';
 type QueryMode = 'visual' | 'sql';
@@ -104,9 +104,19 @@ function optionNumber(value: unknown): string {
   return typeof value === 'number' ? String(value) : '';
 }
 
-function actionLabel(type: string): string {
-  return BUILTIN_SINKS.find((sink) => sink.type === type)?.label
-    ?? type.replace(/(^|[-_])([a-z])/g, (_, prefix: string, letter: string) => `${prefix ? ' ' : ''}${letter.toUpperCase()}`);
+/** BUILTIN_SINKS and KNOWN_FIELDS store catalog keys ('sinklabel.*') rather
+ *  than English, so every consumer must resolve them through `t`. */
+function localized(t: Translate, value: string | undefined): string {
+  if (!value) return '';
+  // Catalog entries are tagged 'sinklabel.x' / 'sinkdesc.x' / 'sinkhint.x';
+  // the catalog stores them under the `rule` namespace without that prefix.
+  const match = /^sink(?:label|desc|hint)\.(.+)$/.exec(value);
+  return match ? t(`rule.${match[1]}` as MessageKey) : value;
+}
+
+function actionLabel(type: string, t: Translate): string {
+  return localized(t, BUILTIN_SINKS.find((sink) => sink.type === type)?.label)
+    || type.replace(/(^|[-_])([a-z])/g, (_, prefix: string, letter: string) => `${prefix ? ' ' : ''}${letter.toUpperCase()}`);
 }
 
 function FieldEditor({
@@ -119,17 +129,19 @@ function FieldEditor({
   onChange: (value: unknown) => void;
 }) {
   const t = useT();
+  const label = localized(t, field.label);
+  const hint = localized(t, field.hint);
   if (field.kind === 'boolean') {
     return (
       <label className="flex items-start justify-between gap-4 rounded-lg border bg-muted/20 p-3">
         <span>
-          <span className="block text-sm font-medium">{field.label}</span>
-          {field.hint && <span className="mt-1 block text-xs text-muted-foreground">{field.hint}</span>}
+          <span className="block text-sm font-medium">{label}</span>
+          {hint && <span className="mt-1 block text-xs text-muted-foreground">{hint}</span>}
         </span>
         <Switch
           checked={value === true}
           onCheckedChange={(checked) => onChange(checked)}
-          aria-label={field.label}
+          aria-label={label}
         />
       </label>
     );
@@ -147,7 +159,7 @@ function FieldEditor({
   return (
     <div className="flex flex-col gap-2">
       <Label htmlFor={`sink-field-${field.key}`}>
-        {field.label}{field.required && <span className="ml-1 text-destructive">*</span>}
+        {label}{field.required && <span className="ml-1 text-destructive">*</span>}
       </Label>
       {field.options?.length ? (
         <Select value={displayed || undefined} onValueChange={update}>
@@ -177,7 +189,7 @@ function FieldEditor({
           autoComplete={field.kind === 'secret' ? 'new-password' : undefined}
         />
       )}
-      {field.hint && <p className="text-xs text-muted-foreground">{field.hint}</p>}
+      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
 }
@@ -285,7 +297,7 @@ function ActionCard({
   const fields = sinkFields(action.type, propList);
 
   const sinkDesc =
-    BUILTIN_SINKS.find((sink) => sink.type === action.type)?.description ??
+    localized(t, BUILTIN_SINKS.find((sink) => sink.type === action.type)?.description) ||
     (metadata?.about?.description
       ? i18nLabel(metadata.about.description, lang)
       : t('rule.installedSink'));
@@ -425,7 +437,7 @@ function ActionCard({
                 <SelectGroup>
                   {sinkTypes.map((type) => (
                     <SelectItem key={type} value={type} className="font-mono text-xs">
-                      {actionLabel(type)} ({type})
+                      {actionLabel(type, t)} ({type})
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -637,7 +649,7 @@ function ActionCard({
             )}
             <JsonObjectEditor
               value={(revealSensitive ? action.config : redactSensitive(action.config)) as JsonObject}
-              label={`${actionLabel(action.type)} configuration JSON`}
+              label={`${actionLabel(action.type, t)} configuration JSON`}
               disabled={!revealSensitive}
               onApply={(config) => onChange({ ...action, config })}
             />
@@ -782,7 +794,7 @@ export function RuleDesigner({ id }: { id?: string }) {
   ])].sort(), [actions, sinkCatalog]);
 
   const filteredResources = resources.filter((resource) => resource.name.toLowerCase().includes(resourceFilter.toLowerCase()));
-  const filteredSinks = sinkTypes.filter((type) => `${type} ${actionLabel(type)}`.toLowerCase().includes(sinkFilter.toLowerCase()));
+  const filteredSinks = sinkTypes.filter((type) => `${type} ${actionLabel(type, t)}`.toLowerCase().includes(sinkFilter.toLowerCase()));
 
   const changeQuery = (key: keyof QueryDraft, value: string) => {
     setGraph(undefined);
@@ -1021,14 +1033,14 @@ export function RuleDesigner({ id }: { id?: string }) {
             {step === 'actions' && (
               <div className="flex flex-col gap-5">
                 <Card>
-                  <CardHeader><CardTitle className="text-lg">{t('rule.addOutput')}</CardTitle><CardDescription>Available types combine eKuiper&apos;s installed metadata with supported built-in editors.</CardDescription></CardHeader>
+                  <CardHeader><CardTitle className="text-lg">{t('rule.addOutput')}</CardTitle><CardDescription>{t('rule.addOutputHint')}</CardDescription></CardHeader>
                   <CardContent className="flex flex-col gap-3">
                     <div className="relative"><Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" aria-hidden="true" /><Input value={sinkFilter} onChange={(event) => setSinkFilter(event.target.value)} className="pl-9" placeholder={t('rule.findSink')} aria-label={t('rule.findSink')} /></div>
                     <div className="grid max-h-64 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
                       {filteredSinks.map((type) => {
                         const known = BUILTIN_SINKS.find((sink) => sink.type === type);
                         const detected = sinkCatalog.some((sink) => sink.name === type);
-                        return <button key={type} type="button" onClick={() => addAction(type)} className="group rounded-lg border p-3 text-left transition-[border-color,background-color,transform] duration-150 ease-out active:scale-[0.99] hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><span className="flex items-center justify-between gap-2"><span className="font-medium">{actionLabel(type)}</span><Plus className="size-4 text-muted-foreground group-hover:text-primary" aria-hidden="true" /></span><span className="mt-1 block text-xs text-muted-foreground">{known?.description ?? 'Installed eKuiper sink.'}</span><Badge variant="outline" className="mt-2 text-[10px]">{detected ? 'Reported by node' : 'Built-in editor'}</Badge></button>;
+                        return <button key={type} type="button" onClick={() => addAction(type)} className="group rounded-lg border p-3 text-left transition-[border-color,background-color,transform] duration-150 ease-out active:scale-[0.99] hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><span className="flex items-center justify-between gap-2"><span className="font-medium">{actionLabel(type, t)}</span><Plus className="size-4 text-muted-foreground group-hover:text-primary" aria-hidden="true" /></span><span className="mt-1 block text-xs text-muted-foreground">{localized(t, known?.description) || t('rule.installedSink')}</span><Badge variant="outline" className="mt-2 text-[10px]">{detected ? t('rule.reportedByNode') : t('rule.builtInEditor')}</Badge></button>;
                       })}
                     </div>
                   </CardContent>
@@ -1058,21 +1070,21 @@ export function RuleDesigner({ id }: { id?: string }) {
             {step === 'options' && (
               <div className="flex flex-col gap-5">
                 <Card>
-                  <CardHeader><CardTitle className="text-lg">{t('rule.runtimeBehavior')}</CardTitle><CardDescription>Only non-default options are sent. Unknown official options are retained in Advanced JSON.</CardDescription></CardHeader>
+                  <CardHeader><CardTitle className="text-lg">{t('rule.runtimeBehavior')}</CardTitle><CardDescription>{t('rule.runtimeBehaviorHint')}</CardDescription></CardHeader>
                   <CardContent className="flex flex-col gap-5">
                     <div className="grid gap-3 sm:grid-cols-2">
-                      {[['isEventTime', 'Use event time', 'Use event timestamps for windowing.'], ['sendMetaToSink', 'Send metadata to sinks', 'Include source metadata in result output.'], ['sendError', 'Send errors to sinks', 'Forward processing errors to configured sinks.']].map(([key, label, description]) => <label key={key} className="flex items-start justify-between gap-3 rounded-lg border p-3 hover:bg-muted/30 transition-colors cursor-pointer"><span><span className="block text-sm font-medium">{label}</span><span className="mt-1 block text-xs text-muted-foreground">{description}</span></span><Switch checked={options[key] === true} onCheckedChange={(checked) => option(key, checked)} aria-label={label} /></label>)}
+                      {[['isEventTime', t('rule.isEventTime'), t('rule.isEventTimeHint')], ['sendMetaToSink', t('rule.sendMetaToSink'), t('rule.sendMetaToSinkHint')], ['sendError', t('rule.sendError'), t('rule.sendErrorHint')]].map(([key, label, description]) => <label key={key} className="flex items-start justify-between gap-3 rounded-lg border p-3 hover:bg-muted/30 transition-colors cursor-pointer"><span><span className="block text-sm font-medium">{label}</span><span className="mt-1 block text-xs text-muted-foreground">{description}</span></span><Switch checked={options[key] === true} onCheckedChange={(checked) => option(key, checked)} aria-label={label} /></label>)}
                     </div>
                     <div className="grid gap-4 sm:grid-cols-2">
-                      {[['concurrency', 'Concurrency'], ['bufferLength', 'Buffer length'], ['checkpointInterval', 'Checkpoint interval (ms)'], ['lateTolerance', 'Late tolerance (ms)']].map(([key, label]) => <div key={key} className="flex flex-col gap-2"><Label htmlFor={`option-${key}`}>{label}</Label><Input id={`option-${key}`} type="number" min="0" value={optionNumber(options[key])} onChange={(event) => option(key, event.target.value ? Number(event.target.value) : undefined)} /></div>)}
+                      {[['concurrency', t('rule.concurrency')], ['bufferLength', t('rule.bufferLength')], ['checkpointInterval', t('rule.checkpointInterval')], ['lateTolerance', t('rule.lateTolerance')]].map(([key, label]) => <div key={key} className="flex flex-col gap-2"><Label htmlFor={`option-${key}`}>{label}</Label><Input id={`option-${key}`} type="number" min="0" value={optionNumber(options[key])} onChange={(event) => option(key, event.target.value ? Number(event.target.value) : undefined)} /></div>)}
                       <div className="flex flex-col gap-2"><Label htmlFor="option-qos">{t('rule.qos')}</Label><Select value={options.qos == null ? 'unset' : String(options.qos)} onValueChange={(value) => option('qos', value === 'unset' ? undefined : Number(value))}><SelectTrigger id="option-qos"><SelectValue /></SelectTrigger><SelectContent><SelectGroup><SelectItem value="unset">{t('rule.engineDefault')}</SelectItem><SelectItem value="0">{t('rule.qosAtMostOnce')}</SelectItem><SelectItem value="1">{t('rule.qosAtLeastOnce')}</SelectItem><SelectItem value="2">{t('rule.qosExactlyOnce')}</SelectItem></SelectGroup></SelectContent></Select></div>
                     </div>
-                    <div className="flex flex-col gap-2"><Label htmlFor="rule-tags">{t('rule.tags')}</Label><Input id="rule-tags" value={tags} onChange={(event) => setTags(event.target.value)} placeholder="production, temperature" /><p className="text-xs text-muted-foreground">Comma-separated; useful for match and bulk operations.</p></div>
-                    {!id && <label className="flex items-start gap-3 rounded-lg border p-4 hover:bg-muted/30 transition-colors cursor-pointer"><Checkbox checked={triggered} onCheckedChange={(checked) => setTriggered(Boolean(checked))} aria-label={t('rule.startAfterCreation')} /><span><span className="block text-sm font-medium">{t('rule.startAfterCreation')}</span><span className="mt-1 block text-xs text-muted-foreground">Off by default so you can review the saved rule before it processes data.</span></span></label>}
+                    <div className="flex flex-col gap-2"><Label htmlFor="rule-tags">{t('rule.tags')}</Label><Input id="rule-tags" value={tags} onChange={(event) => setTags(event.target.value)} placeholder="production, temperature" /><p className="text-xs text-muted-foreground">{t('rule.tagsHint')}</p></div>
+                    {!id && <label className="flex items-start gap-3 rounded-lg border p-4 hover:bg-muted/30 transition-colors cursor-pointer"><Checkbox checked={triggered} onCheckedChange={(checked) => setTriggered(Boolean(checked))} aria-label={t('rule.startAfterCreation')} /><span><span className="block text-sm font-medium">{t('rule.startAfterCreation')}</span><span className="mt-1 block text-xs text-muted-foreground">{t('rule.startAfterCreationHint')}</span></span></label>}
                     <div className="border-t pt-4"><p className="mb-2 text-sm font-medium">{t('rule.advancedOptionsJson')}</p><JsonObjectEditor value={options} label={t('rule.ruleOptionsJson')} onApply={setOptions} /></div>
                   </CardContent>
                 </Card>
-                <div className="flex justify-between"><Button variant="outline" onClick={() => setStep('actions')} className="touch-manipulation"><ArrowLeft className="mr-2 size-4" aria-hidden="true" />{t('rule.back')}</Button><Button onClick={() => void validate()} disabled={validating || loading} className="touch-manipulation">{validating && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}Validate with eKuiper</Button></div>
+                <div className="flex justify-between"><Button variant="outline" onClick={() => setStep('actions')} className="touch-manipulation"><ArrowLeft className="mr-2 size-4" aria-hidden="true" />{t('rule.back')}</Button><Button onClick={() => void validate()} disabled={validating || loading} className="touch-manipulation">{validating && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}{t('rule.validateWithEKuiper')}</Button></div>
               </div>
             )}
           </div>
@@ -1081,7 +1093,7 @@ export function RuleDesigner({ id }: { id?: string }) {
             <Card className="overflow-hidden shadow-beautiful-md">
               <CardHeader className="border-b bg-muted/20 pb-4">
                 <div className="flex items-start justify-between gap-3"><div><CardTitle className="flex items-center gap-2 text-lg"><Code2 className="size-5" aria-hidden="true" />{t('rule.generatedDefinition')}</CardTitle><CardDescription className="mt-1">{t('rule.exactPayload')}</CardDescription></div><Button type="button" variant="ghost" size="icon" onClick={() => { setRevealSensitive((value) => !value); setDefinitionDirty(false); }} aria-label={revealSensitive ? 'Mask sensitive values' : 'Reveal sensitive values'} className="touch-manipulation">{revealSensitive ? <EyeOff className="size-4" aria-hidden="true" /> : <Eye className="size-4" aria-hidden="true" />}</Button></div>
-                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs"><Badge variant="outline">{query.source || 'source'}</Badge><ArrowRight className="size-3 text-muted-foreground" aria-hidden="true" /><Badge variant="secondary">{t('rule.sql')}</Badge><ArrowRight className="size-3 text-muted-foreground" aria-hidden="true" />{actions.length ? actions.map((action) => <Badge key={action.key} variant="outline">{actionLabel(action.type)}</Badge>) : <Badge variant="outline">no output</Badge>}</div>
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs"><Badge variant="outline">{query.source || t('rule.sourcePlaceholder')}</Badge><ArrowRight className="size-3 text-muted-foreground" aria-hidden="true" /><Badge variant="secondary">{t('rule.sql')}</Badge><ArrowRight className="size-3 text-muted-foreground" aria-hidden="true" />{actions.length ? actions.map((action) => <Badge key={action.key} variant="outline">{actionLabel(action.type, t)}</Badge>) : <Badge variant="outline">{t('rule.noOutput')}</Badge>}</div>
               </CardHeader>
               <CardContent className="p-4 flex flex-col gap-4">
                 <Tabs defaultValue="definition">

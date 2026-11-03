@@ -93,27 +93,76 @@ const run = async () => {
         continue;
       }
       await page.waitForTimeout(700);
-      const texts = await page.evaluate(() => {
-        const out = new Set();
-        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-        let node;
-        while ((node = walker.nextNode())) {
-          const parent = node.parentElement;
-          if (!parent) continue;
-          const tag = parent.tagName;
-          // Skip code samples, inputs and script/style payloads.
-          if (['SCRIPT', 'STYLE', 'CODE', 'PRE', 'NOSCRIPT'].includes(tag)) continue;
-          if (parent.closest('pre, code, [class*="font-mono"]')) continue;
-          const text = (node.textContent ?? '').trim().replace(/\s+/g, ' ');
-          if (!text || text.length < 2) continue;
-          if (/[A-Za-z]{2,}/.test(text)) out.add(text);
+      // Tabs mount their panes lazily, so text behind an unselected tab is not
+      // in the DOM at all. Visit every tab role before harvesting.
+      const tabs = await page.$$('[role="tab"]:not([aria-selected="true"])');
+      const seen = new Set();
+      const collect = async () => {
+        const texts = await page.evaluate(() => {
+          const out = new Set();
+          const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+          let node;
+          while ((node = walker.nextNode())) {
+            const parent = node.parentElement;
+            if (!parent) continue;
+            const tag = parent.tagName;
+            // Skip code samples, inputs and script/style payloads.
+            if (['SCRIPT', 'STYLE', 'CODE', 'PRE', 'NOSCRIPT'].includes(tag)) continue;
+            if (parent.closest('pre, code, [class*="font-mono"]')) continue;
+            const text = (node.textContent ?? '').trim().replace(/\s+/g, ' ');
+            if (!text || text.length < 2) continue;
+            if (/[A-Za-z]{2,}/.test(text)) out.add(text);
+          }
+          return [...out];
+        });
+        for (const text of texts) seen.add(text);
+      };
+      await collect();
+      for (let i = 0; i < tabs.length && i < 8; i += 1) {
+        try {
+          await tabs[i].click({ timeout: 2000 });
+          await page.waitForTimeout(400);
+          await collect();
+        } catch {
+          // Tab may unmount or become detached; keep going.
         }
-        return [...out];
-      });
+      }
+      const texts = [...seen];
       const hits = texts.filter((t) => !isAllowed(t));
       if (hits.length) findings.push({ route, hits });
     } catch (error) {
       failures.push({ route, status: error instanceof Error ? error.message.slice(0, 60) : 'error' });
+    }
+  }
+
+  // Signed-in routes never show the sign-in card, so scan it separately with
+  // the session dropped; otherwise /welcome only ever reports the redirect.
+  if (username) {
+    await page.evaluate(async () => {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    }).catch(() => {});
+    for (const route of ['/welcome', '/change-password']) {
+      try {
+        await page.goto(BASE + route, { waitUntil: 'networkidle', timeout: 25000 });
+        await page.waitForTimeout(500);
+        const texts = await page.evaluate(() => {
+          const out = new Set();
+          const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+          let node;
+          while ((node = walker.nextNode())) {
+            const parent = node.parentElement;
+            if (!parent) continue;
+            if (parent.closest('pre, code, [class*="font-mono"], script, style')) continue;
+            const text = (node.textContent ?? '').trim().replace(/\s+/g, ' ');
+            if (text.length >= 2 && /[A-Za-z]{2,}/.test(text)) out.add(text);
+          }
+          return [...out];
+        });
+        const hits = texts.filter((t) => !isAllowed(t));
+        if (hits.length) findings.push({ route: `${route} (signed out)`, hits });
+      } catch (error) {
+        failures.push({ route, status: error instanceof Error ? error.message.slice(0, 60) : 'error' });
+      }
     }
   }
 

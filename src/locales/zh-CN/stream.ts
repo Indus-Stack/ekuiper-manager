@@ -99,6 +99,11 @@ const stream: Record<keyof typeof en, string> = {
   schemaless: '无模式',
   typedSchemaHint: '字段为强类型，并会针对流入数据做校验。',
   schemalessHint: '无模式流（所有 JSON 键均可通过通配符 * 访问）。',
+  submit: "提交",
+  submitting: "提交中…",
+  sqlDefinitionEmpty: "SQL 定义不能为空",
+  eKuiperSqlStatement: "eKuiper SQL 语句",
+  sqlStatementHint: "直接提交完整的 CREATE STREAM 或 CREATE TABLE 语句。",
 };
 
 export default stream;

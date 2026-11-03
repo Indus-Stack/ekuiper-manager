@@ -498,12 +498,12 @@ export default function ConnectionsPage() {
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-medium">
-                    {activeTab === 'conf-sources' ? 'Source Configuration Keys' : 'Sink Delivery Templates'}
+                    {activeTab === 'conf-sources' ? t('admin.sourceConfigKeys') : t('admin.sinkDeliveryTemplates')}
                   </CardTitle>
                   <CardDescription className="text-xs">
                     {activeTab === 'conf-sources'
-                      ? 'Named configuration profiles defining connection parameters, endpoints, credentials, and polling rates for streams and tables.'
-                      : 'Reusable delivery templates specifying serialization formats, schema validation, batching buffers, and cache fallbacks for rule actions.'}
+                      ? t('admin.sourceConfigKeysHint')
+                      : t('admin.sinkTemplatesHint')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -512,13 +512,13 @@ export default function ConnectionsPage() {
                       <Sliders className="size-10 text-muted-foreground/40 mb-3" />
                       <p className="text-sm font-medium text-foreground">
                         {confKeySearch || confKeyTypeFilter !== 'all'
-                          ? 'No configurations match the filter'
+                          ? t('admin.noConfigurationsMatch')
                           : t('page.noConfigFound', { what: t(activeTab === 'conf-sources' ? 'page.whatSourceConfigKeys' : 'page.whatSinkTemplates') })}
                       </p>
                       <p className="text-xs text-muted-foreground mt-1 max-w-sm">
                         {activeTab === 'conf-sources'
-                          ? 'Add a named source confKey to reuse broker endpoints and authentication across multiple streams.'
-                          : 'Add a sink template to predefine target destinations, data templates, and delivery cache parameters.'}
+                          ? t('admin.addSourceConfKeyHint')
+                          : t('admin.addSinkTemplateHint')}
                       </p>
                       <Button
                         size="sm"
@@ -712,7 +712,7 @@ export default function ConnectionsPage() {
                         </Badge>
                       </div>
                       <CardDescription className="text-xs line-clamp-3 mt-2">
-                        {desc || 'Native eKuiper action sink connector.'}
+                        {desc || t('admin.nativeSinkConnector')}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="pt-0 flex items-center justify-between border-t py-3 text-xs">

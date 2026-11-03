@@ -245,4 +245,13 @@ export default {
   createOwnerAccount: "Create the owner account",
   pleaseWait: "Please wait…",
   completeSetup: "Complete setup",
+  sourceConfigKeys: "Source Configuration Keys",
+  sinkDeliveryTemplates: "Sink Delivery Templates",
+  sourceConfigKeysHint: "Named configuration profiles defining connection parameters, endpoints, credentials, and polling rates for streams and tables.",
+  sinkTemplatesHint: "Reusable delivery templates specifying serialization formats, schema validation, batching buffers, and cache fallbacks for rule actions.",
+  noConfigurationsMatch: "No configurations match the filter",
+  addSourceConfKeyHint: "Add a named source confKey to reuse broker endpoints and authentication across multiple streams.",
+  addSinkTemplateHint: "Add a sink template to predefine target destinations, data templates, and delivery cache parameters.",
+  nativeSinkConnector: "Native eKuiper action sink connector.",
+  serverFileSchemaHint: "Referencing a server file allows eKuiper to parse the .proto file directly from the filesystem.",
 };

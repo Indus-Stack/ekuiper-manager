@@ -243,6 +243,15 @@ const admin: Record<keyof typeof en, string> = {
   createOwnerAccount: "创建所有者账户",
   pleaseWait: "请稍候…",
   completeSetup: "完成初始化",
+  sourceConfigKeys: "源配置组",
+  sinkDeliveryTemplates: "目标投递模板",
+  sourceConfigKeysHint: "命名配置组，用于定义流和表的连接参数、端点、凭据与轮询频率。",
+  sinkTemplatesHint: "可复用的投递模板，用于定义规则动作的序列化格式、模式校验、批量缓冲与缓存回退。",
+  noConfigurationsMatch: "没有符合筛选条件的配置",
+  addSourceConfKeyHint: "添加一个命名的源配置组，以便在多个流之间复用 broker 端点与认证信息。",
+  addSinkTemplateHint: "添加目标模板，预先定义目标地址、数据模板与投递缓存参数。",
+  nativeSinkConnector: "eKuiper 原生动作目标连接器。",
+  serverFileSchemaHint: "引用服务器文件后，eKuiper 可直接从文件系统解析 .proto 文件。",
 };
 
 export default admin;

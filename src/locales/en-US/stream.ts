@@ -103,4 +103,9 @@ export default {
   schemaless: 'Schemaless',
   typedSchemaHint: 'Fields are strongly typed and validated against incoming data.',
   schemalessHint: 'Schemaless stream (all JSON keys are accessible via wildcard *).',
+  submit: "Submit",
+  submitting: "Submitting…",
+  sqlDefinitionEmpty: "SQL definition cannot be empty",
+  eKuiperSqlStatement: "eKuiper SQL Statement",
+  sqlStatementHint: "Submit a complete CREATE STREAM or CREATE TABLE statement directly.",
 };

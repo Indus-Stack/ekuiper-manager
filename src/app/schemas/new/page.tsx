@@ -293,7 +293,7 @@ function CreateSchemaContent() {
                     <div className="rounded-lg border border-dashed p-6 text-center text-xs text-muted-foreground bg-muted/10 flex flex-col gap-2">
                       <FileCode className="size-8 mx-auto text-muted-foreground/60" />
                       <p>
-                        Referencing a server file allows eKuiper to parse the .proto file directly from the filesystem.
+                        {t('admin.serverFileSchemaHint')}
                       </p>
                     </div>
                   </div>

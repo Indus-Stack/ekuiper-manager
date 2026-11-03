@@ -266,7 +266,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
   const save = async () => {
     const finalSql = mode === 'sql' ? sql.trim() : (sql.trim() || generatedSql.trim());
     if (!finalSql) {
-      toast.error('SQL definition cannot be empty');
+      toast.error(t('stream.sqlDefinitionEmpty'));
       return;
     }
 
@@ -731,7 +731,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                     disabled={saving || !resourceName.trim()}
                     className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-6"
                   >
-                    {saving ? 'Submitting…' : 'Submit'}
+                    {saving ? t('stream.submitting') : t('stream.submit')}
                   </Button>
                   <Button
                     type="button"
@@ -796,9 +796,9 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
           {mode === 'sql' && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-base font-semibold">eKuiper SQL Statement</CardTitle>
+                <CardTitle className="text-base font-semibold">{t('stream.eKuiperSqlStatement')}</CardTitle>
                 <CardDescription className="text-xs">
-                  Submit a complete CREATE STREAM or CREATE TABLE statement directly.
+                  {t('stream.sqlStatementHint')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-4">
