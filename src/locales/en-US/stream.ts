@@ -108,4 +108,5 @@ export default {
   sqlDefinitionEmpty: "SQL definition cannot be empty",
   eKuiperSqlStatement: "eKuiper SQL Statement",
   sqlStatementHint: "Submit a complete CREATE STREAM or CREATE TABLE statement directly.",
+  optionsAndConfiguration: "Options & Configuration",
 };

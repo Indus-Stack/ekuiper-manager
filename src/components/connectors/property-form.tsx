@@ -633,7 +633,7 @@ function KeyValueFieldEditor({
           onClick={onToggleJsonMode}
           className="h-6 text-[11px] text-muted-foreground hover:text-foreground"
         >
-          {jsonMode ? 'Switch to Table' : 'Switch to Raw JSON'}
+          {jsonMode ? t('rule.switchToTable') : t('rule.switchToRawJson')}
         </Button>
       </div>
 

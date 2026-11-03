@@ -293,6 +293,22 @@ const rule: Record<keyof typeof en, string> = {
   validateWithEKuiper: "使用 eKuiper 校验",
   noOutput: "无输出",
   sourcePlaceholder: "源",
+  tabDefinition: "定义",
+  tabStatus: "状态",
+  tabTopology: "拓扑",
+  tabOutputSchema: "输出模式",
+  tabExplain: "解析",
+  tabTrace: "追踪",
+  statusNativeHint: "来自 eKuiper v2 规则状态接口的原始值。",
+  pipelineActive: "管道运行中",
+  pipelineIdle: "管道空闲",
+  topoNodes: "{count} 个节点",
+  topoChannels: "{count} 条通道",
+  livePoll: "每 5 秒实时刷新",
+  hideJson: "隐藏 JSON",
+  switchToTable: "切换到表格",
+  switchToRawJson: "切换到原始 JSON",
+  rawJsonProperties: "连接的原始 JSON 属性",
 };
 
 export default rule;

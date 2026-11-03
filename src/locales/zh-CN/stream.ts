@@ -104,6 +104,7 @@ const stream: Record<keyof typeof en, string> = {
   sqlDefinitionEmpty: "SQL 定义不能为空",
   eKuiperSqlStatement: "eKuiper SQL 语句",
   sqlStatementHint: "直接提交完整的 CREATE STREAM 或 CREATE TABLE 语句。",
+  optionsAndConfiguration: "选项与配置",
 };
 
 export default stream;

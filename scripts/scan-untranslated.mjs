@@ -85,7 +85,36 @@ const run = async () => {
   const findings = [];
   const failures = [];
 
-  for (const route of ROUTES) {
+  // Detail routes need a real id. Static route lists never reach them, which
+  // is how the rule workspace kept its English tab bar through several passes.
+  const detailRoutes = [];
+  if (username) {
+    const discover = async (listUrl, pathFor) => {
+      try {
+        const rows = await page.evaluate(async (url) => {
+          const res = await fetch(url, { cache: 'no-store' });
+          if (!res.ok) return [];
+          const body = await res.json();
+          return Array.isArray(body) ? body : [];
+        }, listUrl);
+        for (const row of rows.slice(0, 2)) {
+          // Collections return either bare names or objects with id/name.
+          const name = typeof row === 'string' ? row : (row?.id ?? row?.name);
+          if (typeof name === 'string' && name) detailRoutes.push(pathFor(name));
+        }
+      } catch {
+        // The node may not expose this collection; skip it.
+      }
+    };
+    const API = '/api/ekuiper';
+    await discover(`${API}/rules`, (id) => `/rules/${encodeURIComponent(id)}?tab=definition`);
+    await discover(`${API}/rules`, (id) => `/rules/${encodeURIComponent(id)}?tab=topology`);
+    await discover(`${API}/rules`, (id) => `/rules/${encodeURIComponent(id)}?tab=trace`);
+    await discover(`${API}/streams`, (id) => `/streams/${encodeURIComponent(id)}`);
+    await discover(`${API}/tables`, (id) => `/tables/${encodeURIComponent(id)}`);
+  }
+
+  for (const route of [...ROUTES, ...detailRoutes]) {
     try {
       const res = await page.goto(BASE + route, { waitUntil: 'networkidle', timeout: 25000 });
       if (res && res.status() >= 400) {
@@ -108,7 +137,8 @@ const run = async () => {
             const tag = parent.tagName;
             // Skip code samples, inputs and script/style payloads.
             if (['SCRIPT', 'STYLE', 'CODE', 'PRE', 'NOSCRIPT'].includes(tag)) continue;
-            if (parent.closest('pre, code, [class*="font-mono"]')) continue;
+            // Textarea values hold user code (default UDF scripts, SQL), not UI copy.
+            if (parent.closest('pre, code, [class*="font-mono"], textarea')) continue;
             const text = (node.textContent ?? '').trim().replace(/\s+/g, ' ');
             if (!text || text.length < 2) continue;
             if (/[A-Za-z]{2,}/.test(text)) out.add(text);

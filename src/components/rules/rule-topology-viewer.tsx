@@ -259,7 +259,7 @@ export function RuleTopologyViewer({
               )}
             />
             <span className="font-semibold text-foreground">
-              {isRunning ? "Pipeline Active" : "Pipeline Idle"}
+              {isRunning ? t('rule.pipelineActive') : t('rule.pipelineIdle')}
             </span>
           </div>
 
@@ -267,9 +267,9 @@ export function RuleTopologyViewer({
 
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono">
             <Layers className="size-3.5" />
-            <span>{nodes.length} Nodes</span>
+            <span>{t('rule.topoNodes', { count: nodes.length })}</span>
             <span>·</span>
-            <span>{edges.length} Channels</span>
+            <span>{t('rule.topoChannels', { count: edges.length })}</span>
           </div>
         </div>
 
@@ -285,7 +285,7 @@ export function RuleTopologyViewer({
               htmlFor="auto-poll-switch"
               className="text-xs font-mono cursor-pointer text-muted-foreground"
             >
-              5s Live Poll
+              {t('rule.livePoll')}
             </Label>
           </div>
 
@@ -304,7 +304,7 @@ export function RuleTopologyViewer({
             onClick={() => setViewJson(!viewJson)}
           >
             <Code2 className="size-3.5 mr-1" />
-            {viewJson ? "Hide JSON" : "Raw JSON"}
+            {viewJson ? t('rule.hideJson') : t('rule.rawJson')}
           </Button>
         </div>
       </div>

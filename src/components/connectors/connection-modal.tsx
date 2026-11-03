@@ -385,7 +385,7 @@ export function ConnectionModal({
                   value={rawJson}
                   onChange={(e) => setRawJson(e.target.value)}
                   disabled={saving}
-                  aria-label="Raw JSON connection properties"
+                  aria-label={t('rule.rawJsonProperties')}
                   placeholder='{\n  "server": "tcp://127.0.0.1:1883",\n  "clientid": "shared_client"\n}'
                   className="min-h-[240px] font-mono text-xs leading-relaxed"
                   spellCheck={false}

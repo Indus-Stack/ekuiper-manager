@@ -325,7 +325,7 @@ export function SqlResourceDetail({ kind, name }: { kind: ResourceKind; name: st
         {options && Object.keys(options).length > 0 && (
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold">Options & Configuration</CardTitle>
+              <CardTitle className="text-sm font-semibold">{t('stream.optionsAndConfiguration')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 text-xs">
