@@ -233,6 +233,16 @@ const admin: Record<keyof typeof en, string> = {
   compiledLibraryHint: "可选的高性能预编译 proto 描述符库。",
   streamIntegrationBind: "创建该模式后，你可以在流可视化编辑器中为任意流或表绑定它：设置",
   streamEditorTail: "。",
+  diagHttpStatus: "eKuiper 返回 HTTP {status}",
+  diagUnsupportedVersion: "不支持的 eKuiper 版本 {version}",
+  diagVersionNotReported: "该节点未上报版本信息。",
+  diagConnectionFailed: "无法连接到该节点。",
+  diagCannotConnect: "无法连接到 eKuiper 服务器。",
+  diagTimeout: "连接超时：eKuiper 服务器无响应。",
+  notDetected: "未检测到",
+  createOwnerAccount: "创建所有者账户",
+  pleaseWait: "请稍候…",
+  completeSetup: "完成初始化",
 };
 
 export default admin;

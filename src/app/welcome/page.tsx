@@ -86,11 +86,11 @@ export default function WelcomePage() {
         </div>
         <Card className="shadow-beautiful-md">
           <CardHeader>
-            <CardTitle>{status?.setupRequired ? 'Create the owner account' : 'Sign in'}</CardTitle>
+            <CardTitle>{status?.setupRequired ? t('admin.createOwnerAccount') : t('admin.signIn')}</CardTitle>
             <CardDescription>
               {status?.setupRequired
                 ? t('flow.thisAccountControls')
-                : 'Use your Manager account to continue.'}
+                : t('admin.signInHint')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -144,7 +144,7 @@ export default function WelcomePage() {
               )}
               <Button type="submit" className="w-full touch-manipulation" disabled={!status || submitting}>
                 {submitting && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}
-                {submitting ? 'Please wait…' : status?.setupRequired ? 'Complete setup' : 'Sign in'}
+                {submitting ? t('admin.pleaseWait') : status?.setupRequired ? t('admin.completeSetup') : t('admin.signIn')}
               </Button>
             </form>
           </CardContent>

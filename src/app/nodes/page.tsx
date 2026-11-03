@@ -33,6 +33,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useServerStore } from '@/stores/server-store';
 import { ImportNodeRulesetModal } from '@/components/nodes/import-node-ruleset-modal';
 
+import { formatNodeDiagnostic } from '@/lib/nodes/diagnostics';
 interface NodeRecord {
   id: string;
   name: string;
@@ -282,10 +283,10 @@ export default function NodesPage() {
                 <CardContent className="flex flex-col gap-4">
                   {node.description && <p className="text-sm text-muted-foreground">{node.description}</p>}
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div><p className="text-xs text-muted-foreground">{t('admin.version')}</p><p className="font-medium">{node.version ?? 'Not detected'}</p></div>
+                    <div><p className="text-xs text-muted-foreground">{t('admin.version')}</p><p className="font-medium">{node.version ?? t('admin.notDetected')}</p></div>
                     <div><p className="text-xs text-muted-foreground">{t('admin.authorization')}</p><p className="font-medium">{node.hasAuthorization ? t('admin.configured') : t('admin.notConfigured')}</p></div>
                   </div>
-                  {node.lastError && <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground">{node.lastError}</div>}
+                  {formatNodeDiagnostic(node.lastError, t) && <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground">{formatNodeDiagnostic(node.lastError, t)}</div>}
                   <div className="flex flex-wrap gap-2">
                     <Button size="sm" disabled={node.id === activeServerId} onClick={() => setActiveServer(node.id)} className="touch-manipulation">
                       {node.id === activeServerId ? t('admin.inUse') : t('admin.useThisNode')}
