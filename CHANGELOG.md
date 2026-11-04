@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2026-11-04
+
+### Added
+- **Flow Studio (Beta)**: End-to-end visual DAG flow editor (`/flows` and `/flows/[id]`) powered by `@xyflow/react`, with 17 built-in source/transform/sink node definitions, declarative extension node support (`@ekuiper-manager/flow-sdk`), Flow-to-eKuiper IR/SQL/JSON compilation, preflight capability and connection-health validation, one-click deploy/undeploy/delete, automatic revision snapshots (`flow_revisions`), semantic diff and rollback-to-revision, 1 Hz runtime operator metrics, command palette (`Ctrl+K`), focus mode, and Monaco expression editing.
+- **Bilingual Manager UI (`en-US` & `zh-CN`)**: Full English and Simplified Chinese localization across all Manager pages, Flow Studio, Rule Designer (including built-in and node-provided connector/sink metadata labels and hints), and diagnostic rule-status formatting (`formatRuleStatus`), with persistent locale switching.
+- **Interactive Inspector & Connector Pickers**: Searchable comboboxes for option-backed properties, unified connection-registry (`confKey`) pickers for MQTT sources, connector pickers for stream/table reference nodes, and join reference pickers.
+- **Static i18n & Placeholder Verification (`npm run check:i18n`)**: AST-based catalog parity, interpolation variable, and empty-JSX expression checks enforced in both Linux and Windows CI jobs.
+- **Automated Docker Hub Publishing & Release Pipeline**: Added `.github/workflows/release.yml`, `.github/workflows/docker.yml`, and `deploy/docker/README.md` to automatically publish `indusstack/ekuipermanager` images and sync the Docker Hub README on tag releases.
+
+### Changed
+- Replaced legacy third-party API docs bundles with a clean Swagger UI page for the audited eKuiper 2.4.1 OpenAPI reference.
+- Consolidated Dependabot configuration and upgraded Next.js (`16.4.2`), React (`19.3.1`), and GitHub Actions dependencies.
+
+### Security
+- Added dependency overrides (`source-map-js >=1.2.2`) and resolved all reported `npm audit` and CodeQL advisories.
+
 ## [1.3.0] - 2026-08-18
 
 ### Added

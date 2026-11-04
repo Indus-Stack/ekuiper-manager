@@ -2,6 +2,7 @@
 
 [![Build Status](https://github.com/ankur-paan/ekuiper-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/ankur-paan/ekuiper-manager/actions/workflows/ci.yml)
 [![Latest Release](https://img.shields.io/github/v/release/ankur-paan/ekuiper-manager)](https://github.com/ankur-paan/ekuiper-manager/releases/latest)
+[![Docker Pulls](https://img.shields.io/docker/pulls/indusstack/ekuipermanager?color=blue&logo=docker)](https://hub.docker.com/r/indusstack/ekuipermanager)
 [![License: IOSL](https://img.shields.io/badge/License-IDACS%20Open%20Source-green.svg)](LICENSE)
 [![eKuiper](https://img.shields.io/badge/eKuiper-2.4.1-orange)](https://ekuiper.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
@@ -53,6 +54,8 @@ Full support will arrive by the end of this year when reKuiper reaches a stable 
 | **Streams and tables** | Create, inspect, edit, and delete SQL-defined stream and table resources. |
 | **Rule lifecycle** | Validate, create, edit, duplicate, start, stop, restart, and delete rules from a unified workspace. |
 | **Visual rule designer** | Assemble rule inputs, SQL, and ordered actions visually; inspect generated eKuiper SQL/JSON; validate before creating. |
+| **Flow Studio (Beta)** | Visual DAG flow editor with 17 built-in nodes, declarative extensions, Flow-to-eKuiper compilation, preflight deploy/undeploy, revision history/diff/rollback, and 1 Hz runtime operator metrics. |
+| **Bilingual UI (`en-US` & `zh-CN`)** | Complete English and Simplified Chinese localization across all workspaces, Flow Studio, Rule Designer, and connector metadata with live locale switching. |
 | **Rule diagnostics** | Status, topology, output schema, explain plan, trace controls, and trace results live together in the rule workspace. |
 | **Resources** | Shared connections, installed connector metadata, protobuf/custom schemas, schema upload, and managed uploads. |
 | **Extensions** | Native and portable plugins, portable status, UDF symbols, JavaScript UDFs, and external services. |
@@ -90,7 +93,7 @@ See the living [development plan](DEVELOPMENT_PLAN.md) for tracked outcomes, gap
 
 ## 🛣️ Development Roadmap
 
-### Phase 1 — Installable Community Stack (`v1.3.0`)
+### Phase 1 — Installable Community Stack (`v1.3.0`–`v1.4.0`)
 
 - ✅ One Docker Compose command for Manager, eKuiper, and PostgreSQL.
 - ✅ Durable checked SQL migrations and named volumes.
@@ -98,6 +101,8 @@ See the living [development plan](DEVELOPMENT_PLAN.md) for tracked outcomes, gap
 - ✅ Core streams, tables, rules, resources, extensions, and transfer flows.
 - ✅ Official eKuiper v2.4.1 OpenAPI baseline: 98 paths and 140 operations.
 - ✅ Global read-only, tool-calling operations agent with strict data boundaries.
+- ✅ Flow Studio visual DAG editor, revision history/diff/rollback, and runtime metrics (`v1.4.0`).
+- ✅ Bilingual English (`en-US`) and Simplified Chinese (`zh-CN`) UI localization (`v1.4.0`).
 - ✅ CI quality gates, official-stack browser tests, persistence checks, and CodeQL.
 
 ### Phase 2 — Stable Operator Lifecycle
@@ -332,6 +337,7 @@ npm run dev
 Quality gates:
 
 ```bash
+npm run check:i18n
 npm run lint
 npm run type-check
 npm run test:coverage
