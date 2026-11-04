@@ -292,7 +292,6 @@ export default {
   lateTolerance: "Late tolerance (ms)",
   tagsHint: "Comma-separated; useful for match and bulk operations.",
   startAfterCreationHint: "Off by default so you can review the saved rule before it processes data.",
-  validateWithEKuiper: "Validate with eKuiper",
   noOutput: "no output",
   sourcePlaceholder: "source",
   tabDefinition: "Definition",

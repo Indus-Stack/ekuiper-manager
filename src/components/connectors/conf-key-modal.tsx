@@ -284,7 +284,7 @@ export function ConfKeyModal({
         setTestResult({ success: true, message: 'Connection successful!' });
         toast.success(t('page.connectionTestSucceeded'));
       } else {
-        const msg = res.error || res.message || t('page.connectionTestErr');
+        const msg = res.error || res.message || t('page.connectionTestFailed');
         setTestResult({ success: false, message: msg });
         toast.error(`Connection failed: ${msg}`);
       }

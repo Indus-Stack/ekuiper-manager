@@ -116,7 +116,7 @@ export function SqlResourceList({ kind }: { kind: ResourceKind }) {
     >
       <div className="mx-auto max-w-6xl flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-          <div><h2 className="text-2xl font-semibold tracking-tight">{t(byKind(kind, 'stream.streamsTitle', 'stream.tablesTitle'))}</h2><p className="mt-1 text-muted-foreground">{active?.name ?? '—'}</p></div>
+          <div><h2 className="text-2xl font-semibold tracking-tight">{t(byKind(kind, 'stream.streamsTitle', 'stream.tablesTitle'))}</h2><p className="mt-1 text-muted-foreground">{t('stream.definitionsOn', { node: active?.name ?? t('rule.selectedNode') })}</p></div>
           <div className="flex gap-2"><Button variant="outline" onClick={() => void load()} disabled={loading}><RefreshCw className={`mr-2 size-4 ${loading ? 'animate-spin' : ''}`} />{t('stream.refresh')}</Button><Button asChild><Link href={`/${plural(kind)}/new`}><Plus className="mr-2 size-4" />{t(byKind(kind, 'stream.createStream', 'stream.createTable'))}</Link></Button></div>
         </div>
 

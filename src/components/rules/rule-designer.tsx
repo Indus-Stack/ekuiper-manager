@@ -91,10 +91,10 @@ const STEP_ITEMS: Array<{
   descriptionKey: MessageKey;
   icon: typeof Database;
 }> = [
-  { id: 'query', labelKey: 'rule.stepQuery', descriptionKey: 'rule.stepQueryHint', icon: Database },
-  { id: 'actions', labelKey: 'rule.stepOutputs', descriptionKey: 'rule.stepOutputsHint', icon: Send },
-  { id: 'options', labelKey: 'rule.stepRuntime', descriptionKey: 'rule.stepRuntimeHint', icon: Settings2 },
-];
+    { id: 'query', labelKey: 'rule.stepQuery', descriptionKey: 'rule.stepQueryHint', icon: Database },
+    { id: 'actions', labelKey: 'rule.stepOutputs', descriptionKey: 'rule.stepOutputsHint', icon: Send },
+    { id: 'options', labelKey: 'rule.stepRuntime', descriptionKey: 'rule.stepRuntimeHint', icon: Settings2 },
+  ];
 
 function isObject(value: unknown): value is JsonObject {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -312,8 +312,8 @@ function ActionCard({
       typeof action.config.delimiter === 'string'
         ? action.config.delimiter
         : typeof action.config.delimited === 'string'
-        ? action.config.delimited
-        : undefined,
+          ? action.config.delimited
+          : undefined,
     dataTemplate: typeof action.config.dataTemplate === 'string' ? action.config.dataTemplate : undefined,
     concurrency: typeof action.config.concurrency === 'number' ? action.config.concurrency : undefined,
     bufferLength: typeof action.config.bufferLength === 'number' ? action.config.bufferLength : undefined,
@@ -512,11 +512,10 @@ function ActionCard({
             role="tab"
             aria-selected={activeTab === 'properties'}
             onClick={() => setActiveTab('properties')}
-            className={`px-3 py-1.5 rounded-md font-medium transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] ${
-              activeTab === 'properties'
+            className={`px-3 py-1.5 rounded-md font-medium transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] ${activeTab === 'properties'
                 ? 'bg-background text-foreground shadow-beautiful-sm'
                 : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-            }`}
+              }`}
           >
             {t('rule.sinkProperties')}
           </button>
@@ -525,11 +524,10 @@ function ActionCard({
             role="tab"
             aria-selected={activeTab === 'delivery'}
             onClick={() => setActiveTab('delivery')}
-            className={`px-3 py-1.5 rounded-md font-medium transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] ${
-              activeTab === 'delivery'
+            className={`px-3 py-1.5 rounded-md font-medium transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] ${activeTab === 'delivery'
                 ? 'bg-background text-foreground shadow-beautiful-sm'
                 : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-            }`}
+              }`}
           >
             {t('rule.deliveryBuffer')}
           </button>
@@ -538,11 +536,10 @@ function ActionCard({
             role="tab"
             aria-selected={activeTab === 'json'}
             onClick={() => setActiveTab('json')}
-            className={`px-3 py-1.5 rounded-md font-medium transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] ${
-              activeTab === 'json'
+            className={`px-3 py-1.5 rounded-md font-medium transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] ${activeTab === 'json'
                 ? 'bg-background text-foreground shadow-beautiful-sm'
                 : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-            }`}
+              }`}
           >
             {t('rule.rawJson')}
           </button>
@@ -911,7 +908,7 @@ export function RuleDesigner({ id }: { id?: string }) {
   };
 
   return (
-    <AppLayout title={id ? t('rule.editRule') : t('rule.ruleDesignerTitle')}>
+    <AppLayout title={id ? t('rule.editRule', { id }) : t('rule.ruleDesignerTitle')}>
       <div className="mx-auto max-w-[1500px] flex flex-col gap-5">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div className="flex items-center gap-3">
@@ -953,9 +950,8 @@ export function RuleDesigner({ id }: { id?: string }) {
                     aria-selected={selected}
                     aria-current={selected ? 'step' : undefined}
                     onClick={() => setStep(item.id)}
-                    className={`rounded-xl border p-3 text-left transition-[border-color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                      selected ? 'border-primary bg-primary/5 shadow-beautiful-sm' : 'border-border/60 hover:bg-muted/50 hover:border-border'
-                    }`}
+                    className={`rounded-xl border p-3 text-left transition-[border-color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${selected ? 'border-primary bg-primary/5 shadow-beautiful-sm' : 'border-border/60 hover:bg-muted/50 hover:border-border'
+                      }`}
                   >
                     <span className="flex items-center gap-2"><span className={`flex size-7 items-center justify-center rounded-full text-xs font-semibold ${selected ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>{index + 1}</span><Icon className="size-4" aria-hidden="true" /><span className="font-medium">{t(item.labelKey)}</span></span>
                     <span className="mt-1 block pl-9 text-xs text-muted-foreground">{t(item.descriptionKey)}</span>
@@ -1084,7 +1080,7 @@ export function RuleDesigner({ id }: { id?: string }) {
                     <div className="border-t pt-4"><p className="mb-2 text-sm font-medium">{t('rule.advancedOptionsJson')}</p><JsonObjectEditor value={options} label={t('rule.ruleOptionsJson')} onApply={setOptions} /></div>
                   </CardContent>
                 </Card>
-                <div className="flex justify-between"><Button variant="outline" onClick={() => setStep('actions')} className="touch-manipulation"><ArrowLeft className="mr-2 size-4" aria-hidden="true" />{t('rule.back')}</Button><Button onClick={() => void validate()} disabled={validating || loading} className="touch-manipulation">{validating && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}{t('rule.validateWithEKuiper')}</Button></div>
+                <div className="flex justify-between"><Button variant="outline" onClick={() => setStep('actions')} className="touch-manipulation"><ArrowLeft className="mr-2 size-4" aria-hidden="true" />{t('rule.back')}</Button><Button onClick={() => void validate()} disabled={validating || loading} className="touch-manipulation">{validating && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}{t('rule.validateWithEkuiper')}</Button></div>
               </div>
             )}
           </div>

@@ -204,7 +204,7 @@ export default function ConnectionsPage() {
       if (res.success) {
         toast.success(t('page.connectionReachable', { id: conn.id }));
       } else {
-        toast.error(t('page.connectionTestFailed', { id: conn.id, error: res.error || res.message || t('page.unknownError') }));
+        toast.error(t('page.connectionTestErr', { id: conn.id, error: res.error || res.message || t('page.unknownError') }));
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Connection test request failed');

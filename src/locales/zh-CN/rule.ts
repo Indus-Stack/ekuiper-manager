@@ -290,7 +290,6 @@ const rule: Record<keyof typeof en, string> = {
   lateTolerance: "迟到容忍（毫秒）",
   tagsHint: "逗号分隔；便于匹配与批量操作。",
   startAfterCreationHint: "默认关闭，以便在规则处理数据前先检查已保存的规则。",
-  validateWithEKuiper: "使用 eKuiper 校验",
   noOutput: "无输出",
   sourcePlaceholder: "源",
   tabDefinition: "定义",
