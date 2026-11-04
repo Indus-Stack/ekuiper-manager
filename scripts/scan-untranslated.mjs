@@ -11,7 +11,7 @@ import { chromium } from 'playwright';
 
 const BASE = process.argv.includes('--base')
   ? process.argv[process.argv.indexOf('--base') + 1]
-  : 'http://192.168.50.128:3000';
+  : process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
 // Dynamic segments are filled from live data when possible; otherwise a
 // placeholder is used and the route is reported as skipped.

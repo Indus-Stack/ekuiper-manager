@@ -23,10 +23,24 @@ jobs:
         run: npm audit --audit-level=high --omit=dev
       - name: Validate local eKuiper v2.4.1 contract
         run: npm run validate:openapi -- --skip-official
+      - name: Validate i18n catalogs and call sites
+        run: npm run check:i18n
       - run: npm run lint
       - run: npm run type-check
       - run: npm run test:coverage
       - run: npm run build
+
+  i18n-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - name: Validate i18n on Windows paths
+        run: npm run check:i18n
 
   integration:
     runs-on: ubuntu-latest

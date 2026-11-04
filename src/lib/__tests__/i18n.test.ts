@@ -1,3 +1,8 @@
+import { execFileSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+
 import enUS from '@/locales/en-US';
 import zhCN from '@/locales/zh-CN';
 
@@ -141,4 +146,61 @@ describe('formatRuleStatus', () => {
     expect(formatRuleStatus(input, tZh)).toBe(expectedZh);
   });
 });
+
+describe('scripts/check-i18n.mjs', () => {
+  const checkerPath = resolve(process.cwd(), 'scripts', 'check-i18n.mjs');
+  const checkerUrl = pathToFileURL(checkerPath).href;
+
+  it('succeeds when invoked from an arbitrary working directory', () => {
+    const output = execFileSync(process.execPath, [checkerPath], {
+      cwd: tmpdir(),
+      encoding: 'utf8',
+    });
+    expect(output).toContain('i18n check passed');
+  });
+
+  it('reports missing keys, placeholder mismatches, missing interpolation vars, and empty JSX expressions', () => {
+    const script = `
+      import { validateCatalogsAndSources } from ${JSON.stringify(checkerUrl)};
+      const enCatalog = new Map([
+        ['rule.editRule', 'Edit {id}'],
+        ['page.connectionTestErr', 'Connection "{id}" test failed: {error}'],
+        ['common.onlyEn', 'Only English'],
+      ]);
+      const zhCatalog = new Map([
+        ['rule.editRule', '编辑 {id}'],
+        ['page.connectionTestErr', '连接 "{name}" 测试失败：{error}'],
+      ]);
+      const sources = [{
+        filePath: '/repo/src/sample.tsx',
+        content: [
+          "export function Sample({ t }: any) {",
+          "  const a = t('rule.editRule');",
+          "  const b = t('page.connectionTestErr', { id: 'mqtt_1' });",
+          "  const c = t('rule.nonExistentKey');",
+          "  return <button>{}</button>;",
+          "}",
+        ].join('\\n'),
+      }];
+      const result = validateCatalogsAndSources({ enCatalog, zhCatalog, sources, rootDir: '/repo' });
+      console.log(JSON.stringify(result.problems));
+    `;
+    const stdout = execFileSync(process.execPath, ['--input-type=module', '-e', script], {
+      encoding: 'utf8',
+    });
+    const problems = JSON.parse(stdout.trim()) as string[];
+
+    expect(problems).toEqual(
+      expect.arrayContaining([
+        'zh-CN missing key: common.onlyEn',
+        'Placeholder mismatch for key "page.connectionTestErr": en-US has {error, id} vs zh-CN {error, name}',
+        'src/sample.tsx:2 Key "rule.editRule" requires interpolation variable(s) {id}, but none were passed',
+        'src/sample.tsx:3 Key "page.connectionTestErr" is missing required interpolation variable(s): {error}',
+        'src/sample.tsx:4 Unknown translation key "rule.nonExistentKey"',
+        'src/sample.tsx:5 Empty JSX expression "{}" renders blank UI content',
+      ]),
+    );
+  });
+});
+
 
