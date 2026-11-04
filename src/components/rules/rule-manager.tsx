@@ -65,7 +65,7 @@ import { ImportRuleModal } from '@/components/rules/import-rule-modal';
 import { RuleStatusSheet } from '@/components/rules/rule-status-sheet';
 import { useT } from '@/lib/i18n';
 import type { MessageKey } from '@/lib/i18n';
-import { ruleStatusKey } from '@/lib/i18n/translate';
+import { formatRuleStatus } from '@/lib/i18n/translate';
 
 interface RuleListRecord {
   id: string;
@@ -502,9 +502,10 @@ export function RuleList() {
                       >
                         <Badge
                           variant={running(rule.status) ? 'default' : 'secondary'}
-                          className="text-[11px] font-mono capitalize"
+                          className="text-[11px] font-mono"
+                          title={rule.status || undefined}
                         >
-                          {t(ruleStatusKey(rule.status))}
+                          {formatRuleStatus(rule.status, t)}
                         </Badge>
                       </button>
                     </div>
@@ -763,12 +764,13 @@ export function RuleWorkspace({ id }: { id: string }) {
   };
   const setTab = (next: RuleTab) => router.replace(`/rules/${encodeURIComponent(id)}?tab=${next}`);
   const trace = async (action: 'start' | 'stop') => { if (action === 'start') await ekuiperClient.startRuleTrace(id, 'always'); else await ekuiperClient.stopRuleTrace(id); toast.success(t('rule.traceRequested', { action })); await load(); };
-  const statusValue = String(status?.status ?? 'unknown');
+  const rawStatus = typeof status?.status === 'string' ? status.status : undefined;
+  const statusValue = rawStatus ?? 'unknown';
 
   return (
     <AppLayout title={t('rule.rulesTitle')}>
       <div className="mx-auto max-w-7xl flex flex-col gap-6">
-        <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-end"><div className="flex items-center gap-3"><Button variant="ghost" size="icon" asChild><Link href="/rules" aria-label={t('rule.backToRules')}><ArrowLeft className="size-5" /></Link></Button><div><div className="flex items-center gap-2"><h2 className="text-2xl font-semibold tracking-tight">{String(rule?.name ?? id)}</h2><Badge variant={running(statusValue) ? 'default' : 'secondary'}>{t(ruleStatusKey(statusValue))}</Badge></div>{Boolean(rule?.name) && <p className="mt-1 text-sm text-muted-foreground">{id}</p>}</div></div><div className="flex flex-wrap gap-2">{running(statusValue) ? <Button variant="outline" onClick={() => void control('stop')}><Square className="mr-2 size-4" />{t('rule.stop')}</Button> : <Button variant="outline" onClick={() => void control('start')}><Play className="mr-2 size-4" />{t('rule.start')}</Button>}<Button variant="outline" onClick={() => void control('restart')}><RotateCw className="mr-2 size-4" />{t('rule.restart')}</Button><Button variant="outline" onClick={() => { setDuplicateId(`${id}_copy`); setDuplicateError(''); setDuplicateOpen(true); }}><Copy className="mr-2 size-4" />{t('rule.duplicate')}</Button><Button asChild><Link href={`/rules/${encodeURIComponent(id)}/edit`}><Pencil className="mr-2 size-4" />{t('rule.edit')}</Link></Button><Button variant="destructive" size="icon" onClick={() => setDeleteOpen(true)} aria-label={t('rule.delete')}><Trash2 className="size-4" /></Button></div></div>
+        <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-end"><div className="flex items-center gap-3"><Button variant="ghost" size="icon" asChild><Link href="/rules" aria-label={t('rule.backToRules')}><ArrowLeft className="size-5" /></Link></Button><div><div className="flex items-center gap-2"><h2 className="text-2xl font-semibold tracking-tight">{String(rule?.name ?? id)}</h2><Badge variant={running(statusValue) ? 'default' : 'secondary'} title={rawStatus || undefined}>{formatRuleStatus(rawStatus, t)}</Badge></div>{Boolean(rule?.name) && <p className="mt-1 text-sm text-muted-foreground">{id}</p>}</div></div><div className="flex flex-wrap gap-2">{running(statusValue) ? <Button variant="outline" onClick={() => void control('stop')}><Square className="mr-2 size-4" />{t('rule.stop')}</Button> : <Button variant="outline" onClick={() => void control('start')}><Play className="mr-2 size-4" />{t('rule.start')}</Button>}<Button variant="outline" onClick={() => void control('restart')}><RotateCw className="mr-2 size-4" />{t('rule.restart')}</Button><Button variant="outline" onClick={() => { setDuplicateId(`${id}_copy`); setDuplicateError(''); setDuplicateOpen(true); }}><Copy className="mr-2 size-4" />{t('rule.duplicate')}</Button><Button asChild><Link href={`/rules/${encodeURIComponent(id)}/edit`}><Pencil className="mr-2 size-4" />{t('rule.edit')}</Link></Button><Button variant="destructive" size="icon" onClick={() => setDeleteOpen(true)} aria-label={t('rule.delete')}><Trash2 className="size-4" /></Button></div></div>
         <div className="flex gap-1 overflow-x-auto border-b" role="tablist">{tabs.map((item) => <button key={item.id} role="tab" aria-selected={tab === item.id} onClick={() => setTab(item.id)} className={`whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium ${tab === item.id ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>{t(item.labelKey)}</button>)}</div>
         {error && (
           <Alert variant="destructive">

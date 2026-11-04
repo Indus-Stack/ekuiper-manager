@@ -44,13 +44,49 @@ test('visual rule design and safe duplication round-trip through eKuiper', async
     actions: [{ log: {} }],
   });
 
+  // Intercept GET /api/ekuiper/rules to return a detailed diagnostic status suffix
+  await page.route('**/api/ekuiper/rules', async (route) => {
+    if (route.request().method() !== 'GET') {
+      await route.continue();
+      return;
+    }
+    const response = await route.fetch();
+    const body = await response.json();
+    const patched = Array.isArray(body)
+      ? body.map((item: { id?: string; status?: string }) =>
+          item.id === 'e2e_designer_rule'
+            ? { ...item, status: 'stopped: canceled manually' }
+            : item,
+        )
+      : body;
+    await route.fulfill({ response, json: patched });
+  });
+
   await page.goto('/rules');
   const row = page.getByText('e2e_designer_rule', { exact: true }).locator('..').locator('..');
+  await expect(row).toContainText('Stopped: canceled manually');
   await row.getByRole('button', { name: 'Actions for e2e_designer_rule' }).click();
   await page.getByRole('menuitem', { name: 'Duplicate' }).click();
   await page.getByLabel('New rule ID').fill('e2e_designer_copy');
   await page.getByRole('button', { name: 'Duplicate stopped' }).click();
   await expect(page).toHaveURL(/\/rules\/e2e_designer_copy\/edit$/);
+  await expect(page.getByRole('heading', { name: 'Edit e2e_designer_copy', level: 1 })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Edit e2e_designer_copy', level: 2 })).toBeVisible();
+
+  // Switch to zh-CN and verify edit header interpolation and preserved rule-status diagnostics
+  await page.getByRole('button', { name: 'Language' }).click();
+  await page.getByRole('menuitem', { name: '简体中文' }).click();
+  await expect(page.getByRole('heading', { name: '编辑 e2e_designer_copy', level: 1 })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '编辑 e2e_designer_copy', level: 2 })).toBeVisible();
+
+  await page.goto('/rules');
+  const zhRow = page.getByText('e2e_designer_rule', { exact: true }).locator('..').locator('..');
+  await expect(zhRow).toContainText('已停止：canceled manually');
+
+  // Restore en-US locale
+  await page.getByRole('button', { name: '语言' }).click();
+  await page.getByRole('menuitem', { name: 'English' }).click();
+  await page.unroute('**/api/ekuiper/rules');
 
   const copy = await page.evaluate(async () => (await fetch('/api/ekuiper/rules/e2e_designer_copy')).json());
   expect(copy).toMatchObject({

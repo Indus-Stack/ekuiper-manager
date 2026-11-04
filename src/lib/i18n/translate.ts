@@ -81,3 +81,30 @@ export function ruleStatusKey(status: string | undefined): MessageKey {
       return 'common.statusUnknown';
   }
 }
+
+const RULE_STATUS_PREFIX_PATTERN = /^(running|stopped|starting|stopping|error)(?:(\s*:\s*|\s+)([\s\S]+))?$/i;
+
+/**
+ * Formats an eKuiper rule status string for UI display while preserving diagnostic suffixes.
+ * - Recognized prefixes (`running`, `stopped`, `starting`, `stopping`, `error`) are translated.
+ * - Any diagnostic suffix after `:` or whitespace is preserved verbatim.
+ * - Unfamiliar nonempty status strings are returned verbatim.
+ * - Missing or blank values return the translated "Unknown" label.
+ */
+export function formatRuleStatus(status: string | null | undefined, t: Translate): string {
+  if (typeof status !== 'string' || status.trim().length === 0) {
+    return t('common.statusUnknown');
+  }
+  const trimmed = status.trim();
+  const match = RULE_STATUS_PREFIX_PATTERN.exec(trimmed);
+  if (!match) {
+    return trimmed;
+  }
+  const [, prefix, sep, suffix] = match;
+  const label = t(ruleStatusKey(prefix));
+  if (!suffix) {
+    return label;
+  }
+  const normalizedSep = sep.includes(':') ? (/[\u4e00-\u9fff]/.test(label) ? '：' : ': ') : ' ';
+  return `${label}${normalizedSep}${suffix}`;
+}

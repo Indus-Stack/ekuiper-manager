@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Activity, ArrowRight, Database, RefreshCw, Server, Table2, Workflow } from 'lucide-react';
 import { AppLayout } from '@/components/layout';
 import { useT } from '@/lib/i18n';
-import { ruleStatusKey } from '@/lib/i18n/translate';
+import { formatRuleStatus } from '@/lib/i18n/translate';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -122,7 +122,7 @@ export default function DashboardPage() {
           <Card className="lg:col-span-2">
             <CardHeader><CardTitle>{t('page.ruleState')}</CardTitle><CardDescription>{t('page.authoritativeStatus')}</CardDescription></CardHeader>
             <CardContent>
-              {!data?.rules.length ? <p className="py-8 text-center text-sm text-muted-foreground">{t('page.noRulesConfigured')}</p> : <div className="divide-y">{data.rules.slice(0, 8).map((rule) => <Link key={rule.id} href={`/rules/${encodeURIComponent(rule.id)}`} className="flex items-center justify-between py-3 hover:text-primary"><span className="truncate font-medium" title={rule.id}>{rule.id}</span><Badge variant={rule.status?.toLowerCase() === 'running' ? 'default' : 'outline'}>{t(ruleStatusKey(rule.status))}</Badge></Link>)}</div>}
+              {!data?.rules.length ? <p className="py-8 text-center text-sm text-muted-foreground">{t('page.noRulesConfigured')}</p> : <div className="divide-y">{data.rules.slice(0, 8).map((rule) => <Link key={rule.id} href={`/rules/${encodeURIComponent(rule.id)}`} className="flex items-center justify-between py-3 hover:text-primary"><span className="truncate font-medium" title={rule.id}>{rule.id}</span><Badge variant={rule.status?.toLowerCase() === 'running' ? 'default' : 'outline'} title={rule.status || undefined}>{formatRuleStatus(rule.status, t)}</Badge></Link>)}</div>}
               {data && data.rules.length > 8 && <Button asChild variant="link" className="mt-3 px-0"><Link href="/rules">{t('page.viewAllRules', { count: data.rules.length })}</Link></Button>}
             </CardContent>
           </Card>

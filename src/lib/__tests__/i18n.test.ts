@@ -2,7 +2,14 @@ import enUS from '@/locales/en-US';
 import zhCN from '@/locales/zh-CN';
 
 import { LOCALES, LOCALE_LABELS, isLocale } from '../i18n/config';
-import { byKind, createTranslator, interpolate, resolveMessage, type MessageKey } from '../i18n/translate';
+import {
+  byKind,
+  createTranslator,
+  formatRuleStatus,
+  interpolate,
+  resolveMessage,
+  type MessageKey,
+} from '../i18n/translate';
 
 describe('i18n catalogs', () => {
   it('keeps zh-CN structurally identical to en-US', () => {
@@ -107,3 +114,31 @@ describe('locale config', () => {
     expect(isLocale(undefined)).toBe(false);
   });
 });
+
+describe('formatRuleStatus', () => {
+  const tEn = createTranslator(enUS, enUS);
+  const tZh = createTranslator(zhCN, enUS);
+
+  it.each([
+    ['running', 'Running', '运行中'],
+    ['running: all good', 'Running: all good', '运行中：all good'],
+    ['stopped', 'Stopped', '已停止'],
+    ['stopped: canceled manually', 'Stopped: canceled manually', '已停止：canceled manually'],
+    ['stopped: sink failed to connect', 'Stopped: sink failed to connect', '已停止：sink failed to connect'],
+    ['starting', 'Starting', '正在启动'],
+    ['stopping', 'Stopping', '正在停止'],
+    ['error', 'Error', '错误'],
+    ['error: connection refused', 'Error: connection refused', '错误：connection refused'],
+    ['  RUNNING : healthy ', 'Running: healthy', '运行中：healthy'],
+    ['Stopped   timeout waiting for broker', 'Stopped timeout waiting for broker', '已停止 timeout waiting for broker'],
+    ['an unfamiliar engine state', 'an unfamiliar engine state', 'an unfamiliar engine state'],
+    ['', 'Unknown', '未知'],
+    ['   ', 'Unknown', '未知'],
+    [undefined, 'Unknown', '未知'],
+    [null, 'Unknown', '未知'],
+  ] as const)('formats %p in en-US as %p and zh-CN as %p', (input, expectedEn, expectedZh) => {
+    expect(formatRuleStatus(input, tEn)).toBe(expectedEn);
+    expect(formatRuleStatus(input, tZh)).toBe(expectedZh);
+  });
+});
+
