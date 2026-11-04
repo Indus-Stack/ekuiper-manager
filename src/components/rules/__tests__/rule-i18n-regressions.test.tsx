@@ -256,5 +256,71 @@ describe('Rule & Connector i18n regression tests', () => {
     expect(document.body.textContent).not.toContain('{error}');
     await zhView.unmount();
   });
+
+  test('RuleDesigner ActionCard switches built-in MQTT sink field labels on locale change while preserving field values and generated payload', async () => {
+    jest.spyOn(ekuiperClient, 'getRule').mockResolvedValue({
+      id: 'rule_mqtt',
+      sql: 'SELECT * FROM sensor_stream',
+      actions: [
+        {
+          mqtt: {
+            server: 'tcp://broker.emqx.io:1883',
+            topic: 'factory/alerts',
+            username: 'edge_user',
+          },
+        },
+      ],
+    });
+    jest.spyOn(ekuiperClient, 'listStreams').mockResolvedValue([]);
+    jest.spyOn(ekuiperClient, 'listTables').mockResolvedValue([]);
+    jest.spyOn(ekuiperClient, 'listSinkMetadata').mockResolvedValue([]);
+    jest.spyOn(ekuiperClient, 'listConnections').mockResolvedValue([]);
+    jest.spyOn(ekuiperClient, 'listSchemas').mockResolvedValue([]);
+    // Return empty properties so ActionCard uses the FieldEditor path with sinkFields(..., lang)
+    jest.spyOn(ekuiperClient, 'getSinkMetadata').mockResolvedValue({ about: {}, properties: [] } as any);
+    jest.spyOn(ekuiperClient, 'getSinkConfig').mockResolvedValue({});
+
+    const view = await renderWithLocale(<RuleDesigner id="rule_mqtt" />, 'en-US');
+
+    // Switch to Outputs step
+    const outputsStepBtn = Array.from(view.container.querySelectorAll('button')).find((b) =>
+      b.textContent?.includes('Outputs'),
+    );
+    expect(outputsStepBtn).toBeTruthy();
+    await act(async () => {
+      outputsStepBtn?.click();
+    });
+    await flushPromises();
+
+    expect(view.container.textContent).toContain('MQTT Broker Server');
+    expect(view.container.textContent).toContain('Publish Topic');
+    expect(view.container.textContent).toContain('Username');
+
+    const serverInput = view.container.querySelector('#sink-field-server') as HTMLInputElement | null;
+    const topicInput = view.container.querySelector('#sink-field-topic') as HTMLInputElement | null;
+    const defTextarea = view.container.querySelector('textarea[aria-label="Rule JSON"]') as HTMLTextAreaElement | null;
+    expect(serverInput?.value).toBe('tcp://broker.emqx.io:1883');
+    expect(topicInput?.value).toBe('factory/alerts');
+    const payloadBefore = defTextarea?.value;
+    expect(payloadBefore).toContain('tcp://broker.emqx.io:1883');
+
+    // Switch locale live to zh-CN
+    await view.switchLocale();
+
+    expect(view.container.textContent).toContain('MQTT 服务器地址');
+    expect(view.container.textContent).toContain('发布主题');
+    expect(view.container.textContent).toContain('用户名');
+
+    // Field values and generated payload remain identical
+    const zhServerInput = view.container.querySelector('#sink-field-server') as HTMLInputElement | null;
+    const zhTopicInput = view.container.querySelector('#sink-field-topic') as HTMLInputElement | null;
+    const zhDefTextarea = view.container.querySelector('textarea[aria-label="规则 JSON"]') as HTMLTextAreaElement | null;
+    expect(zhServerInput?.value).toBe('tcp://broker.emqx.io:1883');
+    expect(zhTopicInput?.value).toBe('factory/alerts');
+    expect(zhDefTextarea?.value).toBe(payloadBefore);
+
+    await view.unmount();
+  });
 });
+
 

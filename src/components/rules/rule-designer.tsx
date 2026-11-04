@@ -294,7 +294,7 @@ function ActionCard({
   const propList = Array.isArray(metadata?.properties)
     ? metadata.properties
     : (metadata?.properties as any)?.default ?? [];
-  const fields = sinkFields(action.type, propList);
+  const fields = sinkFields(action.type, propList, lang);
 
   const sinkDesc =
     localized(t, BUILTIN_SINKS.find((sink) => sink.type === action.type)?.description) ||

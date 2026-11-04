@@ -187,17 +187,24 @@ function metadataKind(property: MetadataProperty): SinkFieldKind {
   return 'string';
 }
 
-function toLabelString(val: unknown): string {
+export function toLabelString(val: unknown, lang: 'en' | 'zh' = 'en'): string {
   if (!val) return '';
   if (typeof val === 'string') return val;
   if (typeof val === 'object') {
     const obj = val as Record<string, string>;
-    return obj.en ?? obj.en_US ?? Object.values(obj)[0] ?? '';
+    if (lang === 'zh') {
+      return obj.zh ?? obj.zh_CN ?? obj['zh-CN'] ?? obj.en ?? obj.en_US ?? obj['en-US'] ?? Object.values(obj)[0] ?? '';
+    }
+    return obj.en ?? obj.en_US ?? obj['en-US'] ?? Object.values(obj)[0] ?? '';
   }
   return String(val);
 }
 
-export function sinkFields(type: string, metadata: MetadataProperty[] = []): SinkFieldDefinition[] {
+export function sinkFields(
+  type: string,
+  metadata: MetadataProperty[] = [],
+  lang: 'en' | 'zh' = 'en',
+): SinkFieldDefinition[] {
   const merged = new Map<string, SinkFieldDefinition>();
   for (const field of [...(KNOWN_FIELDS[type] ?? []), ...COMMON_FIELDS]) merged.set(field.key, field);
   const effectiveMetadata = metadata.length > 0 ? metadata : getBuiltinConnectorProperties('sinks', type);
@@ -205,11 +212,11 @@ export function sinkFields(type: string, metadata: MetadataProperty[] = []): Sin
     const existing = merged.get(property.name);
     merged.set(property.name, {
       key: property.name,
-      label: toLabelString(property.label) || existing?.label || humanize(property.name),
+      label: toLabelString(property.label, lang) || existing?.label || humanize(property.name),
       kind: existing?.kind ?? metadataKind(property),
       required: existing?.required ?? !property.optional,
       options: property.values?.map(String) ?? existing?.options,
-      hint: toLabelString(property.hint) || existing?.hint,
+      hint: toLabelString(property.hint, lang) || existing?.hint,
       placeholder: existing?.placeholder,
     });
   }

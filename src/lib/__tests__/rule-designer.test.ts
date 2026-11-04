@@ -7,8 +7,9 @@ import {
   parseSimpleSql,
   redactSensitive,
   sinkFields,
+  toLabelString,
 } from '@/lib/ekuiper/rule-designer';
-import type { Rule, Sink } from '@/lib/ekuiper/types';
+import type { MetadataProperty, Rule, Sink } from '@/lib/ekuiper/types';
 
 describe('rule designer codecs', () => {
   test('round-trips typed and unknown action properties without loss', () => {
@@ -76,5 +77,97 @@ describe('rule designer codecs', () => {
       options: { concurrency: 2 },
       tags: ['production'],
     });
+  });
+
+  test('sinkFields localizes built-in MQTT labels and hints in both English and Chinese', () => {
+    const enFields = sinkFields('mqtt', [], 'en');
+    const zhFields = sinkFields('mqtt', [], 'zh');
+
+    const enByKey = new Map(enFields.map((f) => [f.key, f]));
+    const zhByKey = new Map(zhFields.map((f) => [f.key, f]));
+
+    expect(enByKey.get('server')?.label).toBe('MQTT Broker Server');
+    expect(zhByKey.get('server')?.label).toBe('MQTT 服务器地址');
+
+    expect(enByKey.get('topic')?.label).toBe('Publish Topic');
+    expect(zhByKey.get('topic')?.label).toBe('发布主题');
+
+    expect(enByKey.get('username')?.label).toBe('Username');
+    expect(zhByKey.get('username')?.label).toBe('用户名');
+
+    const enSql = new Map(sinkFields('sql', [], 'en').map((f) => [f.key, f]));
+    const zhSql = new Map(sinkFields('sql', [], 'zh').map((f) => [f.key, f]));
+    expect(enSql.get('url')?.hint).toContain('Target SQL database connection URL');
+    expect(zhSql.get('url')?.hint).toBe('目标数据库连接 URL');
+  });
+
+  test('sinkFields resolves bilingual node metadata with English and humanized fallbacks while preserving payloads', () => {
+    const metadata: MetadataProperty[] = [
+      {
+        name: 'endpointUrl',
+        type: 'string',
+        control: 'text',
+        optional: false,
+        label: { en_US: 'Endpoint URL', zh_CN: '终端地址' },
+        hint: { en_US: 'Target HTTP endpoint', zh_CN: '目标 HTTP 地址' },
+      },
+      {
+        name: 'englishOnlyField',
+        type: 'string',
+        control: 'text',
+        optional: true,
+        label: { en: 'English Only Label' },
+        hint: { en: 'English Only Hint' },
+      },
+      {
+        name: 'unlabeledCustomField',
+        type: 'int',
+        control: 'text',
+        optional: true,
+      },
+    ];
+
+    const enFields = sinkFields('custom_sink', metadata, 'en');
+    const zhFields = sinkFields('custom_sink', metadata, 'zh');
+
+    expect(enFields.find((f) => f.key === 'endpointUrl')).toMatchObject({
+      label: 'Endpoint URL',
+      hint: 'Target HTTP endpoint',
+    });
+    expect(zhFields.find((f) => f.key === 'endpointUrl')).toMatchObject({
+      label: '终端地址',
+      hint: '目标 HTTP 地址',
+    });
+
+    // English-only metadata falls back cleanly to English in zh mode
+    expect(zhFields.find((f) => f.key === 'englishOnlyField')).toMatchObject({
+      label: 'English Only Label',
+      hint: 'English Only Hint',
+    });
+
+    // Missing labels fall back to humanized property name
+    expect(zhFields.find((f) => f.key === 'unlabeledCustomField')?.label).toBe('Unlabeled Custom Field');
+    expect(toLabelString({ 'zh-CN': '横线中文', 'en-US': 'Hyphen English' }, 'zh')).toBe('横线中文');
+
+    // Switching language only changes display labels/hints; field keys and encoded payloads are identical
+    expect(enFields.map((f) => f.key)).toEqual(zhFields.map((f) => f.key));
+    const draft = decodeActions([
+      {
+        mqtt: {
+          server: 'tcp://broker.emqx.io:1883',
+          topic: 'devices/telemetry',
+          qos: 1,
+        },
+      } as unknown as Sink,
+    ]);
+    expect(encodeActions(draft)).toEqual([
+      {
+        mqtt: {
+          server: 'tcp://broker.emqx.io:1883',
+          topic: 'devices/telemetry',
+          qos: 1,
+        },
+      },
+    ]);
   });
 });
