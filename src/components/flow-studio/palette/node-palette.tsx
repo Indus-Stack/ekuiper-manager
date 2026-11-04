@@ -134,9 +134,9 @@ export function NodePalette({ definitions, capabilities, children, className }: 
     body = children;
   } else if (!groups || groups.length === 0) {
     body = hasQuery ? (
-      <p role="status" className="text-xs text-muted-foreground">{}</p>
+      <p role="status" className="text-xs text-muted-foreground">{t('flow.noNodesMatch')}</p>
     ) : (
-      <p className="text-xs text-muted-foreground">{}</p>
+      <p className="text-xs text-muted-foreground">{t('flow.noNodesAvailable')}</p>
     );
   } else {
     body = (
@@ -220,7 +220,7 @@ export function NodePalette({ definitions, capabilities, children, className }: 
       data-testid="node-palette"
     >
       <div className="shrink-0 flex flex-col gap-2 border-b px-4 py-3">
-        <h2 className="text-sm font-semibold leading-tight">{}</h2>
+        <h2 className="text-sm font-semibold leading-tight">{t('flow.palette')}</h2>
         {children === undefined ? (
           <Input
             type="search"

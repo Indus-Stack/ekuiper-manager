@@ -64,6 +64,7 @@ function stringifyValue(value: unknown): string {
 }
 
 function TruncatedValue({ value }: { value: unknown }) {
+  const t = useT();
   const full = stringifyValue(value);
   if (full.length <= REVISION_DIFF_TRUNCATE_AT) {
     return (
@@ -85,7 +86,7 @@ function TruncatedValue({ value }: { value: unknown }) {
         {truncated}
       </code>{' '}
       <details className="mt-1">
-        <summary className="cursor-pointer text-[11px] text-muted-foreground">{}</summary>
+        <summary className="cursor-pointer text-[11px] text-muted-foreground">{t('flow.showFullValue')}</summary>
         <pre className="mt-1 max-h-32 max-w-full overflow-auto whitespace-pre-wrap break-all rounded bg-muted p-2 font-mono text-[11px]">
           {full}
         </pre>
@@ -156,7 +157,7 @@ function describeChange(
         </span>
       );
     case 'options-changed':
-      return <span>{}</span>;
+      return <span>{t('flow.changedRuleOptions')}</span>;
     case 'edge-added':
       return (
         <span>

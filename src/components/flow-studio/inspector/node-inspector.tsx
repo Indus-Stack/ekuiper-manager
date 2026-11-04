@@ -75,11 +75,11 @@ export function NodeInspector({
     body = children;
   } else if (!effectiveNodeId) {
     body = (
-      <p className="text-xs text-muted-foreground">{}</p>
+      <p className="text-xs text-muted-foreground">{t('flow.selectNodeToInspect')}</p>
     );
   } else if (!selectedNode) {
     body = (
-      <p className="text-xs text-muted-foreground">{}</p>
+      <p className="text-xs text-muted-foreground">{t('flow.nodeNoLongerInDocument')}</p>
     );
   } else if (!definition) {
     const unknownNode = selectedNode;
@@ -87,7 +87,7 @@ export function NodeInspector({
       <div className="flex flex-col gap-2">
         {/* FS-0069: rename stays available for unsupported nodes; only
             property editing is unavailable. The saved node is preserved. */}
-        <Label htmlFor={nameFieldId}>{}</Label>
+        <Label htmlFor={nameFieldId}>{t('flow.displayName')}</Label>
         <Input
           id={nameFieldId}
           type="text"
@@ -110,7 +110,7 @@ export function NodeInspector({
             removeNodes([unknownNode.id]);
           }}
           data-testid="node-inspector-delete"
-        >{}</Button>
+        >{t('flow.deleteNode')}</Button>
       </div>
     );
   } else {
@@ -129,7 +129,7 @@ export function NodeInspector({
         <div className="flex flex-col gap-1">
           {/* FS-0069: editable display name via renameNode; reflected on
               node chrome which renders spec node name. */}
-          <Label htmlFor={nameFieldId}>{}</Label>
+          <Label htmlFor={nameFieldId}>{t('flow.displayName')}</Label>
           <Input
             id={nameFieldId}
             type="text"
@@ -149,7 +149,7 @@ export function NodeInspector({
         </div>
         {nodeDiagnostics.length > 0 ? (
           <div className="flex flex-col gap-2" data-testid="node-inspector-diagnostics">
-            <p className="text-xs font-semibold">{}</p>
+            <p className="text-xs font-semibold">{t('flow.validation')}</p>
             <ul className="flex flex-col gap-1.5">
               {nodeDiagnostics.map((diagnostic) => (
                 <li
@@ -168,7 +168,7 @@ export function NodeInspector({
           </div>
         ) : null}
         {visibleProperties.length === 0 ? (
-          <p className="text-xs text-muted-foreground">{}</p>
+          <p className="text-xs text-muted-foreground">{t('flow.nodeNoProperties')}</p>
         ) : (
           <div className="flex flex-col gap-4">
             {visibleProperties.map((property) => (
@@ -195,7 +195,7 @@ export function NodeInspector({
             removeNodes([knownNode.id]);
           }}
           data-testid="node-inspector-delete"
-        >{}</Button>
+        >{t('flow.deleteNode')}</Button>
       </div>
     );
   }
@@ -207,7 +207,7 @@ export function NodeInspector({
       data-testid="node-inspector"
     >
       <div className="shrink-0 border-b px-4 py-3">
-        <h2 className="text-sm font-semibold leading-tight">{}</h2>
+        <h2 className="text-sm font-semibold leading-tight">{t('flow.inspector')}</h2>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
         {body}
@@ -216,7 +216,7 @@ export function NodeInspector({
             className="mt-4 flex flex-col gap-2"
             data-testid="node-inspector-flow-diagnostics"
           >
-            <p className="text-xs font-semibold">{}</p>
+            <p className="text-xs font-semibold">{t('flow.flow')}</p>
             <ul className="flex flex-col gap-1.5">
               {(documentDiagnostics ?? []).map((diagnostic) => (
                 <li

@@ -42,10 +42,10 @@ export function FlowSettingsPanel({ className }: { className?: string }) {
         data-testid="flow-settings-panel"
       >
         <div className="shrink-0 border-b px-4 py-3">
-          <h2 className="text-sm font-semibold leading-tight">{}</h2>
+          <h2 className="text-sm font-semibold leading-tight">{t('flow.flowSettings')}</h2>
         </div>
         <div className="px-4 py-3">
-          <p className="text-xs text-muted-foreground">{}</p>
+          <p className="text-xs text-muted-foreground">{t('flow.noFlowLoaded')}</p>
         </div>
       </section>
     );
@@ -60,8 +60,8 @@ export function FlowSettingsPanel({ className }: { className?: string }) {
       data-testid="flow-settings-panel"
     >
       <div className="shrink-0 border-b px-4 py-3">
-        <h2 className="text-sm font-semibold leading-tight">{}</h2>
-        <p className="mt-0.5 text-xs text-muted-foreground">{}</p>
+        <h2 className="text-sm font-semibold leading-tight">{t('flow.flowSettings')}</h2>
+        <p className="mt-0.5 text-xs text-muted-foreground">{t('flow.advancedRuleOptions')}</p>
       </div>
       <div className="flex flex-col gap-4 px-4 py-3">
         <NumberOptionRow
@@ -129,7 +129,7 @@ export function FlowSettingsPanel({ className }: { className?: string }) {
             commitOptionsUpdate(undefined);
           }}
           data-testid="flow-settings-reset"
-        >{}</Button>
+        >{t('flow.resetToDefaults')}</Button>
       </div>
     </section>
   );
@@ -343,7 +343,7 @@ function QosOptionRow({ value }: { value: unknown }) {
   const domValue = matched ? String(matched.value) : "";
   return (
     <div className="flex flex-col gap-1.5" data-testid="flow-settings-qos">
-      <Label htmlFor={fieldId}>{}</Label>
+      <Label htmlFor={fieldId}>{t('flow.qos')}</Label>
       <select
         id={fieldId}
         aria-describedby={descriptionId}
@@ -357,14 +357,14 @@ function QosOptionRow({ value }: { value: unknown }) {
           patchFlowOptions({ qos: raw === "" ? undefined : Number(raw) });
         }}
       >
-        <option value="">{}</option>
+        <option value="">{t('flow.engineDefaultZero')}</option>
         {options.map((option) => (
           <option key={String(option.value)} value={String(option.value)}>
             {option.label}
           </option>
         ))}
       </select>
-      <p id={descriptionId} className="text-xs text-muted-foreground">{}</p>
+      <p id={descriptionId} className="text-xs text-muted-foreground">{t('flow.qosDescription')}</p>
     </div>
   );
 }

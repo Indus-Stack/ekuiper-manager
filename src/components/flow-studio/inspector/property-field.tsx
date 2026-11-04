@@ -538,7 +538,7 @@ function SelectField({
               className="max-h-60 overflow-y-auto p-1"
             >
               {filtered.length === 0 ? (
-                <p className="px-2 py-6 text-center text-sm text-muted-foreground">{}</p>
+                <p className="px-2 py-6 text-center text-sm text-muted-foreground">{t('flow.noMatchesFound')}</p>
               ) : (
                 filtered.map((option, index) => {
                   const selected = matched !== undefined && Object.is(option.value, matched.value);
@@ -578,7 +578,7 @@ function SelectField({
                   className="relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm text-muted-foreground outline-none hover:bg-accent hover:text-accent-foreground"
                   onClick={clearSelection}
                   data-testid={`property-field-clear-${definition.key}`}
-                >{}</button>
+                >{t('flow.clearSelection')}</button>
               ) : null}
             </div>
           </div>
@@ -613,7 +613,7 @@ function SelectField({
         </React.Fragment>
       ) : null}
       {showUnmatchedNote ? (
-        <p className="text-xs text-muted-foreground">{}</p>
+        <p className="text-xs text-muted-foreground">{t('flow.savedValueUnknown')}</p>
       ) : null}
     </React.Fragment>
   );

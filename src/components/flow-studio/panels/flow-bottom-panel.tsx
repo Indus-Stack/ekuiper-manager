@@ -69,7 +69,7 @@ export function FlowBottomPanel({
           aria-expanded={false}
           aria-controls="flow-bottom-panel"
           data-testid="flow-bottom-panel-expand"
-        >{}</Button>
+        >{t('flow.showPanel')}</Button>
         <span className="text-xs text-muted-foreground">
           {clientErrorCount === 0
             ? t('flow.validationNoClientErrors')
@@ -104,8 +104,8 @@ export function FlowBottomPanel({
               {t('flow.validation')}
               {clientErrorCount > 0 ? ` (${clientErrorCount})` : ""}
             </TabsTrigger>
-            <TabsTrigger value="definition" data-testid="flow-bottom-panel-tab-definition">{}</TabsTrigger>
-            <TabsTrigger value="test" data-testid="flow-bottom-panel-tab-test">{}</TabsTrigger>
+            <TabsTrigger value="definition" data-testid="flow-bottom-panel-tab-definition">{t('flow.definition')}</TabsTrigger>
+            <TabsTrigger value="test" data-testid="flow-bottom-panel-tab-test">{t('flow.testOutput')}</TabsTrigger>
           </TabsList>
           <div className="flex-1" />
           {historyToggle}
@@ -117,7 +117,7 @@ export function FlowBottomPanel({
             aria-expanded={true}
             aria-controls="flow-bottom-panel"
             data-testid="flow-bottom-panel-collapse"
-          >{}</Button>
+          >{t('flow.hide')}</Button>
         </div>
         <div className="min-h-0 flex-1 overflow-hidden px-3 pb-3">
           <TabsContent

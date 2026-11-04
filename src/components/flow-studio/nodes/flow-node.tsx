@@ -371,7 +371,7 @@ function FlowNodeView({ data, selected }: FlowNodeProps) {
             className="inline-flex items-center rounded border flow-studio-unsupported-badge px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
             data-testid="flow-node-unsupported"
             title={t('flow.unknownNodeType')}
-          >{}</span>
+          >{t('flow.unsupported')}</span>
         </div>
       ) : null}
 

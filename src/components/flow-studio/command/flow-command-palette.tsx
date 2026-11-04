@@ -82,7 +82,7 @@ export function FlowCommandPalette({
         data-testid="flow-command-palette-input"
       />
       <CommandList aria-label={t('flow.flowCommands')}>
-        <CommandEmpty>{}</CommandEmpty>
+        <CommandEmpty>{t('flow.noCommandsFound')}</CommandEmpty>
         <CommandGroup heading={t('flow.flow')}>
           <CommandItem
             disabled={!canAddNode}
@@ -96,7 +96,7 @@ export function FlowCommandPalette({
             onSelect={() => run(onDeploy)}
             data-testid="flow-command-deploy"
           >
-            <span>{}</span>
+            <span>{t('flow.deployFlow')}</span>
           </CommandItem>
         </CommandGroup>
         <CommandGroup heading={t('flow.panels')}>
@@ -105,21 +105,21 @@ export function FlowCommandPalette({
             onSelect={() => run(onShowValidation)}
             data-testid="flow-command-show-validation"
           >
-            <span>{}</span>
+            <span>{t('flow.showValidationPanel')}</span>
           </CommandItem>
           <CommandItem
             disabled={!panelsAvailable}
             onSelect={() => run(onShowDefinition)}
             data-testid="flow-command-show-definition"
           >
-            <span>{}</span>
+            <span>{t('flow.showDefinitionPanel')}</span>
           </CommandItem>
           <CommandItem
             disabled={!panelsAvailable}
             onSelect={() => run(onShowTestOutput)}
             data-testid="flow-command-show-test-output"
           >
-            <span>{}</span>
+            <span>{t('flow.showTestOutputPanel')}</span>
           </CommandItem>
           <CommandItem
             disabled={!panelsAvailable}
@@ -135,7 +135,7 @@ export function FlowCommandPalette({
             onSelect={() => run(onFitView)}
             data-testid="flow-command-fit-view"
           >
-            <span>{}</span>
+            <span>{t('flow.fitView')}</span>
           </CommandItem>
         </CommandGroup>
       </CommandList>

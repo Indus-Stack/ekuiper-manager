@@ -4,6 +4,7 @@ import * as React from "react";
 import dynamic from "next/dynamic";
 
 import { Textarea } from "@/components/ui/textarea";
+import { useT } from '@/lib/i18n';
 
 /**
  * FS-0128: lazily-loaded Monaco input for `expression` properties.
@@ -50,6 +51,7 @@ export function ExpressionEditor({
   descriptionId,
   placeholder,
 }: ExpressionEditorProps) {
+  const t = useT();
   const [enhanced, setEnhanced] = React.useState(false);
 
   if (!enhanced) {
@@ -113,7 +115,7 @@ export function ExpressionEditor({
         onClick={() => {
           setEnhanced(false);
         }}
-      >{}</button>
+      >{t('flow.usePlainText')}</button>
     </div>
   );
 }

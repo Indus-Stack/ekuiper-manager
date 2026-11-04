@@ -407,7 +407,7 @@ export function RevisionHistory({
         >
           {listError}
         </div>
-        <Button type="button" variant="outline" size="sm" onClick={handleRetry}>{}</Button>
+        <Button type="button" variant="outline" size="sm" onClick={handleRetry}>{t('flow.retry')}</Button>
       </div>
     );
   } else if (!entries || entries.length === 0) {
@@ -472,7 +472,7 @@ export function RevisionHistory({
                     aria-label={`Restore revision ${entry.revisionNumber} into the current draft`}
                     data-testid={`revision-restore-${entry.revisionNumber}`}
                     className="h-6 shrink-0 px-1.5 text-[11px]"
-                  >{}</Button>
+                  >{t('flow.restore')}</Button>
                   <Button
                     type="button"
                     variant="ghost"
@@ -517,7 +517,7 @@ export function RevisionHistory({
                         onClick={handleRestoreCancel}
                         data-testid={`revision-restore-cancel-${entry.revisionNumber}`}
                         className="h-6 px-2 text-[11px]"
-                      >{}</Button>
+                      >{t('flow.cancel')}</Button>
                     </div>
                   </div>
                 ) : null}
@@ -549,7 +549,7 @@ export function RevisionHistory({
         </div>
         <div className="flex flex-col gap-2">
           <label className="flex flex-col gap-1 text-xs">
-            <span className="text-muted-foreground">{}</span>
+            <span className="text-muted-foreground">{t('flow.compareFrom')}</span>
             <select
               aria-label={t('flow.compareFromRevision')}
               data-testid="revision-history-base"
@@ -571,7 +571,7 @@ export function RevisionHistory({
             </select>
           </label>
           <label className="flex flex-col gap-1 text-xs">
-            <span className="text-muted-foreground">{}</span>
+            <span className="text-muted-foreground">{t('flow.compareTo')}</span>
             <select
               aria-label={t('flow.compareToRevision')}
               data-testid="revision-history-target"
@@ -586,7 +586,7 @@ export function RevisionHistory({
               }}
               className="rounded-md border bg-background px-2 py-1.5 text-xs"
             >
-              <option value="draft" disabled={!currentSpec}>{}</option>
+              <option value="draft" disabled={!currentSpec}>{t('flow.currentDraft')}</option>
               {entries.map((entry) => (
                 <option
                   key={entry.revisionNumber}
@@ -626,7 +626,7 @@ export function RevisionHistory({
       className={cn('flex flex-col gap-2', className)}
       data-testid="revision-history"
     >
-      <h3 className="text-xs font-semibold">{}</h3>
+      <h3 className="text-xs font-semibold">{t('flow.history')}</h3>
       {body}
     </section>
   );

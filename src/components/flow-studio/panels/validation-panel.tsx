@@ -57,9 +57,10 @@ function DiagnosticList({
   diagnostics: FlowDiagnostic[];
   testId: string;
 }) {
+  const t = useT();
   if (diagnostics.length === 0) {
     return (
-      <p className="text-xs text-muted-foreground" data-testid={`${testId}-empty`}>{}</p>
+      <p className="text-xs text-muted-foreground" data-testid={`${testId}-empty`}>{t('flow.noIssuesFound')}</p>
     );
   }
   return (
@@ -209,14 +210,14 @@ export function ValidationPanel({
 
       <div className="grid min-h-0 flex-1 gap-3 overflow-y-auto md:grid-cols-2">
         <section aria-label={t('flow.clientDiagnostics')}>
-          <h4 className="mb-1.5 text-xs font-semibold">{}</h4>
+          <h4 className="mb-1.5 text-xs font-semibold">{t('flow.clientChecks')}</h4>
           <DiagnosticList
             diagnostics={clientDiagnostics}
             testId="flow-validation-client-diagnostic"
           />
         </section>
         <section aria-label={t('flow.serverDiagnostics')}>
-          <h4 className="mb-1.5 text-xs font-semibold">{}</h4>
+          <h4 className="mb-1.5 text-xs font-semibold">{t('flow.serverValidation')}</h4>
           {server.valid === null && !error ? (
             <p
               className="text-xs text-muted-foreground"

@@ -150,7 +150,7 @@ export function RuntimePanel({
   let detail: React.ReactNode;
   if (!hasDeployment) {
     detail = (
-      <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-empty">{}</p>
+      <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-empty">{t('flow.runtimeDeployHint')}</p>
     );
   } else if (isLoading && !runtime) {
     detail = (
@@ -164,7 +164,7 @@ export function RuntimePanel({
         role="alert"
         className="rounded-md border border-destructive/30 bg-destructive/10 px-2.5 py-1.5 text-xs text-destructive"
         data-testid="flow-runtime-panel-error"
-      >{}</div>
+      >{t('flow.runtimeUnreadable')}</div>
     );
   } else if (runtime) {
     detail = (
@@ -178,7 +178,7 @@ export function RuntimePanel({
             {runtime.message}
           </p>
         ) : (
-          <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-message-empty">{}</p>
+          <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-message-empty">{t('flow.noRuntimeMessage')}</p>
         )}
         {isError ? (
           <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-stale">
@@ -189,7 +189,7 @@ export function RuntimePanel({
     );
   } else {
     detail = (
-      <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-empty">{}</p>
+      <p className="text-xs text-muted-foreground" data-testid="flow-runtime-panel-empty">{t('flow.runtimeDeployHint')}</p>
     );
   }
 
@@ -200,7 +200,7 @@ export function RuntimePanel({
       data-testid="flow-runtime-panel"
       data-runtime-state={state}
     >
-      <h3 className="text-xs font-semibold">{}</h3>
+      <h3 className="text-xs font-semibold">{t('flow.runtime')}</h3>
       <p
         aria-live="polite"
         data-testid="flow-runtime-panel-state"

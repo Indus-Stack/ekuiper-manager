@@ -180,7 +180,7 @@ export function TestPanel({ flowId, ruleTestSupported, className }: TestPanelPro
           onClick={handleCancel}
           disabled={!running}
           data-testid="flow-test-cancel-button"
-        >{}</Button>
+        >{t('flow.cancel')}</Button>
         <span
           className="text-xs text-muted-foreground"
           data-testid="flow-test-summary"

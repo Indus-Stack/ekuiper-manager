@@ -155,7 +155,7 @@ export function QuickNodePicker({
       onKeyDown={handleKeyDown}
     >
       <div className="shrink-0 flex flex-col gap-1 border-b px-3 py-2">
-        <p className="text-xs font-semibold leading-tight">{}</p>
+        <p className="text-xs font-semibold leading-tight">{t('flow.addNode')}</p>
         <Input
           ref={inputRef}
           type="search"
@@ -169,7 +169,7 @@ export function QuickNodePicker({
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto p-1">
         {filtered.length === 0 ? (
-          <p role="status" className="px-2 py-3 text-xs text-muted-foreground">{}</p>
+          <p role="status" className="px-2 py-3 text-xs text-muted-foreground">{t('flow.noNodesMatch')}</p>
         ) : (
           <ul role="listbox" aria-label={t('flow.matchingNodes')} className="flex flex-col gap-0.5">
             {filtered.map((definition, index) => {
@@ -205,7 +205,7 @@ export function QuickNodePicker({
           </ul>
         )}
       </div>
-      <p className="shrink-0 border-t px-3 py-1.5 text-[11px] text-muted-foreground">{}</p>
+      <p className="shrink-0 border-t px-3 py-1.5 text-[11px] text-muted-foreground">{t('flow.addNodeHint')}</p>
     </div>
   );
 }

@@ -112,7 +112,7 @@ export function FlowStudioHeader({
         disabled={deployDisabled}
         onClick={onDeploy}
         size="sm"
-      >{}</Button>
+      >{t('flow.deploy')}</Button>
     </div>
   );
 }
