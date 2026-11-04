@@ -41,6 +41,7 @@ import {
 import { cn } from "@/lib/utils";
 import { EmptyState } from "@/components/common/empty-state";
 import { LoadingSpinner } from "@/components/common/loading-spinner";
+import { useT } from "@/lib/i18n";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -58,13 +59,16 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
-  searchPlaceholder = "Search...",
+  searchPlaceholder,
   loading = false,
-  emptyMessage = "No results found",
+  emptyMessage,
   emptyDescription,
   onRefresh,
   toolbar,
 }: DataTableProps<TData, TValue>) {
+  const t = useT();
+  const resolvedSearch = searchPlaceholder ?? t("layout.searchPlaceholder");
+  const resolvedEmpty = emptyMessage ?? t("layout.noResults");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -98,8 +102,8 @@ export function DataTable<TData, TValue>({
             <div className="relative max-w-sm">
               <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
               <Input
-                placeholder={searchPlaceholder}
-                aria-label={searchPlaceholder || "Search table"}
+                placeholder={resolvedSearch}
+                aria-label={resolvedSearch}
                 value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
                 onChange={(event) =>
                   table.getColumn(searchKey)?.setFilterValue(event.target.value)
@@ -118,7 +122,7 @@ export function DataTable<TData, TValue>({
               size="icon"
               onClick={onRefresh}
               disabled={loading}
-              aria-label="Refresh table"
+              aria-label={t("layout.refreshTable")}
             >
               <RefreshCw className={cn("size-4", loading && "animate-spin")} aria-hidden="true" />
             </Button>
@@ -128,7 +132,7 @@ export function DataTable<TData, TValue>({
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <Columns className="mr-2 size-4" aria-hidden="true" />
-                Columns
+                {t("layout.columns")}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -182,7 +186,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-32 text-center"
                 >
-                  <LoadingSpinner label="Loading data..." />
+                  <LoadingSpinner label={t("layout.loadingData")} />
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
@@ -208,7 +212,7 @@ export function DataTable<TData, TValue>({
                   className="h-32 text-center"
                 >
                   <EmptyState
-                    title={emptyMessage}
+                    title={resolvedEmpty}
                     description={emptyDescription}
                     variant="search"
                     className="border-0"
@@ -233,8 +237,10 @@ export function DataTable<TData, TValue>({
 
         <div className="flex items-center gap-2">
           <div className="text-sm text-muted-foreground">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            {t("layout.pageOf", {
+              page: table.getState().pagination.pageIndex + 1,
+              total: table.getPageCount(),
+            })}
           </div>
 
           <div className="flex items-center gap-1">
@@ -243,7 +249,7 @@ export function DataTable<TData, TValue>({
               size="icon"
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
-              aria-label="First page"
+              aria-label={t("layout.firstPage")}
             >
               <ChevronsLeft className="size-4" aria-hidden="true" />
             </Button>
@@ -252,7 +258,7 @@ export function DataTable<TData, TValue>({
               size="icon"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              aria-label="Previous page"
+              aria-label={t("layout.previousPage")}
             >
               <ChevronLeft className="size-4" aria-hidden="true" />
             </Button>
@@ -261,7 +267,7 @@ export function DataTable<TData, TValue>({
               size="icon"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              aria-label="Next page"
+              aria-label={t("layout.nextPage")}
             >
               <ChevronRight className="size-4" aria-hidden="true" />
             </Button>
@@ -270,7 +276,7 @@ export function DataTable<TData, TValue>({
               size="icon"
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
-              aria-label="Last page"
+              aria-label={t("layout.lastPage")}
             >
               <ChevronsRight className="size-4" aria-hidden="true" />
             </Button>

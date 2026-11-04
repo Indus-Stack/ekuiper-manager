@@ -21,6 +21,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ConnectorIcon } from '@/components/connectors/connector-icon';
+import { useT } from '@/lib/i18n';
+import { byKind } from '@/lib/i18n/translate';
 import { ekuiperClient } from '@/lib/ekuiper/client';
 import { useServerStore } from '@/stores/server-store';
 
@@ -28,10 +30,6 @@ type ResourceKind = 'stream' | 'table';
 
 function plural(kind: ResourceKind): 'streams' | 'tables' {
   return kind === 'stream' ? 'streams' : 'tables';
-}
-
-function title(kind: ResourceKind): string {
-  return kind === 'stream' ? 'Stream' : 'Table';
 }
 
 function resourceName(value: unknown): string {
@@ -52,6 +50,7 @@ function createdResourceName(sql: string, kind: ResourceKind): string | null {
 }
 
 export function SqlResourceList({ kind }: { kind: ResourceKind }) {
+  const t = useT();
   const { servers, activeServerId } = useServerStore();
   const active = servers.find((node) => node.id === activeServerId);
   const [items, setItems] = React.useState<Array<Record<string, unknown>>>([]);
@@ -72,7 +71,11 @@ export function SqlResourceList({ kind }: { kind: ResourceKind }) {
         typeof item === 'string' ? { name: item } : item as unknown as Record<string, unknown>,
       ));
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : `Failed to load ${plural(kind)}`);
+      setError(
+        reason instanceof Error
+          ? reason.message
+          : t(byKind(kind, 'stream.loadStreamsFailed', 'stream.loadTablesFailed')),
+      );
     } finally {
       setLoading(false);
     }
@@ -85,11 +88,15 @@ export function SqlResourceList({ kind }: { kind: ResourceKind }) {
     try {
       if (kind === 'stream') await ekuiperClient.deleteStream(deleting);
       else await ekuiperClient.deleteTable(deleting);
-      toast.success(`${title(kind)} deleted`);
+      toast.success(t(byKind(kind, 'stream.streamDeleted', 'stream.tableDeleted')));
       setDeleting(null);
       await load();
     } catch (reason) {
-      toast.error(reason instanceof Error ? reason.message : `Failed to delete ${kind}`);
+      toast.error(
+        reason instanceof Error
+          ? reason.message
+          : t(byKind(kind, 'stream.deleteStreamFailed', 'stream.deleteTableFailed')),
+      );
     }
   };
 
@@ -104,11 +111,13 @@ export function SqlResourceList({ kind }: { kind: ResourceKind }) {
 
   const Icon = kind === 'stream' ? Database : Table2;
   return (
-    <AppLayout title={title(kind) + 's'}>
+    <AppLayout
+      title={t(byKind(kind, 'stream.streamsTitle', 'stream.tablesTitle'))}
+    >
       <div className="mx-auto max-w-6xl flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-          <div><h2 className="text-2xl font-semibold tracking-tight">{title(kind)}s</h2><p className="mt-1 text-muted-foreground">Definitions on {active?.name ?? 'the selected eKuiper node'}.</p></div>
-          <div className="flex gap-2"><Button variant="outline" onClick={() => void load()} disabled={loading}><RefreshCw className={`mr-2 size-4 ${loading ? 'animate-spin' : ''}`} />Refresh</Button><Button asChild><Link href={`/${plural(kind)}/new`}><Plus className="mr-2 size-4" />Create {kind}</Link></Button></div>
+          <div><h2 className="text-2xl font-semibold tracking-tight">{t(byKind(kind, 'stream.streamsTitle', 'stream.tablesTitle'))}</h2><p className="mt-1 text-muted-foreground">{t('stream.definitionsOn', { node: active?.name ?? t('rule.selectedNode') })}</p></div>
+          <div className="flex gap-2"><Button variant="outline" onClick={() => void load()} disabled={loading}><RefreshCw className={`mr-2 size-4 ${loading ? 'animate-spin' : ''}`} />{t('stream.refresh')}</Button><Button asChild><Link href={`/${plural(kind)}/new`}><Plus className="mr-2 size-4" />{t(byKind(kind, 'stream.createStream', 'stream.createTable'))}</Link></Button></div>
         </div>
 
         {kind === 'table' && (
@@ -119,7 +128,7 @@ export function SqlResourceList({ kind }: { kind: ResourceKind }) {
               className="h-7 text-xs"
               onClick={() => setTableFilter('all')}
             >
-              All Tables ({items.length})
+              {t('stream.allTables')} ({items.length})
             </Button>
             <Button
               variant={tableFilter === 'scan' ? 'secondary' : 'ghost'}
@@ -127,7 +136,7 @@ export function SqlResourceList({ kind }: { kind: ResourceKind }) {
               className="h-7 text-xs"
               onClick={() => setTableFilter('scan')}
             >
-              Scan / Streaming
+              {t('stream.scanTables')}
             </Button>
             <Button
               variant={tableFilter === 'lookup' ? 'secondary' : 'ghost'}
@@ -135,7 +144,7 @@ export function SqlResourceList({ kind }: { kind: ResourceKind }) {
               className="h-7 text-xs"
               onClick={() => setTableFilter('lookup')}
             >
-              Lookup Tables
+              {t('stream.lookupTables')}
             </Button>
           </div>
         )}
@@ -146,9 +155,9 @@ export function SqlResourceList({ kind }: { kind: ResourceKind }) {
           </Alert>
         )}
         {!active ? (
-          <Card className="border-dashed"><CardContent className="py-12 text-center text-sm text-muted-foreground">Select an eKuiper node first.</CardContent></Card>
+          <Card className="border-dashed"><CardContent className="py-12 text-center text-sm text-muted-foreground">{t('stream.selectNodeFirst')}</CardContent></Card>
         ) : !loading && !displayedItems.length ? (
-          <Card className="border-dashed"><CardContent className="flex flex-col items-center py-14 text-center"><Icon className="mb-4 size-10 text-muted-foreground" /><h3 className="font-semibold">No {tableFilter !== 'all' ? `${tableFilter} ` : ''}{plural(kind)} yet</h3><p className="mt-1 text-sm text-muted-foreground">Create the first {kind} definition for this node.</p><Button asChild className="mt-5"><Link href={`/${plural(kind)}/new`}>Create {kind}</Link></Button></CardContent></Card>
+          <Card className="border-dashed"><CardContent className="flex flex-col items-center py-14 text-center"><Icon className="mb-4 size-10 text-muted-foreground" /><h3 className="font-semibold">{t(byKind(kind, 'stream.noStreamsYet', 'stream.noTablesYet'))}</h3><p className="mt-1 text-sm text-muted-foreground">{t('stream.emptyHint', { kind: t(byKind(kind, 'stream.kindStream', 'stream.kindTable')) })}</p><Button asChild className="mt-5"><Link href={`/${plural(kind)}/new`}>{t(byKind(kind, 'stream.createStream', 'stream.createTable'))}</Link></Button></CardContent></Card>
         ) : (
           <Card>
             <CardContent className="divide-y p-0">
@@ -169,7 +178,7 @@ export function SqlResourceList({ kind }: { kind: ResourceKind }) {
                     <Link href={`/${plural(kind)}/${encodeURIComponent(name)}`} className="min-w-0 flex-1">
                       <span className="block truncate font-medium hover:text-primary" title={name}>{name}</span>
                       <span className="text-xs text-muted-foreground">
-                        {[type, format].filter(Boolean).join(' · ') || `${title(kind)} definition`}
+                        {[type, format].filter(Boolean).join(' · ') || t('stream.definitionFallback', { kind: t(byKind(kind, 'stream.kindStream', 'stream.kindTable')) })}
                       </span>
                     </Link>
                     <div className="hidden gap-1.5 sm:flex items-center">
@@ -188,7 +197,7 @@ export function SqlResourceList({ kind }: { kind: ResourceKind }) {
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" aria-label={`Actions for ${name}`}>
+                        <Button variant="ghost" size="icon" aria-label={t('stream.actionsFor', { name })}>
                           <MoreHorizontal className="size-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -196,11 +205,11 @@ export function SqlResourceList({ kind }: { kind: ResourceKind }) {
                         <DropdownMenuGroup>
                           <DropdownMenuItem asChild>
                             <Link href={`/${plural(kind)}/${encodeURIComponent(name)}/edit`}>
-                              <Pencil className="mr-2 size-4" />Edit
+                              <Pencil className="mr-2 size-4" />{t('common.edit')}
                             </Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem className="text-destructive" onSelect={() => setDeleting(name)}>
-                            <Trash2 className="mr-2 size-4" />Delete
+                            <Trash2 className="mr-2 size-4" />{t('common.delete')}
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                       </DropdownMenuContent>
@@ -212,7 +221,7 @@ export function SqlResourceList({ kind }: { kind: ResourceKind }) {
           </Card>
         )}
       </div>
-      <ConfirmDialog open={Boolean(deleting)} onOpenChange={(open) => !open && setDeleting(null)} title={`Delete ${kind}?`} description={`Delete ${deleting ?? `this ${kind}`} from eKuiper? Rules that depend on it may stop working.`} confirmLabel={`Delete ${kind}`} variant="danger" onConfirm={remove} />
+      <ConfirmDialog open={Boolean(deleting)} onOpenChange={(open) => !open && setDeleting(null)} title={t(byKind(kind, 'stream.deleteStreamTitle', 'stream.deleteTableTitle'))} description={t(byKind(kind, 'stream.deleteStreamDescription', 'stream.deleteTableDescription'), { name: deleting ?? '' })} confirmLabel={t(byKind(kind, 'stream.deleteStreamConfirm', 'stream.deleteTableConfirm'))} variant="danger" onConfirm={remove} />
     </AppLayout>
   );
 }
@@ -225,6 +234,7 @@ export function SqlResourceEditor({ kind, name }: { kind: ResourceKind; name?: s
 }
 
 export function SqlResourceDetail({ kind, name }: { kind: ResourceKind; name: string }) {
+  const t = useT();
   const router = useRouter();
   const { servers, activeServerId } = useServerStore();
   const active = servers.find((node) => node.id === activeServerId);
@@ -238,13 +248,13 @@ export function SqlResourceDetail({ kind, name }: { kind: ResourceKind; name: st
       const response = kind === 'stream' ? await ekuiperClient.getStream(name) : await ekuiperClient.getTable(name);
       setValue(response as unknown as Record<string, unknown>);
       setError('');
-    } catch (reason) { setError(reason instanceof Error ? reason.message : `Failed to load ${kind}`); }
+    } catch (reason) { setError(reason instanceof Error ? reason.message : t(byKind(kind, 'stream.loadStreamsFailed', 'stream.loadTablesFailed'))); }
   }, [active, kind, name]);
   React.useEffect(() => { void load(); }, [load]);
 
   const remove = async () => {
     if (kind === 'stream') await ekuiperClient.deleteStream(name); else await ekuiperClient.deleteTable(name);
-    toast.success(`${title(kind)} deleted`);
+    toast.success(t(byKind(kind, 'stream.streamDeleted', 'stream.tableDeleted')));
     router.push(`/${plural(kind)}`);
   };
 
@@ -256,12 +266,14 @@ export function SqlResourceDetail({ kind, name }: { kind: ResourceKind; name: st
   const options = (value?.Options ?? value?.options) as Record<string, any> | undefined;
 
   return (
-    <AppLayout title={title(kind)}>
+    <AppLayout
+      title={t(byKind(kind, 'stream.streamsTitle', 'stream.tablesTitle'))}
+    >
       <div className="mx-auto max-w-5xl flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" asChild>
-              <Link href={`/${plural(kind)}`} aria-label={`Back to ${plural(kind)}`}>
+              <Link href={`/${plural(kind)}`} aria-label={t(byKind(kind, 'stream.backToStreams', 'stream.backToTables'))}>
                 <ArrowLeft className="size-5" />
               </Link>
             </Button>
@@ -284,17 +296,20 @@ export function SqlResourceDetail({ kind, name }: { kind: ResourceKind; name: st
                 )}
               </div>
               <p className="mt-1 text-muted-foreground">
-                {title(kind)} definition on {active?.name ?? 'eKuiper'}.
+                {t('stream.detailSubtitle', {
+                  kind: t(byKind(kind, 'stream.kindStream', 'stream.kindTable')),
+                  node: active?.name ?? 'eKuiper',
+                })}
               </p>
             </div>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setConfirmDelete(true)}>
-              <Trash2 className="mr-2 size-4" />Delete
+              <Trash2 className="mr-2 size-4" />{t('common.delete')}
             </Button>
             <Button asChild>
               <Link href={`/${plural(kind)}/${encodeURIComponent(name)}/edit`}>
-                <Pencil className="mr-2 size-4" />Edit
+                <Pencil className="mr-2 size-4" />{t('common.edit')}
               </Link>
             </Button>
           </div>
@@ -310,7 +325,7 @@ export function SqlResourceDetail({ kind, name }: { kind: ResourceKind; name: st
         {options && Object.keys(options).length > 0 && (
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold">Options & Configuration</CardTitle>
+              <CardTitle className="text-sm font-semibold">{t('stream.optionsAndConfiguration')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 text-xs">
@@ -347,8 +362,8 @@ export function SqlResourceDetail({ kind, name }: { kind: ResourceKind; name: st
         {/* SQL Statement */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">SQL statement</CardTitle>
-            <CardDescription className="text-xs">The definition reported by eKuiper.</CardDescription>
+            <CardTitle className="text-sm font-semibold">{t('stream.sqlStatement')}</CardTitle>
+            <CardDescription className="text-xs">{t('stream.sqlStatementDescription')}</CardDescription>
           </CardHeader>
           <CardContent>
             <pre className="overflow-x-auto whitespace-pre-wrap rounded-md bg-muted p-4 font-mono text-xs leading-relaxed">
@@ -361,8 +376,8 @@ export function SqlResourceDetail({ kind, name }: { kind: ResourceKind; name: st
         {value && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-semibold">Resolved definition</CardTitle>
-              <CardDescription className="text-xs">Raw JSON returned by eKuiper node.</CardDescription>
+              <CardTitle className="text-sm font-semibold">{t('stream.resolvedDefinition')}</CardTitle>
+              <CardDescription className="text-xs">{t('stream.resolvedDefinitionDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
               <pre className="max-h-[28rem] overflow-auto rounded-md bg-muted p-4 font-mono text-xs">
@@ -375,9 +390,9 @@ export function SqlResourceDetail({ kind, name }: { kind: ResourceKind; name: st
       <ConfirmDialog
         open={confirmDelete}
         onOpenChange={setConfirmDelete}
-        title={`Delete ${kind}?`}
-        description={`Delete ${name} from eKuiper? Dependent rules may fail.`}
-        confirmLabel={`Delete ${kind}`}
+        title={t(byKind(kind, 'stream.deleteStreamTitle', 'stream.deleteTableTitle'))}
+        description={t(byKind(kind, 'stream.deleteStreamDescription', 'stream.deleteTableDescription'), { name })}
+        confirmLabel={t(byKind(kind, 'stream.deleteStreamConfirm', 'stream.deleteTableConfirm'))}
         variant="danger"
         onConfirm={remove}
       />

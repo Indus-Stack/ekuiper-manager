@@ -19,6 +19,7 @@ import { UploadCloud, FileCode2, File, Check, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+import { useT } from '@/lib/i18n';
 export interface UploadFileModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -59,6 +60,7 @@ export function UploadFileModal({
   defaultContent = "",
   title = "Create or Upload File",
 }: UploadFileModalProps) {
+  const t = useT();
   const [mode, setMode] = React.useState<"file" | "text">(defaultMode);
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [textFileName, setTextFileName] = React.useState(defaultFileName);
@@ -163,7 +165,7 @@ export function UploadFileModal({
             {title}
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Upload a file or create configuration content directly on the eKuiper
+            {t('connector.uploadOrCreateHint')}
             node.
           </DialogDescription>
         </DialogHeader>
@@ -178,16 +180,12 @@ export function UploadFileModal({
               value="file"
               className="text-xs font-medium data-[state=active]:bg-background data-[state=active]:text-foreground transition-all flex items-center gap-1.5"
             >
-              <UploadCloud className="size-3.5" aria-hidden="true" />
-              File Upload
-            </TabsTrigger>
+              <UploadCloud className="size-3.5" aria-hidden="true" />{t('connector.fileUpload')}</TabsTrigger>
             <TabsTrigger
               value="text"
               className="text-xs font-medium data-[state=active]:bg-background data-[state=active]:text-foreground transition-all flex items-center gap-1.5"
             >
-              <FileCode2 className="size-3.5" aria-hidden="true" />
-              Text / Code Editor
-            </TabsTrigger>
+              <FileCode2 className="size-3.5" aria-hidden="true" />{t('connector.textCodeEditor')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="file" className="flex flex-col gap-4 m-0 focus-visible:outline-none">
@@ -197,14 +195,14 @@ export function UploadFileModal({
               onChange={handleFileSelect}
               accept={accept}
               className="hidden"
-              aria-label="Select file to upload"
+              aria-label={t('connector.selectFileToUpload')}
             />
 
             {!selectedFile ? (
               <div
                 role="button"
                 tabIndex={0}
-                aria-label="Upload file by dropping or browsing"
+                aria-label={t('connector.uploadByDropOrBrowse')}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
@@ -226,9 +224,7 @@ export function UploadFileModal({
                   <UploadCloud className="size-6" aria-hidden="true" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">
-                    Click to browse or drop file here
-                  </p>
+                  <p className="text-sm font-medium text-foreground">{t('connector.clickToBrowseOrDrop')}</p>
                   <p className="text-xs text-muted-foreground mt-0.5 font-mono">
                     {accept ? `Accepted: ${accept}` : "All file types supported (.proto, .so, .zip, .json, .yaml)"}
                   </p>
@@ -254,7 +250,7 @@ export function UploadFileModal({
                   size="icon"
                   className="size-7 text-muted-foreground hover:text-foreground shrink-0 touch-manipulation"
                   onClick={() => setSelectedFile(null)}
-                  aria-label="Remove selected file"
+                  aria-label={t('connector.removeSelectedFile')}
                 >
                   <X className="size-4" aria-hidden="true" />
                 </Button>
@@ -265,9 +261,7 @@ export function UploadFileModal({
           <TabsContent value="text" className="flex flex-col gap-3 m-0 focus-visible:outline-none">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="upload-text-filename" className="text-xs font-medium">
-                  File Name
-                </Label>
+                <Label htmlFor="upload-text-filename" className="text-xs font-medium">{t('connector.fileName')}</Label>
                 <span className="text-[11px] font-mono text-muted-foreground">
                   Format: {currentLang}
                 </span>
@@ -282,7 +276,7 @@ export function UploadFileModal({
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label className="text-xs font-medium">File Content</Label>
+              <Label className="text-xs font-medium">{t('connector.fileContent')}</Label>
               <div className="h-[280px] w-full border rounded-md overflow-hidden bg-background">
                 <CodeEditor
                   value={textContent}
@@ -300,9 +294,7 @@ export function UploadFileModal({
             size="sm"
             onClick={() => onOpenChange(false)}
             disabled={submitting}
-          >
-            Cancel
-          </Button>
+          >{t('common.cancel')}</Button>
           <Button
             size="sm"
             onClick={handleSubmit}

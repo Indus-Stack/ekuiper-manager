@@ -3,6 +3,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { useT } from '@/lib/i18n';
 export type FlowStudioSaveStatus = 'saved' | 'saving' | 'unsaved' | 'error';
 
 export type FlowDeploymentStatus = 'deployed' | 'undeployed' | 'never-deployed';
@@ -36,6 +37,7 @@ export function FlowStudioHeader({
   runtimeState,
   className,
 }: FlowStudioHeaderProps) {
+  const t = useT();
   return (
     <div
       className={cn("flex min-w-0 flex-1 items-center gap-3", className)}
@@ -106,13 +108,11 @@ export function FlowStudioHeader({
 
       <Button
         type="button"
-        aria-label="Deploy flow"
+        aria-label={t('flow.deployFlow')}
         disabled={deployDisabled}
         onClick={onDeploy}
         size="sm"
-      >
-        Deploy
-      </Button>
+      >{t('flow.deploy')}</Button>
     </div>
   );
 }

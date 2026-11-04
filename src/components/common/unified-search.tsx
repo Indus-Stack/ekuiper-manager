@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/command";
 import { ekuiperClient } from "@/lib/ekuiper/client";
 import { useServerStore } from "@/stores/server-store";
+import { useT } from "@/lib/i18n";
 
 interface SearchItem {
     id: string;
@@ -29,6 +30,7 @@ interface SearchItem {
 }
 
 export function UnifiedSearch() {
+    const t = useT();
     const [open, setOpen] = React.useState(false);
     const router = useRouter();
     const { activeServerId, servers } = useServerStore();
@@ -94,31 +96,31 @@ export function UnifiedSearch() {
     return (
         <>
             <CommandDialog open={open} onOpenChange={setOpen}>
-                <CommandInput placeholder={loading ? "Loading node resources…" : "Type a command or search…"} />
+                <CommandInput placeholder={loading ? t("layout.loadingNodeResources") : t("layout.commandPlaceholder")} />
                 {loading && (
                     <div className="h-0.5 w-full bg-primary/20 overflow-hidden">
                         <div className="h-full bg-primary animate-pulse w-full" />
                     </div>
                 )}
                 <CommandList>
-                    <CommandEmpty>No results found.</CommandEmpty>
+                    <CommandEmpty>{t("layout.noResults")}</CommandEmpty>
 
-                    <CommandGroup heading="Suggestions">
+                    <CommandGroup heading={t("layout.suggestions")}>
                         <CommandItem onSelect={() => runCommand(() => router.push("/dashboard"))}>
                             <Server className="mr-2 h-4 w-4" aria-hidden="true" />
-                            <span>Dashboard</span>
+                            <span>{t("nav.overview")}</span>
                         </CommandItem>
                         <CommandItem onSelect={() => runCommand(() => router.push("/streams"))}>
                             <Database className="mr-2 h-4 w-4" aria-hidden="true" />
-                            <span>Streams</span>
+                            <span>{t("nav.streams")}</span>
                         </CommandItem>
                         <CommandItem onSelect={() => runCommand(() => router.push("/rules"))}>
                             <Workflow className="mr-2 h-4 w-4" aria-hidden="true" />
-                            <span>Rules</span>
+                            <span>{t("nav.rules")}</span>
                         </CommandItem>
                         <CommandItem onSelect={() => runCommand(() => router.push("/data/import"))}>
                             <Upload className="mr-2 h-4 w-4" aria-hidden="true" />
-                            <span>Import configuration</span>
+                            <span>{t("layout.importConfiguration")}</span>
                         </CommandItem>
                     </CommandGroup>
 
@@ -126,7 +128,7 @@ export function UnifiedSearch() {
 
                     {/* Dynamic Groups */}
                     {items.filter(i => i.type === "rule").length > 0 && (
-                        <CommandGroup heading="Rules">
+                        <CommandGroup heading={t("nav.rules")}>
                             {items.filter(i => i.type === "rule").slice(0, 5).map(item => (
                                 <CommandItem key={item.id} onSelect={() => runCommand(() => router.push(item.href))}>
                                     <Workflow className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -137,7 +139,7 @@ export function UnifiedSearch() {
                     )}
 
                     {items.filter(i => i.type === "stream").length > 0 && (
-                        <CommandGroup heading="Streams">
+                        <CommandGroup heading={t("nav.streams")}>
                             {items.filter(i => i.type === "stream").slice(0, 5).map(item => (
                                 <CommandItem key={item.id} onSelect={() => runCommand(() => router.push(item.href))}>
                                     <Database className="mr-2 h-4 w-4" aria-hidden="true" />
@@ -148,7 +150,7 @@ export function UnifiedSearch() {
                     )}
 
                     {items.filter(i => i.type === "table").length > 0 && (
-                        <CommandGroup heading="Tables">
+                        <CommandGroup heading={t("nav.tables")}>
                             {items.filter(i => i.type === "table").slice(0, 5).map(item => (
                                 <CommandItem key={item.id} onSelect={() => runCommand(() => router.push(item.href))}>
                                     <Database className="mr-2 h-4 w-4" aria-hidden="true" />

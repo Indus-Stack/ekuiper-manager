@@ -28,6 +28,7 @@ import { SinkBaseForm, type SinkBaseOptions } from '@/components/connectors/sink
 import { ConnectorIcon } from '@/components/connectors/connector-icon';
 import { ekuiperClient } from '@/lib/ekuiper/client';
 import type { MetadataItem, MetadataProperty, MetadataDetail } from '@/lib/ekuiper/types';
+import { useI18n, toShortLang, useT } from '@/lib/i18n';
 
 export interface ConfKeyModalProps {
   open: boolean;
@@ -48,6 +49,9 @@ export function ConfKeyModal({
   isEdit = false,
   onSaved,
 }: ConfKeyModalProps) {
+  const { locale } = useI18n();
+  const lang = toShortLang(locale);
+  const t = useT();
   const [name, setName] = React.useState(initialName);
   const [type, setType] = React.useState(initialType);
   const [availableTypes, setAvailableTypes] = React.useState<MetadataItem[]>([]);
@@ -258,13 +262,13 @@ export function ConfKeyModal({
         }
       }
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to load configuration details');
+      toast.error(e instanceof Error ? e.message : t('page.loadConfigFailed'));
     }
   };
 
   const handleTestConnection = async () => {
     if (!type) {
-      toast.error('Select a connector type first');
+      toast.error(t('page.selectConnectorTypeFirst'));
       return;
     }
     setTesting(true);
@@ -278,14 +282,14 @@ export function ConfKeyModal({
       const res = await ekuiperClient.testConnection(category, type, payload);
       if (res.success) {
         setTestResult({ success: true, message: 'Connection successful!' });
-        toast.success('Connection test succeeded');
+        toast.success(t('page.connectionTestSucceeded'));
       } else {
-        const msg = res.error || res.message || 'Connection test failed';
+        const msg = res.error || res.message || t('page.connectionTestFailed');
         setTestResult({ success: false, message: msg });
         toast.error(`Connection failed: ${msg}`);
       }
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Connection test request failed';
+      const msg = e instanceof Error ? e.message : t('page.connectionTestRequestFailed');
       setTestResult({ success: false, message: msg });
       toast.error(`Connection test error: ${msg}`);
     } finally {
@@ -295,11 +299,11 @@ export function ConfKeyModal({
 
   const handleSave = async () => {
     if (!name.trim()) {
-      toast.error('Configuration name is required');
+      toast.error(t('page.configNameRequired'));
       return;
     }
     if (!type) {
-      toast.error('Connector type is required');
+      toast.error(t('page.connectorTypeRequired'));
       return;
     }
 
@@ -327,23 +331,25 @@ export function ConfKeyModal({
       }
 
       await ekuiperClient.upsertConfKey(category, type, name.trim(), payload);
-      toast.success(`${category === 'sinks' ? 'Sink template' : 'Configuration'} ${isEdit ? 'updated' : 'created'}`);
+      toast.success(t(category === 'sinks'
+          ? (isEdit ? 'page.sinkTemplateUpdated' : 'page.sinkTemplateCreated')
+          : (isEdit ? 'page.configurationUpdated' : 'page.configurationCreated')));
       onOpenChange(false);
       onSaved?.(name.trim(), type);
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Failed to save configuration');
+      toast.error(e instanceof Error ? e.message : t('page.saveConfigFailed'));
     } finally {
       setSaving(false);
     }
   };
 
-  const titlePrefix = isEdit ? 'Edit' : 'Create';
+  const titlePrefix = isEdit ? t('page.edit') : t('page.create');
   const categoryTitle =
     category === 'sources'
-      ? 'Source Configuration Key'
+      ? t('page.sourceConfigKeyTitle')
       : category === 'sinks'
-      ? 'Sink Template'
-      : 'Connection Configuration';
+      ? t('page.sinkTemplateTitle')
+      : t('page.connectionConfiguration');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -378,7 +384,7 @@ export function ConfKeyModal({
                  id="conf-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. factory_mqtt_conf"
+                placeholder={t('page.confNamePlaceholder')}
                 disabled={isEdit || saving}
                 className="h-9 text-base md:text-xs font-mono"
               />
@@ -394,7 +400,7 @@ export function ConfKeyModal({
                 disabled={isEdit || saving || Boolean(initialType)}
               >
                 <SelectTrigger id="conf-type" className="h-9 text-xs font-mono">
-                  <SelectValue placeholder="Select connector type" />
+                  <SelectValue placeholder={t('page.selectConnectorType')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -407,7 +413,7 @@ export function ConfKeyModal({
                             <span>{typeName}</span>
                             {t.about?.label && (
                               <span className="text-muted-foreground text-[11px]">
-                                ({i18nLabel(t.about.label)})
+                                ({i18nLabel(t.about.label, lang)})
                               </span>
                             )}
                           </div>

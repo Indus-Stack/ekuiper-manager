@@ -4,6 +4,7 @@ import * as React from "react";
 import { useServerStore } from "@/stores/server-store";
 import { ekuiperClient } from "@/lib/ekuiper/client";
 import { AppLayout } from "@/components/layout";
+import { useT } from '@/lib/i18n';
 import { EmptyState, LoadingSpinner } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +20,7 @@ import { toast } from "sonner";
 import { RuleListItem } from "@/lib/ekuiper/types";
 
 export default function DataExportPage() {
+  const t = useT();
     const { servers, activeServerId } = useServerStore();
     const activeServer = servers.find((s) => s.id === activeServerId);
 
@@ -36,7 +38,7 @@ export default function DataExportPage() {
             const list = await ekuiperClient.listRules();
             setRules(list);
         } catch (err) {
-            toast.error("Failed to fetch rules for selection");
+            toast.error(t('extension.failedFetchRules'));
         } finally {
             setLoading(false);
         }
@@ -52,7 +54,7 @@ export default function DataExportPage() {
         try {
             const blob = await ekuiperClient.exportData();
             downloadBlob(blob, `ekuiper-data-${new Date().toISOString().slice(0, 10)}.json`);
-            toast.success("Configuration export completed");
+            toast.success(t('extension.exportCompleted'));
         } catch (err) {
             toast.error(`Export failed: ${err instanceof Error ? err.message : "Error"}`);
         } finally {
@@ -63,14 +65,14 @@ export default function DataExportPage() {
     const handlePartialExport = async () => {
         if (!activeServer) return;
         if (selectedRules.length === 0) {
-            toast.error("Select at least one rule");
+            toast.error(t('extension.selectAtLeastOneRule'));
             return;
         }
         setExportingPartial(true);
         try {
             const blob = await ekuiperClient.exportRuleset(selectedRules);
             downloadBlob(blob, `ekuiper-ruleset-${new Date().toISOString().slice(0, 10)}.json`);
-            toast.success("Ruleset export completed");
+            toast.success(t('extension.rulesetExportCompleted'));
         } catch (err) {
             toast.error(`Export failed: ${err instanceof Error ? err.message : "Error"}`);
         } finally {
@@ -105,21 +107,21 @@ export default function DataExportPage() {
 
     if (!activeServer) {
         return (
-            <AppLayout title="Data Export">
+            <AppLayout title={t('nav.dataExportFull')}>
                 <EmptyState
-                    title="No Server Connected"
-                    description="Connect to an eKuiper server to export data."
+                    title={t('extension.noServerConnected')}
+                    description={t('admin.connectToExport')}
                 />
             </AppLayout>
         );
     }
 
     return (
-        <AppLayout title="Data Export">
+        <AppLayout title={t('nav.dataExportFull')}>
             <div className="flex flex-col gap-6">
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight">Export eKuiper configuration</h2>
-                    <p className="text-muted-foreground">Download configuration from the selected node. Manager users and registered nodes are not included.</p>
+                    <h2 className="text-2xl font-bold tracking-tight">{t('admin.exportConfig')}</h2>
+                    <p className="text-muted-foreground">{t('extension.exportConfigHint')}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -127,27 +129,21 @@ export default function DataExportPage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Archive className="size-5" />
-                                Configuration Export
-                            </CardTitle>
+                                <Archive className="size-5" />{t('admin.configExport')}</CardTitle>
                             <CardDescription>
-                                Export the configuration returned by eKuiper into a single JSON file for migration or reuse.
+                                {t('extension.exportFileHint')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="h-32 flex items-center justify-center bg-muted/20 rounded-md border border-dashed">
                                 <div className="text-center text-sm text-muted-foreground">
-                                    <CheckCircle2 className="size-8 mx-auto mb-2 text-green-500/50" />
-                                    Selected node configuration
-                                </div>
+                                    <CheckCircle2 className="size-8 mx-auto mb-2 text-green-500/50" />{t('admin.selectedNodeConfig')}</div>
                             </div>
                         </CardContent>
                         <CardFooter>
                             <Button className="w-full" onClick={handleFullExport} disabled={exportingFull}>
                                 {exportingFull && <Loader2 className="mr-2 size-4 animate-spin" />}
-                                <Download className="mr-2 size-4" />
-                                Download Configuration
-                            </Button>
+                                <Download className="mr-2 size-4" />{t('admin.downloadConfig')}</Button>
                         </CardFooter>
                     </Card>
 
@@ -155,18 +151,16 @@ export default function DataExportPage() {
                     <Card className="flex flex-col">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <CheckCircle2 className="size-5" />
-                                Selective Ruleset Export
-                            </CardTitle>
+                                <CheckCircle2 className="size-5" />{t('admin.selectiveExport')}</CardTitle>
                             <CardDescription>
-                                Export the selected rules using eKuiper&apos;s selective data export endpoint.
+                                {t('extension.selectiveExportHint')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="flex-1 min-h-0 flex flex-col">
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm font-medium">{selectedRules.length} selected</span>
                                 <Button variant="ghost" size="sm" onClick={toggleAll} className="h-8 text-xs">
-                                    {selectedRules.length === rules.length ? "Deselect All" : "Select All"}
+                                    {selectedRules.length === rules.length ? t('extension.deselectAll') : t('extension.selectAll')}
                                 </Button>
                             </div>
                             {loading ? (
@@ -175,7 +169,7 @@ export default function DataExportPage() {
                                 <div className="border rounded-md flex-1 min-h-[12rem] bg-card">
                                     <ScrollArea className="h-48">
                                         <div className="p-4 flex flex-col gap-2">
-                                            {rules.length === 0 && <div className="text-sm text-muted-foreground text-center">No rules found</div>}
+                                            {rules.length === 0 && <div className="text-sm text-muted-foreground text-center">{t('admin.noRulesFound')}</div>}
                                             {rules.map(rule => (
                                                 <div key={rule.id} className="flex items-center gap-2">
                                                     <Checkbox
@@ -199,9 +193,7 @@ export default function DataExportPage() {
                         <CardFooter>
                             <Button className="w-full" variant="outline" onClick={handlePartialExport} disabled={exportingPartial || selectedRules.length === 0}>
                                 {exportingPartial && <Loader2 className="mr-2 size-4 animate-spin" />}
-                                <Download className="mr-2 size-4" />
-                                Export Ruleset
-                            </Button>
+                                <Download className="mr-2 size-4" />{t('admin.exportRulesetBtn')}</Button>
                         </CardFooter>
                     </Card>
                 </div>

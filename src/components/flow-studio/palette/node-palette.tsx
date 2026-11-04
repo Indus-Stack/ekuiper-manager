@@ -9,6 +9,7 @@ import type {
 import type { TargetCapabilityProfile } from "@/lib/flows/capabilities/types";
 import { isDefinitionSupportedByCapabilities } from "@/lib/flows/validation/capability-validation";
 
+import { useT } from '@/lib/i18n';
 export interface NodePaletteProps {
   definitions?: FlowNodeDefinition[];
   /**
@@ -113,6 +114,7 @@ function matchesPaletteSearch(
 }
 
 export function NodePalette({ definitions, capabilities, children, className }: NodePaletteProps) {
+  const t = useT();
   const [search, setSearch] = React.useState("");
   const filteredDefinitions = React.useMemo(
     () =>
@@ -132,13 +134,9 @@ export function NodePalette({ definitions, capabilities, children, className }: 
     body = children;
   } else if (!groups || groups.length === 0) {
     body = hasQuery ? (
-      <p role="status" className="text-xs text-muted-foreground">
-        No nodes match your search.
-      </p>
+      <p role="status" className="text-xs text-muted-foreground">{t('flow.noNodesMatch')}</p>
     ) : (
-      <p className="text-xs text-muted-foreground">
-        No nodes available yet.
-      </p>
+      <p className="text-xs text-muted-foreground">{t('flow.noNodesAvailable')}</p>
     );
   } else {
     body = (
@@ -217,19 +215,19 @@ export function NodePalette({ definitions, capabilities, children, className }: 
 
   return (
     <section
-      aria-label="Node palette panel"
+      aria-label={t('flow.palettePanel')}
       className={cn("flex h-full min-h-0 flex-col", className)}
       data-testid="node-palette"
     >
       <div className="shrink-0 flex flex-col gap-2 border-b px-4 py-3">
-        <h2 className="text-sm font-semibold leading-tight">Palette</h2>
+        <h2 className="text-sm font-semibold leading-tight">{t('flow.palette')}</h2>
         {children === undefined ? (
           <Input
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search nodes"
-            aria-label="Search nodes"
+            placeholder={t('flow.searchNodes')}
+            aria-label={t('flow.searchNodes')}
             data-testid="node-palette-search"
             className="h-8"
           />

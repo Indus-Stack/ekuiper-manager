@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useT } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -222,6 +223,7 @@ function Investigation({ activity, rounds }: { activity: AssistantActivity[]; ro
 }
 
 export function Assistant({ pageTitle }: AssistantProps) {
+  const t = useT();
   const pathname = usePathname();
   const activeServer = useServerStore((state) => state.getActiveServer());
   const [open, setOpen] = React.useState(false);
@@ -320,10 +322,10 @@ export function Assistant({ pageTitle }: AssistantProps) {
         <SheetTrigger asChild>
           <Button
             className="fixed bottom-5 right-5 z-40 h-12 rounded-full px-4 shadow-beautiful-md active:scale-95"
-            aria-label="Open AI assistant"
+            aria-label={t('layout.openAssistant')}
           >
             <Sparkles className="mr-2 h-4 w-4" />
-            Ask AI
+            {t('admin.askAi')}
           </Button>
         </SheetTrigger>
         <SheetContent
@@ -334,7 +336,7 @@ export function Assistant({ pageTitle }: AssistantProps) {
           <SheetHeader className="border-b p-5 pr-12 text-left">
             <div className="flex items-center gap-2">
               <Bot className="h-5 w-5 text-primary" />
-              <SheetTitle>Operations agent</SheetTitle>
+              <SheetTitle>{t('layout.assistantTitle')}</SheetTitle>
             </div>
             <SheetDescription>
               Read-only investigation for {pageTitle}. It correlates live state; you control every change.
@@ -372,7 +374,7 @@ export function Assistant({ pageTitle }: AssistantProps) {
 
               {status && !status.enabled && (
                 <div className="rounded-lg border border-dashed p-4 text-sm">
-                  <p className="font-medium">Assistant provider not configured</p>
+                  <p className="font-medium">{t('layout.assistantNotConfigured')}</p>
                   <p className="mt-2 text-muted-foreground">
                     The Manager owner can enable it with <code>AI_ASSISTANT_ENABLED</code>,{' '}
                     <code>AI_API_URL</code>, <code>AI_MODEL</code>, and optionally{' '}
@@ -436,8 +438,8 @@ export function Assistant({ pageTitle }: AssistantProps) {
                     index === messages.length - 1 &&
                     message.suggestions &&
                     message.suggestions.length > 0 && (
-                      <div className="mt-2 flex flex-col gap-2" aria-label="Suggested next questions">
-                        <p className="text-xs font-medium text-muted-foreground">Continue with</p>
+                      <div className="mt-2 flex flex-col gap-2" aria-label={t('layout.suggestedQuestions')}>
+                        <p className="text-xs font-medium text-muted-foreground">{t('layout.continueWith')}</p>
                         <div className="flex flex-wrap gap-2">
                           {message.suggestions.map((suggestion) => (
                             <Button
@@ -486,7 +488,7 @@ export function Assistant({ pageTitle }: AssistantProps) {
                 id="assistant-message"
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
-                placeholder={status?.enabled ? 'Ask about this page or live stack…' : 'Assistant is not configured'}
+                placeholder={status?.enabled ? t('layout.assistantPlaceholder') : t('layout.assistantDisabledPlaceholder')}
                 maxLength={4_000}
                 rows={3}
                 disabled={!status?.enabled || sending}
@@ -501,7 +503,7 @@ export function Assistant({ pageTitle }: AssistantProps) {
                 type="submit"
                 size="icon"
                 disabled={!status?.enabled || sending || !draft.trim()}
-                aria-label="Send message"
+                aria-label={t('layout.sendMessage')}
               >
                 {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>

@@ -3,9 +3,10 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LogOut, Settings, UserRound } from 'lucide-react';
+import { Check, Globe, LogOut, Settings, UserRound } from 'lucide-react';
 import { ServerSelector } from './server-selector';
 import { MobileNav } from './mobile-nav';
+import { LOCALES, LOCALE_LABELS, useI18n, type Locale } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -28,6 +29,7 @@ interface SessionUser {
 
 export function Header({ title }: HeaderProps) {
   const router = useRouter();
+  const { locale, setLocale, t } = useI18n();
   const [user, setUser] = React.useState<SessionUser | null>(null);
 
   React.useEffect(() => {
@@ -52,16 +54,36 @@ export function Header({ title }: HeaderProps) {
         <ServerSelector />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Account menu">
+            <Button variant="ghost" size="icon" aria-label={t('common.language')}>
+              <Globe className="size-4" aria-hidden="true" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuLabel>{t('common.language')}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {LOCALES.map((option: Locale) => (
+              <DropdownMenuItem key={option} onSelect={() => setLocale(option)}>
+                <Check
+                  className={`mr-2 size-4 ${option === locale ? 'opacity-100' : 'opacity-0'}`}
+                  aria-hidden="true"
+                />
+                {LOCALE_LABELS[option]}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label={t('layout.accountMenu')}>
               <UserRound className="size-4" aria-hidden="true" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>
-              <span className="block truncate" title={user?.username ?? 'Account'}>{user?.username ?? 'Account'}</span>
+              <span className="block truncate" title={user?.username ?? ''}>{user?.username ?? ''}</span>
               {user && (
                 <span className="text-xs font-normal text-muted-foreground">
-                  {user.role === 'OWNER' ? 'Owner' : 'User'}
+                  {user.role === 'OWNER' ? t('layout.owner') : t('layout.user')}
                 </span>
               )}
             </DropdownMenuLabel>
@@ -69,11 +91,11 @@ export function Header({ title }: HeaderProps) {
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
                 <Link href="/settings">
-                  <Settings className="mr-2 size-4" aria-hidden="true" /> Settings
+                  <Settings className="mr-2 size-4" aria-hidden="true" /> {t('nav.settings')}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={logout}>
-                <LogOut className="mr-2 size-4" aria-hidden="true" /> Sign out
+                <LogOut className="mr-2 size-4" aria-hidden="true" /> {t('layout.signOut')}
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>

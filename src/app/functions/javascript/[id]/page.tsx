@@ -20,6 +20,7 @@ import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { CodeEditor } from "@/components/ui/code-editor";
 
+import { useT } from '@/lib/i18n';
 const DEFAULT_SCRIPT = `/**
  * Custom JavaScript UDF
  * @param {any[]} args - The arguments passed to the function
@@ -32,6 +33,7 @@ function main(...args) {
 `;
 
 export default function JSUDFEditorPage() {
+  const t = useT();
     const router = useRouter();
     const params = useParams() as { id: string };
     const { servers, activeServerId } = useServerStore();
@@ -79,17 +81,17 @@ export default function JSUDFEditorPage() {
         if (!activeServer) return;
 
         if (!funcId.trim()) {
-            toast.error("Function ID is required");
+            toast.error(t('extension.functionIdRequired'));
             return;
         }
 
         if (!script.trim()) {
-            toast.error("Script content is required");
+            toast.error(t('extension.scriptRequired'));
             return;
         }
 
         if (!description.trim()) {
-            toast.error("Description is required");
+            toast.error(t('extension.descriptionRequired'));
             return;
         }
 
@@ -120,10 +122,10 @@ export default function JSUDFEditorPage() {
 
     if (!activeServer) {
         return (
-            <AppLayout title={isNew ? "Create Function" : "Edit Function"}>
+            <AppLayout title={isNew ? t('extension.createFunction') : t('extension.editFunction')}>
                 <EmptyState
-                    title="No Server Connected"
-                    description="Connect to an eKuiper server to manage functions."
+                    title={t('extension.noServerConnected')}
+                    description={t('extension.connectToManageFunctions')}
                 />
             </AppLayout>
         );
@@ -134,7 +136,7 @@ export default function JSUDFEditorPage() {
     }
 
     return (
-        <AppLayout title={isNew ? "Create Function" : "Edit Function"}>
+        <AppLayout title={isNew ? t('extension.createFunction') : t('extension.editFunction')}>
             <div className="flex flex-col h-[calc(100vh-140px)] gap-6">
                 {/* Header */}
                 <div className="flex items-center justify-between shrink-0">
@@ -143,7 +145,7 @@ export default function JSUDFEditorPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => router.push("/functions")}
-                            aria-label="Back to functions"
+                            aria-label={t('extension.backToFunctions')}
                         >
                             <ArrowLeft className="size-5" aria-hidden="true" />
                         </Button>
@@ -151,19 +153,17 @@ export default function JSUDFEditorPage() {
                             <Code2 className="size-6 text-yellow-500" aria-hidden="true" />
                             <div>
                                 <h2 className="text-2xl font-bold tracking-tight">
-                                    {isNew ? "Create JavaScript UDF" : funcId}
+                                    {isNew ? t('extension.createJsUdf') : funcId}
                                 </h2>
                                 <p className="text-muted-foreground">
-                                    {isNew ? "Define a new custom function using JavaScript" : "Edit function logic"}
+                                    {isNew ? t('extension.createJsUdfHint') : t('extension.editFunctionHint')}
                                 </p>
                             </div>
                         </div>
                     </div>
                     <Button onClick={handleSave} disabled={saving}>
                         {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
-                        <Save className="mr-2 size-4" />
-                        Save Function
-                    </Button>
+                        <Save className="mr-2 size-4" />{t('extension.saveFunction')}</Button>
                 </div>
 
                 {/* Editor Layout */}
@@ -171,12 +171,12 @@ export default function JSUDFEditorPage() {
                     {/* Sidebar / Config */}
                     <Card className="h-fit">
                         <CardHeader>
-                            <CardTitle>Configuration</CardTitle>
-                            <CardDescription>Function metadata</CardDescription>
+                            <CardTitle>{t('extension.configLabel')}</CardTitle>
+                            <CardDescription>{t('extension.functionMetadata')}</CardDescription>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-4">
                             <div className="flex flex-col gap-2">
-                                <Label htmlFor="funcId">Function ID</Label>
+                                <Label htmlFor="funcId">{t('extension.functionId')}</Label>
                                 <Input
                                     id="funcId"
                                     value={funcId}
@@ -184,25 +184,23 @@ export default function JSUDFEditorPage() {
                                     disabled={!isNew}
                                     placeholder="myCustomFunc"
                                 />
-                                {!isNew && <p className="text-xs text-muted-foreground">ID cannot be changed after creation</p>}
+                                {!isNew && <p className="text-xs text-muted-foreground">{t('extension.idImmutable')}</p>}
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <Label htmlFor="description">Description</Label>
+                                <Label htmlFor="description">{t('extension.descriptionLabel')}</Label>
                                 <Input
                                     id="description"
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
-                                    placeholder="What this function returns"
+                                    placeholder={t('extension.returnValue')}
                                 />
                             </div>
 
                             <div className="flex items-center justify-between rounded-lg border p-3 shadow-beautiful-sm">
                                 <div className="flex flex-col gap-0.5">
-                                    <Label htmlFor="isAgg">Aggregate Function</Label>
-                                    <p className="text-xs text-muted-foreground">
-                                        Enable if this function performs aggregation
-                                    </p>
+                                    <Label htmlFor="isAgg">{t('extension.aggregateFunction')}</Label>
+                                    <p className="text-xs text-muted-foreground">{t('extension.aggregateHint')}</p>
                                 </div>
                                 <Switch
                                     id="isAgg"
@@ -222,9 +220,7 @@ export default function JSUDFEditorPage() {
                                 language="javascript"
                             />
                         </div>
-                        <p className="text-xs text-muted-foreground mt-2">
-                            Write your JavaScript logic above. The function must return a value.
-                        </p>
+                        <p className="text-xs text-muted-foreground mt-2">{t('extension.jsLogicHint')}</p>
                     </div>
                 </div>
             </div>

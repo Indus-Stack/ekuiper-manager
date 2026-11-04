@@ -47,126 +47,126 @@ const COMMON_ACTION_KEYS = new Set([
 ]);
 
 const COMMON_FIELDS: SinkFieldDefinition[] = [
-  { key: 'sendSingle', label: 'Send each row separately', kind: 'boolean', hint: 'Emit one sink message per result row.' },
-  { key: 'omitIfEmpty', label: 'Omit empty results', kind: 'boolean' },
-  { key: 'dataTemplate', label: 'Data template', kind: 'string', placeholder: '{{json .}}' },
+  { key: 'sendSingle', label: 'sinklabel.send_each_row_separately', kind: 'boolean', hint: 'sinkhint.emit_one_sink_message_per_result_row' },
+  { key: 'omitIfEmpty', label: 'sinklabel.omit_empty_results', kind: 'boolean' },
+  { key: 'dataTemplate', label: 'sinklabel.data_template', kind: 'string', placeholder: '{{json .}}' },
 ];
 
 export const BUILTIN_SINKS: Array<{ type: string; label: string; description: string }> = [
-  { type: 'log', label: 'Log', description: 'Write result rows to the eKuiper log.' },
-  { type: 'nop', label: 'No-op', description: 'Discard output; useful for testing processing cost.' },
-  { type: 'mqtt', label: 'MQTT', description: 'Publish results to an MQTT topic or shared connection.' },
-  { type: 'rest', label: 'HTTP / REST', description: 'Send results to an HTTP/REST endpoint.' },
-  { type: 'memory', label: 'Memory', description: 'Publish results to an in-memory topic.' },
-  { type: 'file', label: 'File', description: 'Write results to a file managed by eKuiper.' },
-  { type: 'sql', label: 'SQL', description: 'Insert results into a SQL database table.' },
-  { type: 'influx2', label: 'InfluxDB v2', description: 'Write time-series data points to InfluxDB v2 bucket.' },
-  { type: 'influx', label: 'InfluxDB v1', description: 'Write metrics to InfluxDB v1 database.' },
-  { type: 'kafka', label: 'Kafka', description: 'Stream messages to an Apache Kafka topic.' },
-  { type: 'redis', label: 'Redis / RedisPub', description: 'Publish messages to Redis key or Pub/Sub channel.' },
-  { type: 'image', label: 'Image Store', description: 'Save processed video frames or image buffers to disk.' },
-  { type: 'websocket', label: 'WebSocket', description: 'Stream output messages over an outbound WebSocket.' },
-  { type: 'neuron', label: 'Neuron Gateway', description: 'Forward processed data to Neuron northbound nodes.' },
-  { type: 'edgex', label: 'EdgeX Foundry', description: 'Publish results to an installed EdgeX Foundry bus.' },
+  { type: 'log', label: 'sinklabel.log', description: 'sinkdesc.write_result_rows_to_the_ekuiper_log' },
+  { type: 'nop', label: 'sinklabel.no_op', description: 'sinkdesc.discard_output_useful_for_testing_processing_cost' },
+  { type: 'mqtt', label: 'sinklabel.mqtt', description: 'sinkdesc.publish_results_to_an_mqtt_topic_or_shared_connection' },
+  { type: 'rest', label: 'sinklabel.http_rest', description: 'sinkdesc.send_results_to_an_http_rest_endpoint' },
+  { type: 'memory', label: 'sinklabel.memory', description: 'sinkdesc.publish_results_to_an_in_memory_topic' },
+  { type: 'file', label: 'sinklabel.file', description: 'sinkdesc.write_results_to_a_file_managed_by_ekuiper' },
+  { type: 'sql', label: 'sinklabel.sql', description: 'sinkdesc.insert_results_into_a_sql_database_table' },
+  { type: 'influx2', label: 'sinklabel.influxdb_v2', description: 'sinkdesc.write_time_series_data_points_to_influxdb_v2_bucket' },
+  { type: 'influx', label: 'sinklabel.influxdb_v1', description: 'sinkdesc.write_metrics_to_influxdb_v1_database' },
+  { type: 'kafka', label: 'sinklabel.kafka', description: 'sinkdesc.stream_messages_to_an_apache_kafka_topic' },
+  { type: 'redis', label: 'sinklabel.redis_redispub', description: 'sinkdesc.publish_messages_to_redis_key_or_pub_sub_channel' },
+  { type: 'image', label: 'sinklabel.image_store', description: 'sinkdesc.save_processed_video_frames_or_image_buffers_to_disk' },
+  { type: 'websocket', label: 'sinklabel.websocket', description: 'sinkdesc.stream_output_messages_over_an_outbound_websocket' },
+  { type: 'neuron', label: 'sinklabel.neuron_gateway', description: 'sinkdesc.forward_processed_data_to_neuron_northbound_nodes' },
+  { type: 'edgex', label: 'sinklabel.edgex_foundry', description: 'sinkdesc.publish_results_to_an_installed_edgex_foundry_bus' },
 ];
 
 const KNOWN_FIELDS: Record<string, SinkFieldDefinition[]> = {
   log: [],
-  nop: [{ key: 'log', label: 'Log discarded rows', kind: 'boolean' }],
+  nop: [{ key: 'log', label: 'sinklabel.log_discarded_rows', kind: 'boolean' }],
   mqtt: [
-    { key: 'connectionSelector', label: 'Shared connection', kind: 'string', placeholder: 'connection id' },
-    { key: 'server', label: 'Broker URL', kind: 'string', placeholder: 'tcp://broker:1883' },
-    { key: 'topic', label: 'Topic', kind: 'string', required: true, placeholder: 'factory/alerts' },
-    { key: 'clientId', label: 'Client ID', kind: 'string' },
-    { key: 'username', label: 'Username', kind: 'string' },
-    { key: 'password', label: 'Password', kind: 'secret' },
-    { key: 'qos', label: 'QoS', kind: 'number', options: ['0', '1', '2'] },
-    { key: 'retained', label: 'Retain message', kind: 'boolean' },
-    { key: 'insecureSkipVerify', label: 'Skip TLS verification', kind: 'boolean' },
-    { key: 'certificationPath', label: 'CA certificate path', kind: 'string' },
-    { key: 'privateKeyPath', label: 'Private key path', kind: 'secret' },
+    { key: 'connectionSelector', label: 'sinklabel.shared_connection', kind: 'string', placeholder: 'connection id' },
+    { key: 'server', label: 'sinklabel.broker_url', kind: 'string', placeholder: 'tcp://broker:1883' },
+    { key: 'topic', label: 'sinklabel.topic', kind: 'string', required: true, placeholder: 'factory/alerts' },
+    { key: 'clientId', label: 'sinklabel.client_id', kind: 'string' },
+    { key: 'username', label: 'sinklabel.username', kind: 'string' },
+    { key: 'password', label: 'sinklabel.password', kind: 'secret' },
+    { key: 'qos', label: 'sinklabel.qos', kind: 'number', options: ['0', '1', '2'] },
+    { key: 'retained', label: 'sinklabel.retain_message', kind: 'boolean' },
+    { key: 'insecureSkipVerify', label: 'sinklabel.skip_tls_verification', kind: 'boolean' },
+    { key: 'certificationPath', label: 'sinklabel.ca_certificate_path', kind: 'string' },
+    { key: 'privateKeyPath', label: 'sinklabel.private_key_path', kind: 'secret' },
   ],
   rest: [
-    { key: 'url', label: 'URL', kind: 'string', required: true, placeholder: 'https://example.test/events' },
-    { key: 'method', label: 'Method', kind: 'string', options: ['POST', 'PUT', 'PATCH', 'GET', 'DELETE'] },
-    { key: 'bodyType', label: 'Body type', kind: 'string', options: ['json', 'text', 'form'] },
-    { key: 'headers', label: 'Headers', kind: 'json', placeholder: '{"Authorization":"..."}' },
-    { key: 'timeout', label: 'Timeout (ms)', kind: 'number' },
-    { key: 'insecureSkipVerify', label: 'Skip TLS verification', kind: 'boolean' },
+    { key: 'url', label: 'sinklabel.url', kind: 'string', required: true, placeholder: 'https://example.test/events' },
+    { key: 'method', label: 'sinklabel.method', kind: 'string', options: ['POST', 'PUT', 'PATCH', 'GET', 'DELETE'] },
+    { key: 'bodyType', label: 'sinklabel.body_type', kind: 'string', options: ['json', 'text', 'form'] },
+    { key: 'headers', label: 'sinklabel.headers', kind: 'json', placeholder: '{"Authorization":"..."}' },
+    { key: 'timeout', label: 'sinklabel.timeout_ms', kind: 'number' },
+    { key: 'insecureSkipVerify', label: 'sinklabel.skip_tls_verification', kind: 'boolean' },
   ],
   memory: [
-    { key: 'topic', label: 'Topic', kind: 'string', required: true },
-    { key: 'keyField', label: 'Key field', kind: 'string' },
+    { key: 'topic', label: 'sinklabel.topic', kind: 'string', required: true },
+    { key: 'keyField', label: 'sinklabel.key_field', kind: 'string' },
   ],
   file: [
-    { key: 'path', label: 'Path', kind: 'string', required: true },
-    { key: 'fileType', label: 'File type', kind: 'string', options: ['json', 'csv', 'lines'] },
-    { key: 'delimiter', label: 'Delimiter', kind: 'string' },
-    { key: 'hasHeader', label: 'Write header', kind: 'boolean' },
+    { key: 'path', label: 'sinklabel.path', kind: 'string', required: true },
+    { key: 'fileType', label: 'sinklabel.file_type', kind: 'string', options: ['json', 'csv', 'lines'] },
+    { key: 'delimiter', label: 'sinklabel.delimiter', kind: 'string' },
+    { key: 'hasHeader', label: 'sinklabel.write_header', kind: 'boolean' },
   ],
   sql: [
-    { key: 'dburl', label: 'Database URL', kind: 'secret', required: true, placeholder: 'connection string or DSN' },
-    { key: 'table', label: 'Table', kind: 'string', required: true },
-    { key: 'fields', label: 'Fields', kind: 'string-list', hint: 'One field per line or comma-separated.' },
-    { key: 'sendSingle', label: 'Insert rows separately', kind: 'boolean' },
+    { key: 'dburl', label: 'sinklabel.database_url', kind: 'secret', required: true, placeholder: 'connection string or DSN' },
+    { key: 'table', label: 'sinklabel.table', kind: 'string', required: true },
+    { key: 'fields', label: 'sinklabel.fields', kind: 'string-list', hint: 'sinkhint.one_field_per_line_or_comma_separated' },
+    { key: 'sendSingle', label: 'sinklabel.insert_rows_separately', kind: 'boolean' },
   ],
   edgex: [
-    { key: 'connectionSelector', label: 'Shared connection', kind: 'string' },
-    { key: 'protocol', label: 'Protocol', kind: 'string' },
-    { key: 'host', label: 'Host', kind: 'string' },
-    { key: 'port', label: 'Port', kind: 'number' },
-    { key: 'topic', label: 'Topic', kind: 'string' },
-    { key: 'topicPrefix', label: 'Topic prefix', kind: 'string' },
-    { key: 'contentType', label: 'Content type', kind: 'string' },
-    { key: 'messageType', label: 'Message type', kind: 'string' },
-    { key: 'metadata', label: 'Metadata', kind: 'json' },
-    { key: 'profileName', label: 'Profile name', kind: 'string' },
-    { key: 'deviceName', label: 'Device name', kind: 'string' },
-    { key: 'sourceName', label: 'Source name', kind: 'string' },
+    { key: 'connectionSelector', label: 'sinklabel.shared_connection', kind: 'string' },
+    { key: 'protocol', label: 'sinklabel.protocol', kind: 'string' },
+    { key: 'host', label: 'sinklabel.host', kind: 'string' },
+    { key: 'port', label: 'sinklabel.port', kind: 'number' },
+    { key: 'topic', label: 'sinklabel.topic', kind: 'string' },
+    { key: 'topicPrefix', label: 'sinklabel.topic_prefix', kind: 'string' },
+    { key: 'contentType', label: 'sinklabel.content_type', kind: 'string' },
+    { key: 'messageType', label: 'sinklabel.message_type', kind: 'string' },
+    { key: 'metadata', label: 'sinklabel.metadata', kind: 'json' },
+    { key: 'profileName', label: 'sinklabel.profile_name', kind: 'string' },
+    { key: 'deviceName', label: 'sinklabel.device_name', kind: 'string' },
+    { key: 'sourceName', label: 'sinklabel.source_name', kind: 'string' },
   ],
   influx2: [
-    { key: 'addr', label: 'Server Address', kind: 'string', required: true, placeholder: 'http://127.0.0.1:8086' },
-    { key: 'bucket', label: 'Bucket', kind: 'string', required: true, placeholder: 'my-bucket' },
-    { key: 'org', label: 'Organization', kind: 'string', required: true, placeholder: 'my-org' },
-    { key: 'token', label: 'API Token', kind: 'secret', placeholder: 'Token string' },
-    { key: 'measurement', label: 'Measurement', kind: 'string', placeholder: 'sensor_metrics' },
-    { key: 'precision', label: 'Precision', kind: 'string', options: ['s', 'ms', 'us', 'ns'] },
-    { key: 'useLineProtocol', label: 'Use Line Protocol', kind: 'boolean' },
+    { key: 'addr', label: 'sinklabel.server_address', kind: 'string', required: true, placeholder: 'http://127.0.0.1:8086' },
+    { key: 'bucket', label: 'sinklabel.bucket', kind: 'string', required: true, placeholder: 'my-bucket' },
+    { key: 'org', label: 'sinklabel.organization', kind: 'string', required: true, placeholder: 'my-org' },
+    { key: 'token', label: 'sinklabel.api_token', kind: 'secret', placeholder: 'Token string' },
+    { key: 'measurement', label: 'sinklabel.measurement', kind: 'string', placeholder: 'sensor_metrics' },
+    { key: 'precision', label: 'sinklabel.precision', kind: 'string', options: ['s', 'ms', 'us', 'ns'] },
+    { key: 'useLineProtocol', label: 'sinklabel.use_line_protocol', kind: 'boolean' },
   ],
   influx: [
-    { key: 'addr', label: 'Server Address', kind: 'string', required: true, placeholder: 'http://127.0.0.1:8086' },
-    { key: 'database', label: 'Database', kind: 'string', required: true, placeholder: 'telemetry' },
-    { key: 'measurement', label: 'Measurement', kind: 'string', placeholder: 'sensor_metrics' },
-    { key: 'username', label: 'Username', kind: 'string' },
-    { key: 'password', label: 'Password', kind: 'secret' },
-    { key: 'precision', label: 'Precision', kind: 'string', options: ['s', 'ms', 'us', 'ns'] },
+    { key: 'addr', label: 'sinklabel.server_address', kind: 'string', required: true, placeholder: 'http://127.0.0.1:8086' },
+    { key: 'database', label: 'sinklabel.database', kind: 'string', required: true, placeholder: 'telemetry' },
+    { key: 'measurement', label: 'sinklabel.measurement', kind: 'string', placeholder: 'sensor_metrics' },
+    { key: 'username', label: 'sinklabel.username', kind: 'string' },
+    { key: 'password', label: 'sinklabel.password', kind: 'secret' },
+    { key: 'precision', label: 'sinklabel.precision', kind: 'string', options: ['s', 'ms', 'us', 'ns'] },
   ],
   image: [
-    { key: 'path', label: 'Storage Path', kind: 'string', required: true, placeholder: './tmp' },
-    { key: 'imageFormat', label: 'Format', kind: 'string', options: ['jpeg', 'png'] },
-    { key: 'maxAge', label: 'Max Retention (hours)', kind: 'number', placeholder: '72' },
-    { key: 'maxCount', label: 'Max Image Count', kind: 'number', placeholder: '1000' },
+    { key: 'path', label: 'sinklabel.storage_path', kind: 'string', required: true, placeholder: './tmp' },
+    { key: 'imageFormat', label: 'sinklabel.format', kind: 'string', options: ['jpeg', 'png'] },
+    { key: 'maxAge', label: 'sinklabel.max_retention_hours', kind: 'number', placeholder: '72' },
+    { key: 'maxCount', label: 'sinklabel.max_image_count', kind: 'number', placeholder: '1000' },
   ],
   kafka: [
-    { key: 'brokers', label: 'Broker Addresses', kind: 'string', required: true, placeholder: '127.0.0.1:9092' },
-    { key: 'topic', label: 'Topic', kind: 'string', required: true, placeholder: 'alerts' },
-    { key: 'saslAuthType', label: 'SASL Auth Type', kind: 'string', options: ['none', 'plain', 'scram-sha-256', 'scram-sha-512'] },
-    { key: 'username', label: 'SASL Username', kind: 'string' },
-    { key: 'password', label: 'SASL Password', kind: 'secret' },
+    { key: 'brokers', label: 'sinklabel.broker_addresses', kind: 'string', required: true, placeholder: '127.0.0.1:9092' },
+    { key: 'topic', label: 'sinklabel.topic', kind: 'string', required: true, placeholder: 'alerts' },
+    { key: 'saslAuthType', label: 'sinklabel.sasl_auth_type', kind: 'string', options: ['none', 'plain', 'scram-sha-256', 'scram-sha-512'] },
+    { key: 'username', label: 'sinklabel.sasl_username', kind: 'string' },
+    { key: 'password', label: 'sinklabel.sasl_password', kind: 'secret' },
   ],
   redis: [
-    { key: 'addr', label: 'Redis Address', kind: 'string', required: true, placeholder: '127.0.0.1:6379' },
-    { key: 'topic', label: 'Pub/Sub Topic / Key', kind: 'string', required: true, placeholder: 'events' },
-    { key: 'db', label: 'Database Index', kind: 'number', placeholder: '0' },
-    { key: 'password', label: 'Password', kind: 'secret' },
+    { key: 'addr', label: 'sinklabel.redis_address', kind: 'string', required: true, placeholder: '127.0.0.1:6379' },
+    { key: 'topic', label: 'sinklabel.pub_sub_topic_key', kind: 'string', required: true, placeholder: 'events' },
+    { key: 'db', label: 'sinklabel.database_index', kind: 'number', placeholder: '0' },
+    { key: 'password', label: 'sinklabel.password', kind: 'secret' },
   ],
   websocket: [
-    { key: 'url', label: 'WebSocket URL', kind: 'string', required: true, placeholder: 'ws://127.0.0.1:8080/ws' },
+    { key: 'url', label: 'sinklabel.websocket_url', kind: 'string', required: true, placeholder: 'ws://127.0.0.1:8080/ws' },
   ],
   neuron: [
-    { key: 'url', label: 'Neuron URL', kind: 'string', required: true, placeholder: 'tcp://127.0.0.1:7081' },
-    { key: 'nodeName', label: 'Target Node Name', kind: 'string', required: true },
-    { key: 'groupName', label: 'Target Group Name', kind: 'string', required: true },
+    { key: 'url', label: 'sinklabel.neuron_url', kind: 'string', required: true, placeholder: 'tcp://127.0.0.1:7081' },
+    { key: 'nodeName', label: 'sinklabel.target_node_name', kind: 'string', required: true },
+    { key: 'groupName', label: 'sinklabel.target_group_name', kind: 'string', required: true },
   ],
 };
 
@@ -187,17 +187,24 @@ function metadataKind(property: MetadataProperty): SinkFieldKind {
   return 'string';
 }
 
-function toLabelString(val: unknown): string {
+export function toLabelString(val: unknown, lang: 'en' | 'zh' = 'en'): string {
   if (!val) return '';
   if (typeof val === 'string') return val;
   if (typeof val === 'object') {
     const obj = val as Record<string, string>;
-    return obj.en ?? obj.en_US ?? Object.values(obj)[0] ?? '';
+    if (lang === 'zh') {
+      return obj.zh ?? obj.zh_CN ?? obj['zh-CN'] ?? obj.en ?? obj.en_US ?? obj['en-US'] ?? Object.values(obj)[0] ?? '';
+    }
+    return obj.en ?? obj.en_US ?? obj['en-US'] ?? Object.values(obj)[0] ?? '';
   }
   return String(val);
 }
 
-export function sinkFields(type: string, metadata: MetadataProperty[] = []): SinkFieldDefinition[] {
+export function sinkFields(
+  type: string,
+  metadata: MetadataProperty[] = [],
+  lang: 'en' | 'zh' = 'en',
+): SinkFieldDefinition[] {
   const merged = new Map<string, SinkFieldDefinition>();
   for (const field of [...(KNOWN_FIELDS[type] ?? []), ...COMMON_FIELDS]) merged.set(field.key, field);
   const effectiveMetadata = metadata.length > 0 ? metadata : getBuiltinConnectorProperties('sinks', type);
@@ -205,11 +212,11 @@ export function sinkFields(type: string, metadata: MetadataProperty[] = []): Sin
     const existing = merged.get(property.name);
     merged.set(property.name, {
       key: property.name,
-      label: toLabelString(property.label) || existing?.label || humanize(property.name),
+      label: toLabelString(property.label, lang) || existing?.label || humanize(property.name),
       kind: existing?.kind ?? metadataKind(property),
       required: existing?.required ?? !property.optional,
       options: property.values?.map(String) ?? existing?.options,
-      hint: toLabelString(property.hint) || existing?.hint,
+      hint: toLabelString(property.hint, lang) || existing?.hint,
       placeholder: existing?.placeholder,
     });
   }

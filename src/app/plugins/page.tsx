@@ -5,6 +5,7 @@ import { useServerStore } from "@/stores/server-store";
 import { ekuiperClient } from "@/lib/ekuiper/client";
 import type { PluginType } from "@/lib/ekuiper/types";
 import { AppLayout } from "@/components/layout";
+import { useT } from '@/lib/i18n';
 import { DataTable } from "@/components/common/data-table";
 import { StatusBadge, EmptyState, ErrorState, ConfirmDialog } from "@/components/common";
 import { Button } from "@/components/ui/button";
@@ -38,11 +39,21 @@ interface Plugin {
 type InstallablePluginType = Exclude<PluginType, "udfs">;
 
 export default function PluginsPage() {
+  const t = useT();
   const router = useRouter();
   const { servers, activeServerId } = useServerStore();
   const activeServer = servers.find((s) => s.id === activeServerId);
 
   const [activeTab, setActiveTab] = React.useState<InstallablePluginType>("sources");
+  // activeTab is an internal routing key ('sources'/'sinks'/...); the UI
+  // must show its localized label instead of the raw slice.
+  const pluginTypeLabels: Record<InstallablePluginType, string> = {
+    sources: t('extension.sources'),
+    sinks: t('extension.sinks'),
+    functions: t('extension.functions'),
+    portables: t('extension.portables'),
+  };
+  const typeLabel = pluginTypeLabels[activeTab];
   const [plugins, setPlugins] = React.useState<Plugin[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -50,7 +61,7 @@ export default function PluginsPage() {
 
   const fetchPlugins = React.useCallback(async (type: InstallablePluginType) => {
     if (!activeServer) {
-      setError("No server selected");
+      setError(t('extension.noServerSelected'));
       setLoading(false);
       return;
     }
@@ -65,7 +76,7 @@ export default function PluginsPage() {
         : [];
       setPlugins(pluginList);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch plugins");
+      setError(err instanceof Error ? err.message : t('extension.failedFetchPlugins'));
     } finally {
       setLoading(false);
     }
@@ -85,7 +96,7 @@ export default function PluginsPage() {
       setDeletePlugin(null);
       fetchPlugins(activeTab);
     } catch (err) {
-      toast.error(`Failed to delete plugin: ${err instanceof Error ? err.message : "Unknown error"}`);
+      toast.error(`Failed to delete plugin: ${err instanceof Error ? err.message : t('extension.unknownError')}`);
     }
   };
 
@@ -109,9 +120,7 @@ export default function PluginsPage() {
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 size-4" />
+        >{t('extension.name')}<ArrowUpDown className="ml-2 size-4" />
         </Button>
       ),
       cell: ({ row }) => (
@@ -123,14 +132,14 @@ export default function PluginsPage() {
     },
     {
       id: "type",
-      header: "Type",
+      header: t('extension.typeColumn'),
       cell: () => (
-        <StatusBadge status="info" label={activeTab.slice(0, -1)} showIcon={false} />
+        <StatusBadge status="info" label={typeLabel} showIcon={false} />
       ),
     },
     {
       id: "actions",
-      header: "Actions",
+      header: t('extension.actionsColumn'),
       cell: ({ row }) => {
         const plugin = row.original;
         return (
@@ -145,16 +154,12 @@ export default function PluginsPage() {
                 <DropdownMenuItem
                   onClick={() => router.push(`/plugins/${activeTab}/${encodeURIComponent(plugin.name)}`)}
                 >
-                  <Eye className="mr-2 size-4" />
-                  View Details
-                </DropdownMenuItem>
+                  <Eye className="mr-2 size-4" />{t('extension.viewDetails')}</DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-destructive"
                   onClick={() => setDeletePlugin({ name: plugin.name, type: activeTab })}
                 >
-                  <Trash2 className="mr-2 size-4" />
-                  Delete
-                </DropdownMenuItem>
+                  <Trash2 className="mr-2 size-4" />{t('extension.delete')}</DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -165,58 +170,46 @@ export default function PluginsPage() {
 
   if (!activeServer) {
     return (
-      <AppLayout title="Plugins">
+      <AppLayout title={t('nav.plugins')}>
         <EmptyState
-          title="No Server Connected"
-          description="Connect to an eKuiper server to manage plugins."
+          title={t('extension.noServerConnected')}
+          description={t('extension.connectToManagePlugins')}
         />
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout title="Plugins">
+    <AppLayout title={t('nav.plugins')}>
       <div className="flex flex-col gap-4">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Plugins</h2>
-            <p className="text-muted-foreground">
-              Manage eKuiper source, sink, function, and portable plugins
-            </p>
+            <h2 className="text-2xl font-bold tracking-tight">{t('extension.plugins')}</h2>
+            <p className="text-muted-foreground">{t('extension.pluginsHint')}</p>
           </div>
           <Button onClick={() => router.push(`/plugins/${activeTab}/new`)}>
-            <Plus className="mr-2 size-4" />
-            Install Plugin
-          </Button>
+            <Plus className="mr-2 size-4" />{t('extension.installPlugin')}</Button>
         </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as InstallablePluginType)}>
           <TabsList>
             <TabsTrigger value="sources">
-              <Plug className="mr-2 size-4" />
-              Sources
-            </TabsTrigger>
+              <Plug className="mr-2 size-4" />{t('extension.sources')}</TabsTrigger>
             <TabsTrigger value="sinks">
-              <Plug className="mr-2 size-4" />
-              Sinks
-            </TabsTrigger>
+              <Plug className="mr-2 size-4" />{t('extension.sinks')}</TabsTrigger>
             <TabsTrigger value="functions">
-              <Code2 className="mr-2 size-4" />
-              Functions
-            </TabsTrigger>
+              <Code2 className="mr-2 size-4" />{t('extension.functions')}</TabsTrigger>
             <TabsTrigger value="portables">
-              <Box className="mr-2 size-4" />
-              Portables
-            </TabsTrigger>
+              <Box className="mr-2 size-4" />{t('extension.portables')}</TabsTrigger>
           </TabsList>
 
           {(["sources", "sinks", "functions", "portables"] as InstallablePluginType[]).map((type) => (
             <TabsContent key={type} value={type}>
               {error ? (
                 <ErrorState
-                  title="Error Loading Plugins"
+                  title={t('extension.errorLoadingPlugins')}
                   description={error}
                   onRetry={() => fetchPlugins(activeTab)}
                 />
@@ -225,10 +218,10 @@ export default function PluginsPage() {
                   columns={columns}
                   data={plugins}
                   searchKey="name"
-                  searchPlaceholder={`Search ${type}...`}
+                  searchPlaceholder={t('extension.searchPlugins', { type: typeLabel })}
                   loading={loading}
-                  emptyMessage={`No ${type} plugins found`}
-                  emptyDescription={`Install a ${type.slice(0, -1)} plugin to extend eKuiper functionality.`}
+                  emptyMessage={t('extension.noPluginsFound', { type: typeLabel })}
+                  emptyDescription={t('extension.installPluginHint', { type: typeLabel })}
                   onRefresh={() => fetchPlugins(activeTab)}
                 />
               )}
@@ -241,9 +234,9 @@ export default function PluginsPage() {
       <ConfirmDialog
         open={!!deletePlugin}
         onOpenChange={(open) => !open && setDeletePlugin(null)}
-        title="Delete Plugin"
+        title={t('extension.deletePlugin')}
         description={`Are you sure you want to delete the plugin "${deletePlugin?.name}"? This action cannot be undone.`}
-        confirmLabel="Delete"
+        confirmLabel={t('extension.delete')}
         variant="danger"
         onConfirm={handleDeletePlugin}
       />

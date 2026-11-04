@@ -43,6 +43,7 @@ import type { FlowDiagnostic } from '@/lib/flows/model/diagnostic';
 import { useFlowAutosave, type FlowAutosaveSaved, type FlowAutosaveStatus } from './hooks/use-flow-autosave';
 import { useFlowRuntimeMetrics } from './hooks/use-flow-runtime-metrics';
 import { useFlowEditorStore } from '@/stores/flow-editor-store';
+import { useT } from '@/lib/i18n';
 
 interface FlowSummary {
   id: string;
@@ -277,7 +278,10 @@ function activateFlowBottomPanelTab(tab: 'validation' | 'definition' | 'test'): 
   const expand = document.querySelector('[data-testid="flow-bottom-panel-expand"]');
   if (expand instanceof HTMLElement) expand.click();
   const trigger = document.querySelector(`[data-testid="flow-bottom-panel-tab-${tab}"]`);
-  if (trigger instanceof HTMLElement) trigger.click();
+  if (trigger instanceof HTMLElement) {
+    trigger.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0 }));
+    trigger.click();
+  }
 }
 
 /**
@@ -300,6 +304,7 @@ function activateFlowCanvasFitView(): void {
  * and no draft PUT is ever issued. Edits stay in browser memory only.
  */
 export function FlowStudioPage({ flowId, initialDocument }: { flowId: string; initialDocument?: FlowDocument }) {
+  const t = useT();
   const isLocalFixture = initialDocument !== undefined;
   const flowQuery = useQuery({
     queryKey: ['flow', flowId],
@@ -1259,12 +1264,10 @@ export function FlowStudioPage({ flowId, initialDocument }: { flowId: string; in
         return (
           <Card>
             <CardContent className="flex flex-col items-center py-14 text-center">
-              <h3 className="font-semibold">Flow not found</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                This flow does not exist or you do not have access to it.
-              </p>
+              <h3 className="font-semibold">{t('flow.flowNotFound')}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{t('flow.flowNotFoundHint')}</p>
               <Button asChild className="mt-5">
-                <Link href="/rules">Back to rules</Link>
+                <Link href="/rules">{t('flow.backToRules')}</Link>
               </Button>
             </CardContent>
           </Card>
@@ -1277,9 +1280,7 @@ export function FlowStudioPage({ flowId, initialDocument }: { flowId: string; in
               {flowQuery.error instanceof Error ? flowQuery.error.message : 'Failed to load flow'}
             </AlertDescription>
           </Alert>
-          <Button variant="outline" onClick={() => void flowQuery.refetch()}>
-            Retry
-          </Button>
+          <Button variant="outline" onClick={() => void flowQuery.refetch()}>{t('flow.retry')}</Button>
         </div>
       );
     }
@@ -1300,9 +1301,7 @@ export function FlowStudioPage({ flowId, initialDocument }: { flowId: string; in
               {draftQuery.error instanceof Error ? draftQuery.error.message : 'Failed to load draft'}
             </AlertDescription>
           </Alert>
-          <Button variant="outline" onClick={() => void draftQuery.refetch()}>
-            Retry
-          </Button>
+          <Button variant="outline" onClick={() => void draftQuery.refetch()}>{t('flow.retry')}</Button>
         </div>
       );
     }
@@ -1434,9 +1433,7 @@ export function FlowStudioPage({ flowId, initialDocument }: { flowId: string; in
                         onClick={handlePaletteOpen}
                         aria-haspopup="dialog"
                         data-testid="flow-command-palette-open"
-                      >
-                        Commands
-                      </Button>
+                      >{t('flow.commands')}</Button>
                       <Button
                         type="button"
                         variant="ghost"

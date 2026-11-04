@@ -24,7 +24,10 @@ import {
 import { Badge } from '@/components/ui/badge';
 import type { MetadataProperty, I18nString } from '@/lib/ekuiper/types';
 import { getBuiltinConnectorProperties } from '@/lib/ekuiper/connector-catalog';
+import { useI18n, toShortLang } from '@/lib/i18n';
 
+import { useT } from '@/lib/i18n';
+import type { Translate } from '@/lib/i18n';
 export function i18nLabel(val: I18nString | undefined | null, lang: 'en' | 'zh' = 'en'): string {
   if (!val) return '';
   if (typeof val === 'string') return val;
@@ -69,6 +72,9 @@ export function PropertyForm({
   connectionSelected = false,
   showRawToggle = true,
 }: PropertyFormProps) {
+  const t = useT();
+  const { locale } = useI18n();
+  const lang = toShortLang(locale);
   const [showPasswords, setShowPasswords] = React.useState<Record<string, boolean>>({});
   const [jsonModes, setJsonModes] = React.useState<Record<string, boolean>>({});
   const [rawMode, setRawMode] = React.useState(false);
@@ -133,18 +139,14 @@ export function PropertyForm({
     return (
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Configuration (Raw JSON)
-          </Label>
+          <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('connector.rawJsonConfig')}</Label>
           <Button
             type="button"
             variant="ghost"
             size="sm"
             className="h-7 text-xs"
             onClick={() => setRawMode(false)}
-          >
-            Switch to Visual Form
-          </Button>
+          >{t('connector.switchToVisual')}</Button>
         </div>
         <Textarea
           value={rawJson}
@@ -175,9 +177,7 @@ export function PropertyForm({
                 setRawMode(true);
               }}
             >
-              <Code2 className="size-3.5" />
-              JSON Mode
-            </Button>
+              <Code2 className="size-3.5" />{t('connector.jsonMode')}</Button>
           </div>
         )}
 
@@ -191,8 +191,8 @@ export function PropertyForm({
               const isInherited = Boolean(prop.connection_related && connectionSelected);
               const isFieldDisabled = Boolean(disabled || isInherited);
               const val = values?.[prop.name];
-              const labelText = i18nLabel(prop.label) || prop.name;
-              const hintText = i18nLabel(prop.hint);
+              const labelText = i18nLabel(prop.label, lang) || prop.name;
+              const hintText = i18nLabel(prop.hint, lang);
               const isFullWidth =
                 prop.control === 'textarea' ||
                 prop.control === 'list' ||
@@ -231,9 +231,7 @@ export function PropertyForm({
                       )}
                     </div>
                     {isInherited && (
-                      <Badge variant="outline" className="text-[10px] text-muted-foreground font-normal">
-                        From connection
-                      </Badge>
+                      <Badge variant="outline" className="text-[10px] text-muted-foreground font-normal">{t('connector.fromConnection')}</Badge>
                     )}
                   </div>
 
@@ -248,6 +246,7 @@ export function PropertyForm({
                     jsonMode: Boolean(jsonModes[prop.name]),
                     onToggleJsonMode: () =>
                       setJsonModes((prev) => ({ ...prev, [prop.name]: !prev[prop.name] })),
+                    t,
                   })}
                 </div>
               );
@@ -288,7 +287,8 @@ function renderControl({
   onTogglePassword,
   jsonMode,
   onToggleJsonMode,
-}: ControlProps) {
+  t,
+}: ControlProps & { t: Translate }) {
   const isPassword =
     prop.name.toLowerCase().includes('password') ||
     prop.name.toLowerCase().includes('secret') ||
@@ -324,9 +324,7 @@ function renderControl({
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="__CLEAR__" className="text-xs italic text-muted-foreground">
-              None (Default)
-            </SelectItem>
+            <SelectItem value="__CLEAR__" className="text-xs italic text-muted-foreground">{t('connector.noneDefault')}</SelectItem>
             {prop.values.map((opt) => {
               const optVal = String(opt);
               return (
@@ -463,6 +461,7 @@ function StringListEditor({
   disabled: boolean;
   onChange: (vals: string[]) => void;
 }) {
+  const t = useT();
   const [inputVal, setInputVal] = React.useState('');
 
   const addTag = () => {
@@ -481,7 +480,7 @@ function StringListEditor({
     <div className="flex flex-col gap-2 rounded-md border p-2 bg-muted/20">
       <div className="flex flex-wrap gap-1.5 min-h-[28px]">
         {values.length === 0 ? (
-          <span className="text-[11px] text-muted-foreground italic py-0.5">No items added</span>
+          <span className="text-[11px] text-muted-foreground italic py-0.5">{t('connector.noItemsAdded')}</span>
         ) : (
           values.map((tag, idx) => (
             <Badge
@@ -553,6 +552,7 @@ function KeyValueFieldEditor({
   jsonMode: boolean;
   onToggleJsonMode: () => void;
 }) {
+  const t = useT();
   const [jsonText, setJsonText] = React.useState('');
   const [jsonError, setJsonError] = React.useState<string | null>(null);
 
@@ -633,7 +633,7 @@ function KeyValueFieldEditor({
           onClick={onToggleJsonMode}
           className="h-6 text-[11px] text-muted-foreground hover:text-foreground"
         >
-          {jsonMode ? 'Switch to Table' : 'Switch to Raw JSON'}
+          {jsonMode ? t('rule.switchToTable') : t('rule.switchToRawJson')}
         </Button>
       </div>
 
@@ -651,21 +651,21 @@ function KeyValueFieldEditor({
       ) : (
         <div className="flex flex-col gap-2">
           {pairs.length === 0 ? (
-            <p className="text-[11px] italic text-muted-foreground">No entries configured</p>
+            <p className="text-[11px] italic text-muted-foreground">{t('connector.noEntriesConfigured')}</p>
           ) : (
             pairs.map((pair, idx) => (
               <div key={idx} className="flex items-center gap-2">
                 <Input
                   value={pair.key}
                   onChange={(e) => updatePair(idx, { key: e.target.value })}
-                  placeholder="Key"
+                  placeholder={t('connector.key')}
                   disabled={disabled}
                   className="h-9 flex-1 font-mono text-base md:text-xs"
                 />
                 <Input
                   value={pair.value}
                   onChange={(e) => updatePair(idx, { value: e.target.value })}
-                  placeholder="Value"
+                  placeholder={t('connector.value')}
                   disabled={disabled}
                   className="h-9 flex-1 font-mono text-base md:text-xs"
                 />
@@ -692,9 +692,7 @@ function KeyValueFieldEditor({
               onClick={addPair}
               className="h-7 gap-1 text-xs"
             >
-              <Plus className="size-3" />
-              Add Key-Value
-            </Button>
+              <Plus className="size-3" />{t('connector.addKeyValue')}</Button>
           )}
         </div>
       )}
@@ -714,6 +712,7 @@ function MultiIndexFieldsEditor({
   onChange: (val: any) => void;
   disabled: boolean;
 }) {
+  const t = useT();
   const fields: IndexField[] = values?.indexFields ?? [
     {
       name: 1,
@@ -764,16 +763,12 @@ function MultiIndexFieldsEditor({
     <div className="flex flex-col gap-3 rounded-lg border p-3 bg-muted/10 sm:col-span-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Multi-Index Query Fields
-          </Label>
+          <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('connector.multiIndexFields')}</Label>
           <Tooltip>
             <TooltipTrigger asChild>
               <HelpCircle className="size-3.5 cursor-help text-muted-foreground" />
             </TooltipTrigger>
-            <TooltipContent className="max-w-xs text-xs">
-              Supports configuring multiple index fields for incremental SQL queries
-            </TooltipContent>
+            <TooltipContent className="max-w-xs text-xs">{t('connector.multiIndexHint')}</TooltipContent>
           </Tooltip>
         </div>
         {!disabled && (
@@ -784,9 +779,7 @@ function MultiIndexFieldsEditor({
             onClick={addField}
             className="h-7 text-xs gap-1"
           >
-            <ListPlus className="size-3" />
-            Add Index Field
-          </Button>
+            <ListPlus className="size-3" />{t('connector.addIndexField')}</Button>
         )}
       </div>
 
@@ -795,7 +788,7 @@ function MultiIndexFieldsEditor({
           <div key={idx} className="rounded-md border p-3 bg-background flex flex-col gap-2.5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-foreground">
-                Index Field #{field.name}
+                {t('connector.indexFieldN', { name: field.name })}
               </span>
               {fields.length > 1 && !disabled && (
                 <Button
@@ -813,7 +806,7 @@ function MultiIndexFieldsEditor({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               <div className="flex flex-col gap-1">
-                <Label className="text-[11px] text-muted-foreground">Field Name</Label>
+                <Label className="text-[11px] text-muted-foreground">{t('connector.fieldName')}</Label>
                 <Input
                   value={field.indexField}
                   onChange={(e) => updateField(idx, { indexField: e.target.value })}
@@ -824,7 +817,7 @@ function MultiIndexFieldsEditor({
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label className="text-[11px] text-muted-foreground">Field Type</Label>
+                <Label className="text-[11px] text-muted-foreground">{t('connector.fieldType')}</Label>
                 <Select
                   value={field.indexFieldType}
                   onValueChange={(val: 'DATETIME' | 'INT') =>
@@ -833,7 +826,7 @@ function MultiIndexFieldsEditor({
                   disabled={disabled}
                 >
                   <SelectTrigger className="h-9 text-base md:text-xs">
-                    <SelectValue placeholder="Select type" />
+                    <SelectValue placeholder={t('connector.selectType')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
@@ -850,7 +843,7 @@ function MultiIndexFieldsEditor({
 
               {field.indexFieldType === 'DATETIME' && (
                 <div className="flex flex-col gap-1">
-                  <Label className="text-[11px] text-muted-foreground">Date Time Format</Label>
+                  <Label className="text-[11px] text-muted-foreground">{t('connector.dateTimeFormat')}</Label>
                   <Input
                     value={field.dateTimeFormat}
                     onChange={(e) => updateField(idx, { dateTimeFormat: e.target.value })}
@@ -862,12 +855,12 @@ function MultiIndexFieldsEditor({
               )}
 
               <div className="flex flex-col gap-1">
-                <Label className="text-[11px] text-muted-foreground">Initial Value</Label>
+                <Label className="text-[11px] text-muted-foreground">{t('connector.initialValue')}</Label>
                 <Input
                   type={field.indexFieldType === 'INT' ? 'number' : 'text'}
                   value={field.indexValue}
                   onChange={(e) => updateField(idx, { indexValue: e.target.value })}
-                  placeholder="Initial checkpoint value"
+                  placeholder={t('connector.initialCheckpoint')}
                   disabled={disabled}
                   className="h-9 text-base md:text-xs font-mono"
                 />

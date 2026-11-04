@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { FlowStudioPage } from '@/components/flow-studio/flow-studio-page';
 import { generateLargeFlow } from '@/lib/flows/testing/generate-large-flow';
 
+import { useT } from '@/lib/i18n';
 const PERF_FIXTURE_SIZES = [50, 250, 500, 1000] as const;
 
 type PerfFixtureSize = (typeof PERF_FIXTURE_SIZES)[number];
@@ -31,6 +32,7 @@ function isPerfFixtureSize(value: number): value is PerfFixtureSize {
  * convention) and is clearly labeled development-only otherwise.
  */
 export default function FlowStudioPerfPage() {
+  const t = useT();
   const [size, setSize] = React.useState<PerfFixtureSize>(DEFAULT_PERF_FIXTURE_SIZE);
   const fixture = React.useMemo(
     () => (process.env.NODE_ENV === 'production' ? null : generateLargeFlow(size)),
@@ -39,17 +41,16 @@ export default function FlowStudioPerfPage() {
 
   if (fixture === null) {
     return (
-      <AppLayout title="Not available">
+      <AppLayout title={t('flow.notAvailable')}>
         <div className="mx-auto max-w-2xl">
           <Card>
             <CardContent className="flex flex-col items-center py-14 text-center">
-              <h2 className="font-semibold">Not available in production</h2>
+              <h2 className="font-semibold">{t('flow.notAvailableInProduction')}</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                The Flow Studio performance fixture route is development-only and
-                is disabled in this build.
+                {t('admin.perfDevOnly')}
               </p>
               <Button asChild className="mt-5">
-                <Link href="/flows">Back to flows</Link>
+                <Link href="/flows">{t('flow.backToFlows')}</Link>
               </Button>
             </CardContent>
           </Card>
@@ -75,7 +76,7 @@ export default function FlowStudioPerfPage() {
         <span className="text-xs text-muted-foreground">
           Local generated flow, nothing is saved to the server and Deploy stays disabled.
         </span>
-        <div className="flex items-center gap-1" role="group" aria-label="Fixture size">
+        <div className="flex items-center gap-1" role="group" aria-label={t('flow.fixtureSize')}>
           {PERF_FIXTURE_SIZES.map((option) => (
             <Button
               key={option}
@@ -97,7 +98,7 @@ export default function FlowStudioPerfPage() {
         </span>
         <span className="flex-1" />
         <Button type="button" variant="ghost" size="sm" asChild>
-          <Link href="/flows">Back to flows</Link>
+          <Link href="/flows">{t('flow.backToFlows')}</Link>
         </Button>
       </div>
       <div className="min-h-0 flex-1">

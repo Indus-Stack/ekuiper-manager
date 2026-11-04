@@ -6,7 +6,9 @@ import { ArrowLeft, BookOpen, ExternalLink, RefreshCw, Terminal } from 'lucide-r
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
+import { useT } from '@/lib/i18n';
 export default function ApiDocsPage() {
+  const t = useT();
   const [iframeKey, setIframeKey] = React.useState(0);
   const [isLoaded, setIsLoaded] = React.useState(false);
 
@@ -22,9 +24,7 @@ export default function ApiDocsPage() {
             className="h-8 gap-1.5 px-2.5 text-xs text-muted-foreground transition-transform duration-150 active:scale-[0.97] hover:text-foreground"
           >
             <Link href="/help">
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Documentation
-            </Link>
+              <ArrowLeft className="h-3.5 w-3.5" />{t('admin.documentation')}</Link>
           </Button>
 
           <div className="h-4 w-px bg-border" />
@@ -49,11 +49,9 @@ export default function ApiDocsPage() {
               setIframeKey((k) => k + 1);
             }}
             className="h-8 gap-1.5 text-xs transition-transform duration-150 active:scale-[0.97]"
-            title="Reload API Docs"
+            title={t('admin.reloadApiDocs')}
           >
-            <RefreshCw className="h-3.5 w-3.5" />
-            Reload
-          </Button>
+            <RefreshCw className="h-3.5 w-3.5" />{t('admin.reload')}</Button>
 
           <Button
             asChild
@@ -61,9 +59,7 @@ export default function ApiDocsPage() {
             size="sm"
             className="h-8 gap-1.5 text-xs transition-transform duration-150 active:scale-[0.97]"
           >
-            <a href="/api-docs/index.html" target="_blank" rel="noopener noreferrer">
-              Open Fullscreen
-              <ExternalLink className="h-3.5 w-3.5" />
+            <a href="/api-docs/index.html" target="_blank" rel="noopener noreferrer">{t('admin.openFullscreen')}<ExternalLink className="h-3.5 w-3.5" />
             </a>
           </Button>
         </div>
@@ -82,7 +78,7 @@ export default function ApiDocsPage() {
           key={iframeKey}
           src="/api-docs/index.html"
           onLoad={() => setIsLoaded(true)}
-          title="Interactive API Documentation"
+          title={t('admin.interactiveApiDocs')}
           className="h-full w-full border-0 bg-white"
           sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
         />

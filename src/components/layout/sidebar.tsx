@@ -24,78 +24,81 @@ import {
   WandSparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n';
+import type { MessageKey } from '@/lib/i18n/translate';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-interface NavItem {
-  title: string;
+export interface NavItem {
+  /** Locale key resolved at render time; never a display string. */
+  titleKey: MessageKey;
   href: string;
   icon: ComponentType<{ className?: string }>;
 }
 
-interface NavGroup {
-  title: string;
+export interface NavGroup {
+  titleKey: MessageKey;
   icon: ComponentType<{ className?: string }>;
   items: NavItem[];
 }
 
 export const navigationGroups: NavGroup[] = [
   {
-    title: 'Workspace',
+    titleKey: 'nav.groupsWorkspace',
     icon: Activity,
-    items: [{ title: 'Overview', href: '/dashboard', icon: Activity }],
+    items: [{ titleKey: 'nav.overview', href: '/dashboard', icon: Activity }],
   },
   {
-    title: 'Data',
+    titleKey: 'nav.groupsData',
     icon: Database,
     items: [
-      { title: 'Streams', href: '/streams', icon: Database },
-      { title: 'Tables', href: '/tables', icon: Table2 },
+      { titleKey: 'nav.streams', href: '/streams', icon: Database },
+      { titleKey: 'nav.tables', href: '/tables', icon: Table2 },
     ],
   },
   {
-    title: 'Rules',
+    titleKey: 'nav.groupsRules',
     icon: Workflow,
     items: [
-      { title: 'Flows', href: '/flows', icon: Workflow },
-      { title: 'Rules', href: '/rules', icon: Workflow },
-      { title: 'Designer', href: '/rules/new', icon: WandSparkles },
+      { titleKey: 'nav.flows', href: '/flows', icon: Workflow },
+      { titleKey: 'nav.rules', href: '/rules', icon: Workflow },
+      { titleKey: 'nav.designer', href: '/rules/new', icon: WandSparkles },
     ],
   },
   {
-    title: 'Resources',
+    titleKey: 'nav.groupsResources',
     icon: FolderCog,
     items: [
-      { title: 'Connections', href: '/connections', icon: Network },
-      { title: 'Schemas', href: '/schemas', icon: FileJson },
-      { title: 'Files', href: '/uploads', icon: HardDriveUpload },
+      { titleKey: 'nav.connections', href: '/connections', icon: Network },
+      { titleKey: 'nav.schemas', href: '/schemas', icon: FileJson },
+      { titleKey: 'nav.files', href: '/uploads', icon: HardDriveUpload },
     ],
   },
   {
-    title: 'Extensions',
+    titleKey: 'nav.groupsExtensions',
     icon: Blocks,
     items: [
-      { title: 'Plugins', href: '/plugins', icon: Plug },
-      { title: 'Functions', href: '/functions', icon: FunctionSquare },
-      { title: 'Services', href: '/services', icon: Network },
+      { titleKey: 'nav.plugins', href: '/plugins', icon: Plug },
+      { titleKey: 'nav.functions', href: '/functions', icon: FunctionSquare },
+      { titleKey: 'nav.services', href: '/services', icon: Network },
     ],
   },
   {
-    title: 'Operations',
+    titleKey: 'nav.groupsOperations',
     icon: FileArchive,
     items: [
-      { title: 'Import', href: '/data/import', icon: Upload },
-      { title: 'Export', href: '/data/export', icon: FileArchive },
+      { titleKey: 'nav.dataImport', href: '/data/import', icon: Upload },
+      { titleKey: 'nav.dataExport', href: '/data/export', icon: FileArchive },
     ],
   },
   {
-    title: 'Manager',
+    titleKey: 'nav.groupsManager',
     icon: Settings,
     items: [
-      { title: 'Nodes', href: '/nodes', icon: Server },
-      { title: 'Users', href: '/users', icon: Users },
-      { title: 'Settings', href: '/settings', icon: Settings },
+      { titleKey: 'nav.nodes', href: '/nodes', icon: Server },
+      { titleKey: 'nav.users', href: '/users', icon: Users },
+      { titleKey: 'nav.settings', href: '/settings', icon: Settings },
     ],
   },
 ];
@@ -112,6 +115,7 @@ function active(pathname: string, href: string): boolean {
 
 export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) {
   const pathname = usePathname();
+  const t = useT();
   return (
     <aside
       className={cn(
@@ -129,32 +133,33 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
           size="icon"
           className={cn('ml-auto size-8', collapsed && 'mx-auto')}
           onClick={() => onCollapsedChange?.(!collapsed)}
-          aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}
+          aria-label={collapsed ? t('nav.expandNavigation') : t('nav.collapseNavigation')}
           aria-expanded={!collapsed}
         >
           <ChevronLeft className={cn('size-4 transition-transform', collapsed && 'rotate-180')} aria-hidden="true" />
         </Button>
       </div>
       <ScrollArea className="flex-1 py-3">
-        <nav className="flex flex-col gap-4 px-2" aria-label="Primary navigation">
+        <nav className="flex flex-col gap-4 px-2" aria-label={t('nav.primaryNavigation')}>
           {navigationGroups.map((group) => (
-            <div key={group.title}>
+            <div key={group.titleKey}>
               {!collapsed && (
                 <p className="mb-1 px-3 text-xs font-semibold text-muted-foreground/80">
-                  {group.title}
+                  {t(group.titleKey)}
                 </p>
               )}
               <div className="flex flex-col gap-1">
                 {group.items.map((item) => {
+                  const label = t(item.titleKey);
                   const itemButton = (
                     <Button
                       variant={active(pathname, item.href) ? 'secondary' : 'ghost'}
                       size={collapsed ? 'icon' : 'default'}
                       className={cn('h-9', !collapsed && 'w-full justify-start gap-3')}
-                      aria-label={collapsed ? item.title : undefined}
+                      aria-label={collapsed ? label : undefined}
                     >
                       <item.icon className="size-4 shrink-0" aria-hidden="true" />
-                      {!collapsed && item.title}
+                      {!collapsed && label}
                     </Button>
                   );
                   return collapsed ? (
@@ -164,7 +169,7 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
                           {itemButton}
                         </Link>
                       </TooltipTrigger>
-                      <TooltipContent side="right">{item.title}</TooltipContent>
+                      <TooltipContent side="right">{label}</TooltipContent>
                     </Tooltip>
                   ) : (
                     <Link

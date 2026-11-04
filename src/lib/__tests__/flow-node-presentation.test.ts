@@ -18,6 +18,7 @@ import {
   resolveFlowNodeSubtitle,
 } from '@/lib/flows/registry/node-definition';
 
+import { withI18n } from '@/test-utils/with-i18n';
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 if ((globalThis as Record<string, unknown>)['structuredClone'] === undefined) {
@@ -66,7 +67,7 @@ async function renderNode(data: FlowNodeData): Promise<HTMLElement> {
   mounted.push({ container, root });
   await act(async () => {
     root.render(
-      React.createElement(ReactFlow, {
+      withI18n(React.createElement(ReactFlow, {
         edges: [],
         nodes: [
           {
@@ -77,7 +78,7 @@ async function renderNode(data: FlowNodeData): Promise<HTMLElement> {
           },
         ],
         nodeTypes: flowNodeTypes,
-      }),
+      })) as React.ReactElement,
     );
   });
   return container;

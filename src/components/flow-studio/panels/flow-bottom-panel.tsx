@@ -10,6 +10,7 @@ import { DefinitionPanel } from "./definition-panel";
 import { ValidationPanel } from "./validation-panel";
 import { TestPanel } from "./test-panel";
 
+import { useT } from '@/lib/i18n';
 export type FlowBottomPanelTab = "validation" | "definition" | "test";
 
 export interface FlowBottomPanelProps {
@@ -43,6 +44,7 @@ export function FlowBottomPanel({
   className,
   historyToggle,
 }: FlowBottomPanelProps) {
+  const t = useT();
   const [open, setOpen] = React.useState(true);
   const [tab, setTab] = React.useState<FlowBottomPanelTab>("validation");
 
@@ -67,12 +69,10 @@ export function FlowBottomPanel({
           aria-expanded={false}
           aria-controls="flow-bottom-panel"
           data-testid="flow-bottom-panel-expand"
-        >
-          Show panel
-        </Button>
+        >{t('flow.showPanel')}</Button>
         <span className="text-xs text-muted-foreground">
           {clientErrorCount === 0
-            ? "Validation: no client errors"
+            ? t('flow.validationNoClientErrors')
             : `Validation: ${clientErrorCount} client error(s)`}
         </span>
         {historyToggle ? <div className="ml-auto">{historyToggle}</div> : null}
@@ -83,7 +83,7 @@ export function FlowBottomPanel({
   return (
     <section
       id="flow-bottom-panel"
-      aria-label="Flow bottom panel"
+      aria-label={t('flow.bottomPanel')}
       className={cn(
         "flex h-64 shrink-0 flex-col border-t bg-background",
         className,
@@ -99,17 +99,13 @@ export function FlowBottomPanel({
         className="flex min-h-0 flex-1 flex-col"
       >
         <div className="flex shrink-0 items-center gap-2 px-3 pt-1.5">
-          <TabsList aria-label="Flow bottom panel tabs">
+          <TabsList aria-label={t('flow.bottomPanelTabs')}>
             <TabsTrigger value="validation" data-testid="flow-bottom-panel-tab-validation">
-              Validation
+              {t('flow.validation')}
               {clientErrorCount > 0 ? ` (${clientErrorCount})` : ""}
             </TabsTrigger>
-            <TabsTrigger value="definition" data-testid="flow-bottom-panel-tab-definition">
-              Definition
-            </TabsTrigger>
-            <TabsTrigger value="test" data-testid="flow-bottom-panel-tab-test">
-              Test Output
-            </TabsTrigger>
+            <TabsTrigger value="definition" data-testid="flow-bottom-panel-tab-definition">{t('flow.definition')}</TabsTrigger>
+            <TabsTrigger value="test" data-testid="flow-bottom-panel-tab-test">{t('flow.testOutput')}</TabsTrigger>
           </TabsList>
           <div className="flex-1" />
           {historyToggle}
@@ -121,9 +117,7 @@ export function FlowBottomPanel({
             aria-expanded={true}
             aria-controls="flow-bottom-panel"
             data-testid="flow-bottom-panel-collapse"
-          >
-            Hide
-          </Button>
+          >{t('flow.hide')}</Button>
         </div>
         <div className="min-h-0 flex-1 overflow-hidden px-3 pb-3">
           <TabsContent

@@ -25,6 +25,8 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
+import { useT } from '@/lib/i18n';
+import type { Translate } from '@/lib/i18n';
 export type FieldType =
   | 'bigint'
   | 'float'
@@ -73,6 +75,7 @@ export function formatFieldTypeString(field: StreamFieldNode): string {
 }
 
 export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableProps) {
+  const t = useT();
   const [modalOpen, setModalOpen] = React.useState(false);
   const [parentId, setParentId] = React.useState<string | null>(null);
   const [editingField, setEditingField] = React.useState<StreamFieldNode | null>(null);
@@ -198,11 +201,9 @@ export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableP
       <div className="flex items-center justify-between">
         <div>
           <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Schema Fields ({countFields(fields)})
+            {t('connector.schemaFieldsCount', { count: countFields(fields) })}
           </Label>
-          <p className="text-[11px] text-muted-foreground">
-            Explicit data types for stream or table columns.
-          </p>
+          <p className="text-[11px] text-muted-foreground">{t('connector.explicitTypes')}</p>
         </div>
         {!disabled && (
           <div className="flex items-center gap-1.5">
@@ -213,9 +214,7 @@ export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableP
               onClick={() => setImportOpen(true)}
               className="h-7 text-xs gap-1 text-muted-foreground hover:text-foreground"
             >
-              <FileJson className="size-3.5" />
-              Infer from JSON
-            </Button>
+              <FileJson className="size-3.5" />{t('connector.inferFromJson')}</Button>
             <Button
               type="button"
               variant="default"
@@ -223,16 +222,14 @@ export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableP
               onClick={() => openAdd(null)}
               className="h-7 text-xs gap-1"
             >
-              <Plus className="size-3.5" />
-              Add Field
-            </Button>
+              <Plus className="size-3.5" />{t('connector.addField')}</Button>
           </div>
         )}
       </div>
 
       {fields.length === 0 ? (
         <div className="rounded-lg border border-dashed py-8 text-center bg-muted/5">
-          <p className="text-xs text-muted-foreground">No schema fields configured.</p>
+          <p className="text-xs text-muted-foreground">{t('connector.noSchemaFields')}</p>
           <p className="text-[11px] text-muted-foreground/75 mt-0.5">
             Click &ldquo;Add Field&rdquo; or &ldquo;Infer from JSON&rdquo; to populate typed columns.
           </p>
@@ -242,12 +239,12 @@ export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableP
           <div className="overflow-x-auto">
             <div className="min-w-[420px]">
               <div className="grid grid-cols-12 gap-2 border-b bg-muted/40 px-3 py-2 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                <div className="col-span-6">Field Name</div>
-                <div className="col-span-4">Data Type</div>
-                <div className="col-span-2 text-right">Actions</div>
+                <div className="col-span-6">{t('connector.fieldName')}</div>
+                <div className="col-span-4">{t('connector.dataType')}</div>
+                <div className="col-span-2 text-right">{t('connector.actions')}</div>
               </div>
               <div className="divide-y text-xs">
-                {renderFieldRows(fields, 0, disabled, openAdd, openEdit, removeField)}
+                {renderFieldRows(fields, 0, disabled, openAdd, openEdit, removeField, t)}
               </div>
             </div>
           </div>
@@ -261,15 +258,12 @@ export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableP
             <DialogTitle className="text-base font-semibold">
               {editingField ? 'Edit Field' : parentId ? 'Add Nested Field' : 'Add Schema Field'}
             </DialogTitle>
-            <DialogDescription className="text-xs">
-              Configure name and eKuiper SQL data type.
-            </DialogDescription>
+            <DialogDescription className="text-xs">{t('connector.configureNameType')}</DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-col gap-3.5 py-2">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="field-name" className="text-xs font-medium">
-                Field Name <span className="text-destructive">*</span>
+              <Label htmlFor="field-name" className="text-xs font-medium">{t('connector.fieldName')}<span className="text-destructive">*</span>
               </Label>
               <Input
                 id="field-name"
@@ -282,9 +276,7 @@ export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableP
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="field-type" className="text-xs font-medium">
-                Data Type
-              </Label>
+              <Label htmlFor="field-type" className="text-xs font-medium">{t('connector.dataType')}</Label>
               <Select value={type} onValueChange={(val: FieldType) => setType(val)}>
                 <SelectTrigger id="field-type" className="h-9 text-xs">
                   <SelectValue />
@@ -303,9 +295,7 @@ export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableP
 
             {type === 'array' && (
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="array-element-type" className="text-xs font-medium">
-                  Array Element Type
-                </Label>
+                <Label htmlFor="array-element-type" className="text-xs font-medium">{t('connector.arrayElementType')}</Label>
                 <Select
                   value={arrayType}
                   onValueChange={(val: FieldType) => setArrayType(val)}
@@ -334,9 +324,7 @@ export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableP
               size="sm"
               onClick={() => setModalOpen(false)}
               className="touch-manipulation"
-            >
-              Cancel
-            </Button>
+            >{t('common.cancel')}</Button>
             <Button
               type="button"
               size="sm"
@@ -344,7 +332,7 @@ export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableP
               disabled={!name.trim()}
               className="touch-manipulation"
             >
-              {editingField ? 'Save Changes' : 'Add Field'}
+              {editingField ? 'Save Changes' : t('connector.addField')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -355,9 +343,7 @@ export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableP
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-base font-semibold flex items-center gap-1.5">
-              <Sparkles className="size-4 text-primary" aria-hidden="true" />
-              Infer Schema from Sample JSON
-            </DialogTitle>
+              <Sparkles className="size-4 text-primary" aria-hidden="true" />{t('connector.inferFromSample')}</DialogTitle>
             <DialogDescription className="text-xs">
               Paste a sample payload. Field names and data types will be extracted automatically.
             </DialogDescription>
@@ -369,7 +355,7 @@ export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableP
               onChange={(e) => setJsonInput(e.target.value)}
               placeholder='{\n  "deviceId": "dev-001",\n  "temperature": 23.5,\n  "humidity": 60,\n  "status": "active"\n}'
               className="min-h-[180px] font-mono text-xs"
-              aria-label="Sample JSON to infer fields"
+              aria-label={t('connector.sampleJson')}
               spellCheck={false}
             />
             {jsonError && (
@@ -386,18 +372,14 @@ export function FieldsTable({ fields, onChange, disabled = false }: FieldsTableP
               size="sm"
               onClick={() => setImportOpen(false)}
               className="touch-manipulation"
-            >
-              Cancel
-            </Button>
+            >{t('common.cancel')}</Button>
             <Button
               type="button"
               size="sm"
               onClick={handleImportJson}
               disabled={!jsonInput.trim()}
               className="touch-manipulation"
-            >
-              Import Fields
-            </Button>
+            >{t('connector.importFields')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -422,7 +404,10 @@ function renderFieldRows(
   disabled: boolean,
   onAddChild: (id: string) => void,
   onEdit: (field: StreamFieldNode) => void,
-  onRemove: (id: string) => void
+  onRemove: (id: string) => void,
+  // Passed in rather than called as a hook: this helper recurses, and a hook
+  // in a recursive call path would break the rules-of-hooks order.
+  t: Translate
 ): React.ReactNode {
   return nodes.map((field) => (
     <React.Fragment key={field.id}>
@@ -458,8 +443,8 @@ function renderFieldRows(
               size="icon"
               className="size-6 text-muted-foreground hover:text-foreground"
               onClick={() => onAddChild(field.id)}
-              title="Add nested child field"
-              aria-label="Add nested child field"
+              title={t('connector.addNestedChild')}
+              aria-label={t('connector.addNestedChild')}
             >
               <Plus className="size-3" aria-hidden="true" />
             </Button>
@@ -472,16 +457,14 @@ function renderFieldRows(
                 size="sm"
                 className="h-6 text-[11px] px-1.5 text-muted-foreground hover:text-foreground"
                 onClick={() => onEdit(field)}
-              >
-                Edit
-              </Button>
+              >{t('common.edit')}</Button>
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
                 className="size-6 text-muted-foreground hover:text-destructive"
                 onClick={() => onRemove(field.id)}
-                title="Delete field"
+                title={t('connector.deleteField')}
                 aria-label={`Delete field ${field.name || ''}`}
               >
                 <Trash2 className="size-3" aria-hidden="true" />
@@ -492,7 +475,7 @@ function renderFieldRows(
       </div>
 
       {field.children && field.children.length > 0 && (
-        renderFieldRows(field.children, depth + 1, disabled, onAddChild, onEdit, onRemove)
+        renderFieldRows(field.children, depth + 1, disabled, onAddChild, onEdit, onRemove, t)
       )}
     </React.Fragment>
   ));

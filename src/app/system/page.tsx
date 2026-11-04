@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout';
+import { useT } from '@/lib/i18n';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -45,6 +46,7 @@ function formatDetailedUptime(seconds?: number): string {
 }
 
 export default function SystemPage() {
+  const t = useT();
   const { servers, activeServerId } = useServerStore();
   const activeNode = servers.find((node) => node.id === activeServerId);
 
@@ -105,16 +107,16 @@ export default function SystemPage() {
 
   if (!activeNode) {
     return (
-      <AppLayout title="System">
+      <AppLayout title={t('nav.system')}>
         <Card className="mx-auto max-w-xl border-dashed">
           <CardContent className="flex flex-col items-center py-14 text-center">
             <Server className="mb-4 size-10 text-muted-foreground" />
-            <h2 className="text-lg font-semibold">Select an eKuiper node</h2>
+            <h2 className="text-lg font-semibold">{t('admin.selectNode')}</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               To inspect hardware architecture and system telemetry, select or register a node.
             </p>
             <Button asChild className="mt-5">
-              <Link href="/nodes">Manage nodes</Link>
+              <Link href="/nodes">{t('admin.manageNodes')}</Link>
             </Button>
           </CardContent>
         </Card>
@@ -123,27 +125,25 @@ export default function SystemPage() {
   }
 
   return (
-    <AppLayout title="System">
+    <AppLayout title={t('nav.system')}>
       <div className="mx-auto max-w-7xl flex flex-col gap-6">
         {/* Header bar */}
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-semibold tracking-tight">System Telemetry</h2>
+              <h2 className="text-2xl font-semibold tracking-tight">{t('admin.systemTelemetry')}</h2>
               <Badge variant="outline" className="font-mono text-xs">
                 {activeNode.name}
               </Badge>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              Real-time hardware runtime, engine architecture, and operating parameters.
+              {t('admin.systemHint')}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/60 bg-muted/20 text-xs">
-              <Label htmlFor="auto-poll" className="cursor-pointer text-xs text-muted-foreground">
-                Live Refresh
-              </Label>
+              <Label htmlFor="auto-poll" className="cursor-pointer text-xs text-muted-foreground">{t('admin.liveRefresh')}</Label>
               <Switch
                 id="auto-poll"
                 checked={autoPoll}
@@ -169,9 +169,7 @@ export default function SystemPage() {
               disabled={loading}
               className="text-xs"
             >
-              <RefreshCw className={`mr-1.5 size-3.5 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
-              Refresh
-            </Button>
+              <RefreshCw className={`mr-1.5 size-3.5 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />{t('admin.refresh')}</Button>
 
             <Button
               variant="outline"
@@ -185,7 +183,7 @@ export default function SystemPage() {
               ) : (
                 <Copy className="mr-1.5 size-3.5 text-muted-foreground" />
               )}
-              {copied ? 'Copied' : 'Copy JSON'}
+              {copied ? t('admin.copied') : t('admin.copyJson')}
             </Button>
           </div>
         </div>
@@ -203,9 +201,7 @@ export default function SystemPage() {
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400" />
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Engine Version
-                </span>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('admin.engineVersion')}</span>
                 <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                   <ShieldCheck className="size-4" />
                 </div>
@@ -215,9 +211,7 @@ export default function SystemPage() {
               <div className="text-2xl font-mono font-bold tracking-tight text-foreground">
                 {info?.version || '—'}
               </div>
-              <p className="text-[11px] text-muted-foreground font-mono">
-                LF Edge eKuiper Stream Engine
-              </p>
+              <p className="text-[11px] text-muted-foreground font-mono">{t('admin.engineTitle')}</p>
             </CardContent>
           </Card>
 
@@ -226,9 +220,7 @@ export default function SystemPage() {
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500" />
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Host Platform
-                </span>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('admin.hostPlatform')}</span>
                 <div className="p-1.5 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400">
                   <Terminal className="size-4" />
                 </div>
@@ -238,9 +230,7 @@ export default function SystemPage() {
               <div className="text-2xl font-mono font-bold tracking-tight text-foreground capitalize">
                 {info?.os || '—'}
               </div>
-              <p className="text-[11px] text-muted-foreground font-mono">
-                Target Execution Host OS
-              </p>
+              <p className="text-[11px] text-muted-foreground font-mono">{t('admin.targetHostOs')}</p>
             </CardContent>
           </Card>
 
@@ -249,9 +239,7 @@ export default function SystemPage() {
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 to-sky-400" />
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  Architecture
-                </span>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('admin.architecture')}</span>
                 <div className="p-1.5 rounded-md bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
                   <Cpu className="size-4" />
                 </div>
@@ -261,9 +249,7 @@ export default function SystemPage() {
               <div className="text-2xl font-mono font-bold tracking-tight text-foreground uppercase">
                 {info?.arch || '—'}
               </div>
-              <p className="text-[11px] text-muted-foreground font-mono">
-                CPU Instruction Set
-              </p>
+              <p className="text-[11px] text-muted-foreground font-mono">{t('admin.cpuInstructionSet')}</p>
             </CardContent>
           </Card>
 
@@ -272,9 +258,7 @@ export default function SystemPage() {
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-violet-400" />
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  System Uptime
-                </span>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('admin.systemUptime')}</span>
                 <div className="p-1.5 rounded-md bg-purple-500/10 text-purple-600 dark:text-purple-400">
                   <Clock className="size-4" />
                 </div>
@@ -296,33 +280,31 @@ export default function SystemPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card className="lg:col-span-2">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Active Node Environment</CardTitle>
-              <CardDescription className="text-xs">
-                Active endpoint binding and telemetry heartbeat status.
-              </CardDescription>
+              <CardTitle className="text-base font-semibold">{t('admin.activeNodeEnvironment')}</CardTitle>
+              <CardDescription className="text-xs">{t('admin.activeEndpointHint')}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4 text-xs font-mono">
               <div className="divide-y divide-border/60 rounded-lg border border-border/60 overflow-hidden bg-card">
                 <div className="flex items-center justify-between p-3">
-                  <span className="text-muted-foreground">Node Identifier</span>
+                  <span className="text-muted-foreground">{t('admin.nodeIdentifier')}</span>
                   <span className="font-semibold text-foreground">{activeNode.id}</span>
                 </div>
                 <div className="flex items-center justify-between p-3">
-                  <span className="text-muted-foreground">Display Name</span>
+                  <span className="text-muted-foreground">{t('admin.displayName')}</span>
                   <span className="font-semibold text-foreground">{activeNode.name}</span>
                 </div>
                 <div className="flex items-center justify-between p-3">
-                  <span className="text-muted-foreground">REST Endpoint URL</span>
+                  <span className="text-muted-foreground">{t('admin.restEndpoint')}</span>
                   <span className="font-semibold text-foreground">{activeNode.url}</span>
                 </div>
                 <div className="flex items-center justify-between p-3">
-                  <span className="text-muted-foreground">Connection Status</span>
+                  <span className="text-muted-foreground">{t('admin.connectionStatus')}</span>
                   <Badge variant={activeNode.status === 'connected' ? 'default' : 'secondary'} className="text-[10px]">
                     {activeNode.status}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between p-3">
-                  <span className="text-muted-foreground">Last Heartbeat</span>
+                  <span className="text-muted-foreground">{t('admin.lastHeartbeat')}</span>
                   <span className="text-foreground">
                     {lastRefreshed ? lastRefreshed.toLocaleTimeString() : '—'}
                   </span>
@@ -333,13 +315,13 @@ export default function SystemPage() {
               {(info?.memoryUsed || info?.cpuUsage) && (
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   <div className="p-3 rounded-lg border border-border/60 bg-muted/20">
-                    <span className="text-[11px] text-muted-foreground block font-sans">Memory Used</span>
+                    <span className="text-[11px] text-muted-foreground block font-sans">{t('admin.memoryUsed')}</span>
                     <span className="text-sm font-semibold text-foreground">
                       {info.memoryUsed} {info.memoryTotal ? `/ ${info.memoryTotal}` : ''}
                     </span>
                   </div>
                   <div className="p-3 rounded-lg border border-border/60 bg-muted/20">
-                    <span className="text-[11px] text-muted-foreground block font-sans">CPU Usage</span>
+                    <span className="text-[11px] text-muted-foreground block font-sans">{t('admin.cpuUsage')}</span>
                     <span className="text-sm font-semibold text-foreground">{info.cpuUsage}</span>
                   </div>
                 </div>
@@ -350,45 +332,35 @@ export default function SystemPage() {
           {/* Quick Actions & Navigation */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Shortcuts</CardTitle>
-              <CardDescription className="text-xs">
-                Jump to corresponding management views.
-              </CardDescription>
+              <CardTitle className="text-base font-semibold">{t('admin.shortcuts')}</CardTitle>
+              <CardDescription className="text-xs">{t('admin.shortcutsHint')}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
               <Button asChild variant="outline" className="w-full justify-between text-xs h-9">
                 <Link href="/nodes">
                   <span className="flex items-center gap-2">
-                    <Server className="size-3.5 text-blue-500" />
-                    Manage Registered Nodes
-                  </span>
+                    <Server className="size-3.5 text-blue-500" />{t('admin.manageRegisteredNodes')}</span>
                   <ArrowRight className="size-3.5 text-muted-foreground" />
                 </Link>
               </Button>
               <Button asChild variant="outline" className="w-full justify-between text-xs h-9">
                 <Link href="/rules">
                   <span className="flex items-center gap-2">
-                    <Zap className="size-3.5 text-amber-500" />
-                    Inspect Rule Alarms & Topology
-                  </span>
+                    <Zap className="size-3.5 text-amber-500" />{t('admin.inspectAlarms')}</span>
                   <ArrowRight className="size-3.5 text-muted-foreground" />
                 </Link>
               </Button>
               <Button asChild variant="outline" className="w-full justify-between text-xs h-9">
                 <Link href="/connections">
                   <span className="flex items-center gap-2">
-                    <Network className="size-3.5 text-emerald-500" />
-                    Shared Connection Pools
-                  </span>
+                    <Network className="size-3.5 text-emerald-500" />{t('admin.sharedConnectionPools')}</span>
                   <ArrowRight className="size-3.5 text-muted-foreground" />
                 </Link>
               </Button>
               <Button asChild variant="outline" className="w-full justify-between text-xs h-9">
                 <Link href="/plugins">
                   <span className="flex items-center gap-2">
-                    <Layers className="size-3.5 text-purple-500" />
-                    Extensions & Plugins
-                  </span>
+                    <Layers className="size-3.5 text-purple-500" />{t('admin.extensionsPlugins')}</span>
                   <ArrowRight className="size-3.5 text-muted-foreground" />
                 </Link>
               </Button>

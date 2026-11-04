@@ -4,6 +4,8 @@ import * as React from 'react';
 import { CheckCircle2, Download, Loader2, MoreHorizontal, Plus, RefreshCw, Server, Star, Trash2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout';
+import { useT } from '@/lib/i18n';
+import type { Translate } from '@/lib/i18n';
 import { ConfirmDialog } from '@/components/common';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -31,6 +33,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useServerStore } from '@/stores/server-store';
 import { ImportNodeRulesetModal } from '@/components/nodes/import-node-ruleset-modal';
 
+import { formatNodeDiagnostic } from '@/lib/nodes/diagnostics';
 interface NodeRecord {
   id: string;
   name: string;
@@ -63,14 +66,16 @@ async function getError(response: Response): Promise<string> {
   return payload?.error?.message ?? `Request failed (${response.status})`;
 }
 
-function statusBadge(node: NodeRecord) {
-  if (node.status === 'ONLINE') return <Badge className="bg-emerald-600">Online</Badge>;
-  if (node.status === 'INCOMPATIBLE') return <Badge variant="secondary">Incompatible</Badge>;
-  if (node.status === 'OFFLINE') return <Badge variant="destructive">Offline</Badge>;
-  return <Badge variant="outline">Not checked</Badge>;
+/** Takes `t` explicitly: called outside the component, where hooks are unavailable. */
+function statusBadge(node: NodeRecord, t: Translate) {
+  if (node.status === 'ONLINE') return <Badge className="bg-emerald-600">{t('admin.online')}</Badge>;
+  if (node.status === 'INCOMPATIBLE') return <Badge variant="secondary">{t('admin.incompatible')}</Badge>;
+  if (node.status === 'OFFLINE') return <Badge variant="destructive">{t('admin.offline')}</Badge>;
+  return <Badge variant="outline">{t('admin.notChecked')}</Badge>;
 }
 
 export default function NodesPage() {
+  const t = useT();
   const { activeServerId, fetchServers: refreshStore, setActiveServer } = useServerStore();
   const [nodes, setNodes] = React.useState<NodeRecord[]>([]);
   const [isOwner, setIsOwner] = React.useState(false);
@@ -103,7 +108,7 @@ export default function NodesPage() {
       URL.revokeObjectURL(url);
       toast.success(`Exported ruleset for ${node.name}`);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to export ruleset');
+      toast.error(err instanceof Error ? err.message : t('admin.exportRulesetFailed'));
     } finally {
       setExportingId(null);
     }
@@ -122,7 +127,7 @@ export default function NodesPage() {
       setNodes(payload.nodes);
       setIsOwner(session?.user?.role === 'OWNER');
     } catch (reason) {
-      toast.error(reason instanceof Error ? reason.message : 'Failed to load nodes');
+      toast.error(reason instanceof Error ? reason.message : t('admin.loadNodesFailed'));
     } finally {
       setLoading(false);
     }
@@ -168,11 +173,11 @@ export default function NodesPage() {
         });
         if (!selection.ok) throw new Error(await getError(selection));
       }
-      toast.success(editing ? 'Node updated' : 'Node added and selected');
+      toast.success(editing ? t('admin.nodeUpdated') : t('admin.nodeAdded'));
       setDialogOpen(false);
       await Promise.all([load(), refreshStore()]);
     } catch (reason) {
-      toast.error(reason instanceof Error ? reason.message : 'Failed to save node');
+      toast.error(reason instanceof Error ? reason.message : t('admin.saveNodeFailed'));
     } finally {
       setSaving(false);
     }
@@ -213,14 +218,14 @@ export default function NodesPage() {
   };
 
   return (
-    <AppLayout title="Nodes">
+    <AppLayout title={t('nav.nodes')}>
       <div className="mx-auto max-w-6xl flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight">eKuiper nodes</h2>
-            <p className="mt-1 text-muted-foreground">Registered destinations used by every Manager operation.</p>
+            <h2 className="text-2xl font-semibold tracking-tight">{t('admin.nodesTitle')}</h2>
+            <p className="mt-1 text-muted-foreground">{t('admin.registeredDestinations')}</p>
           </div>
-          {isOwner && <Button onClick={openAdd}><Plus className="mr-2 size-4" aria-hidden="true" />Add node</Button>}
+          {isOwner && <Button onClick={openAdd}><Plus className="mr-2 size-4" aria-hidden="true" />{t('admin.addNodeLabel')}</Button>}
         </div>
 
         {loading ? (
@@ -232,9 +237,9 @@ export default function NodesPage() {
           <Card className="border-dashed">
             <CardContent className="flex flex-col items-center py-14 text-center">
               <Server className="mb-4 size-10 text-muted-foreground" aria-hidden="true" />
-              <h3 className="font-semibold">No eKuiper node configured</h3>
-              <p className="mt-1 max-w-md text-sm text-muted-foreground">Add the REST address of the eKuiper node you want to manage.</p>
-              {isOwner && <Button className="mt-5" onClick={openAdd}>Add first node</Button>}
+              <h3 className="font-semibold">{t('admin.noNodeConfigured')}</h3>
+              <p className="mt-1 max-w-md text-sm text-muted-foreground">{t('admin.addNodeHint')}</p>
+              {isOwner && <Button className="mt-5" onClick={openAdd}>{t('admin.addFirstNode')}</Button>}
             </CardContent>
           </Card>
         ) : (
@@ -246,32 +251,28 @@ export default function NodesPage() {
                     <div className="min-w-0">
                       <CardTitle className="flex items-center gap-2">
                         <span className="truncate" title={node.name}>{node.name}</span>
-                        {node.id === activeServerId && <Badge>Selected</Badge>}
-                        {node.isDefault && <Star className="size-4 fill-amber-400 text-amber-400" aria-label="Default node" />}
+                        {node.id === activeServerId && <Badge>{t('admin.selected')}</Badge>}
+                        {node.isDefault && <Star className="size-4 fill-amber-400 text-amber-400" aria-label={t('admin.defaultNode')} />}
                       </CardTitle>
                       <CardDescription className="mt-1 truncate" title={node.baseUrl}>{node.baseUrl}</CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
-                      {statusBadge(node)}
+                      {statusBadge(node, t)}
                       {isOwner && (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" aria-label={`Actions for ${node.name}`} className="touch-manipulation"><MoreHorizontal className="size-4" aria-hidden="true" /></Button></DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuGroup>
-                              <DropdownMenuItem onSelect={() => openEdit(node)}>Edit</DropdownMenuItem>
+                              <DropdownMenuItem onSelect={() => openEdit(node)}>{t('common.edit')}</DropdownMenuItem>
                               <DropdownMenuItem onSelect={() => void exportNodeRuleset(node)}>
-                                <Download className="mr-2 size-4" aria-hidden="true" />
-                                Export ruleset
-                              </DropdownMenuItem>
+                                <Download className="mr-2 size-4" aria-hidden="true" />{t('admin.exportRuleset')}</DropdownMenuItem>
                               <DropdownMenuItem onSelect={() => setImportRulesetNode(node)}>
-                                <Upload className="mr-2 size-4" aria-hidden="true" />
-                                Import ruleset
-                              </DropdownMenuItem>
-                              {!node.isDefault && <DropdownMenuItem onSelect={() => void makeDefault(node)}><Star className="mr-2 size-4" aria-hidden="true" />Make default</DropdownMenuItem>}
+                                <Upload className="mr-2 size-4" aria-hidden="true" />{t('admin.importRuleset')}</DropdownMenuItem>
+                              {!node.isDefault && <DropdownMenuItem onSelect={() => void makeDefault(node)}><Star className="mr-2 size-4" aria-hidden="true" />{t('admin.makeDefault')}</DropdownMenuItem>}
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
-                              <DropdownMenuItem className="text-destructive" onSelect={() => setDeleteNode(node)}><Trash2 className="mr-2 size-4" aria-hidden="true" />Remove</DropdownMenuItem>
+                              <DropdownMenuItem className="text-destructive" onSelect={() => setDeleteNode(node)}><Trash2 className="mr-2 size-4" aria-hidden="true" />{t('admin.remove')}</DropdownMenuItem>
                             </DropdownMenuGroup>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -282,13 +283,13 @@ export default function NodesPage() {
                 <CardContent className="flex flex-col gap-4">
                   {node.description && <p className="text-sm text-muted-foreground">{node.description}</p>}
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div><p className="text-xs text-muted-foreground">Version</p><p className="font-medium">{node.version ?? 'Not detected'}</p></div>
-                    <div><p className="text-xs text-muted-foreground">Authorization</p><p className="font-medium">{node.hasAuthorization ? 'Configured' : 'Not configured'}</p></div>
+                    <div><p className="text-xs text-muted-foreground">{t('admin.version')}</p><p className="font-medium">{node.version ?? t('admin.notDetected')}</p></div>
+                    <div><p className="text-xs text-muted-foreground">{t('admin.authorization')}</p><p className="font-medium">{node.hasAuthorization ? t('admin.configured') : t('admin.notConfigured')}</p></div>
                   </div>
-                  {node.lastError && <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground">{node.lastError}</div>}
+                  {formatNodeDiagnostic(node.lastError, t) && <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground">{formatNodeDiagnostic(node.lastError, t)}</div>}
                   <div className="flex flex-wrap gap-2">
                     <Button size="sm" disabled={node.id === activeServerId} onClick={() => setActiveServer(node.id)} className="touch-manipulation">
-                      {node.id === activeServerId ? 'In use' : 'Use this node'}
+                      {node.id === activeServerId ? t('admin.inUse') : t('admin.useThisNode')}
                     </Button>
                     <Button
                       variant="outline"
@@ -298,7 +299,7 @@ export default function NodesPage() {
                       className="touch-manipulation"
                     >
                       <RefreshCw className={`mr-2 size-4 ${probingId === node.id ? 'animate-spin' : ''}`} aria-hidden="true" />
-                      {probingId === node.id ? 'Checking…' : 'Check connection'}
+                      {probingId === node.id ? t('admin.checking') : t('admin.checkConnection')}
                     </Button>
                     <Button
                       variant="outline"
@@ -308,7 +309,7 @@ export default function NodesPage() {
                       className="text-xs gap-1 touch-manipulation"
                     >
                       <Download className={`size-3.5 ${exportingId === node.id ? 'animate-bounce' : ''}`} aria-hidden="true" />
-                      {exportingId === node.id ? 'Exporting…' : 'Export ruleset'}
+                      {exportingId === node.id ? t('admin.exporting') : t('admin.exportRuleset')}
                     </Button>
                   </div>
                 </CardContent>
@@ -321,26 +322,26 @@ export default function NodesPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editing ? 'Edit eKuiper node' : 'Add eKuiper node'}</DialogTitle>
-            <DialogDescription>The address is validated and stored by the Manager. It is never accepted from ordinary API calls.</DialogDescription>
+            <DialogTitle>{editing ? t('admin.editNode') : t('admin.addNodeTitle')}</DialogTitle>
+            <DialogDescription>{t('extension.nodeAddressHint')}</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-2">
-            <div className="flex flex-col gap-2"><Label htmlFor="node-name">Name</Label><Input id="node-name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="Production eKuiper" /></div>
-            <div className="flex flex-col gap-2"><Label htmlFor="node-url">REST URL</Label><Input id="node-url" value={form.baseUrl} onChange={(event) => setForm({ ...form, baseUrl: event.target.value })} placeholder="https://ekuiper.example.com:9081" /></div>
-            <div className="flex flex-col gap-2"><Label htmlFor="node-description">Description</Label><Textarea id="node-description" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} rows={3} /></div>
-            <div className="flex flex-col gap-2"><Label htmlFor="node-authorization">Authorization value</Label><Input id="node-authorization" type="password" autoComplete="off" value={form.authorization} onChange={(event) => setForm({ ...form, authorization: event.target.value })} placeholder={editing?.hasAuthorization ? 'Leave blank to keep current value' : 'Optional'} /><p className="text-xs text-muted-foreground">Enter the raw eKuiper Authorization header value when authentication is enabled.</p></div>
+            <div className="flex flex-col gap-2"><Label htmlFor="node-name">{t('admin.name')}</Label><Input id="node-name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder={t('admin.productionEkuiper')} /></div>
+            <div className="flex flex-col gap-2"><Label htmlFor="node-url">{t('admin.restUrl')}</Label><Input id="node-url" value={form.baseUrl} onChange={(event) => setForm({ ...form, baseUrl: event.target.value })} placeholder="https://ekuiper.example.com:9081" /></div>
+            <div className="flex flex-col gap-2"><Label htmlFor="node-description">{t('admin.description')}</Label><Textarea id="node-description" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} rows={3} /></div>
+            <div className="flex flex-col gap-2"><Label htmlFor="node-authorization">{t('admin.authorizationValue')}</Label><Input id="node-authorization" type="password" autoComplete="off" value={form.authorization} onChange={(event) => setForm({ ...form, authorization: event.target.value })} placeholder={editing?.hasAuthorization ? t('admin.leaveBlankToKeep') : t('extension.optional')} /><p className="text-xs text-muted-foreground">{t('extension.authValueHint')}</p></div>
           </div>
           <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setDialogOpen(false)} className="touch-manipulation">Cancel</Button>
+            <Button variant="outline" onClick={() => setDialogOpen(false)} className="touch-manipulation">{t('common.cancel')}</Button>
             <Button onClick={() => void save()} disabled={saving || !form.name || !form.baseUrl} className="touch-manipulation">
               {saving && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}
-              {saving ? 'Saving…' : 'Save node'}
+              {saving ? t('admin.saving') : t('admin.saveNode')}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <ConfirmDialog open={Boolean(deleteNode)} onOpenChange={(open) => !open && setDeleteNode(null)} title="Remove eKuiper node?" description={`Remove ${deleteNode?.name ?? 'this node'} from the Manager? This does not stop or delete the eKuiper installation.`} confirmLabel="Remove node" variant="danger" onConfirm={confirmDelete} />
+      <ConfirmDialog open={Boolean(deleteNode)} onOpenChange={(open) => !open && setDeleteNode(null)} title={t('admin.removeNodeTitle')} description={`Remove ${deleteNode?.name ?? 'this node'} from the Manager? This does not stop or delete the eKuiper installation.`} confirmLabel="Remove node" variant="danger" onConfirm={confirmDelete} />
 
       <ImportNodeRulesetModal
         node={importRulesetNode}

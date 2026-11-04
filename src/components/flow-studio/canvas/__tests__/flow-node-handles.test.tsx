@@ -18,6 +18,7 @@ import {
   type FlowDocument,
 } from '@/lib/flows/model/flow-document';
 
+import { withI18n } from '@/test-utils/with-i18n';
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 if ((globalThis as Record<string, unknown>)['structuredClone'] === undefined) {
@@ -109,9 +110,7 @@ async function renderCanvas(nodes: Parameters<typeof ReactFlow>[0]['nodes']): Pr
   const root = createRoot(container);
   mounted.push({ container, root });
   await act(async () => {
-    root.render(
-      <ReactFlow nodes={nodes} edges={[]} nodeTypes={flowNodeTypes} />,
-    );
+    root.render(withI18n(<ReactFlow nodes={nodes} edges={[]} nodeTypes={flowNodeTypes} />));
   });
   return container;
 }

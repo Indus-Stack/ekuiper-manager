@@ -5,6 +5,7 @@ import { useServerStore } from "@/stores/server-store";
 import { ekuiperClient } from "@/lib/ekuiper/client";
 import type { PluginType } from "@/lib/ekuiper/types";
 import { AppLayout } from "@/components/layout";
+import { useT } from '@/lib/i18n';
 import { EmptyState } from "@/components/common";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,10 +56,15 @@ interface PrebuildPlugin {
 }
 
 export default function InstallPluginPage() {
+  const t = useT();
   const router = useRouter();
   const params = useParams();
   const typeParam = String(params.type);
   const type = isInstallablePluginType(typeParam) ? typeParam : null;
+  // `type` is an internal routing key; the heading needs its localized label.
+  const pluginTypeLabel = type
+    ? { sources: t('extension.sources'), sinks: t('extension.sinks'), functions: t('extension.functions'), portables: t('extension.portables') }[type]
+    : typeParam;
 
   const { servers, activeServerId } = useServerStore();
   const activeServer = servers.find((s) => s.id === activeServerId);
@@ -124,12 +130,12 @@ export default function InstallPluginPage() {
       : fileUrl).trim();
 
     if (!name) {
-      toast.error("Plugin name is required");
+      toast.error(t('extension.pluginNameRequired'));
       return;
     }
 
     if (!url) {
-      toast.error("Plugin file or URL is required");
+      toast.error(t('extension.pluginSourceRequired'));
       return;
     }
 
@@ -156,7 +162,7 @@ export default function InstallPluginPage() {
       toast.success(`Plugin "${name}" installed successfully`);
       router.push("/plugins");
     } catch (err) {
-      toast.error(`Failed to install plugin: ${err instanceof Error ? err.message : "Unknown error"}`);
+      toast.error(`Failed to install plugin: ${err instanceof Error ? err.message : t('extension.unknownError')}`);
     } finally {
       setInstalling(false);
     }
@@ -179,11 +185,11 @@ export default function InstallPluginPage() {
 
   if (!type) {
     return (
-      <AppLayout title="Install Plugin">
+      <AppLayout title={t('nav.installPlugin')}>
         <EmptyState
-          title="Unsupported plugin type"
-          description="Install source, sink, function, or portable plugins here."
-          actionLabel="Back to plugins"
+          title={t('extension.unsupportedPluginType')}
+          description={t('extension.installPluginHint')}
+          actionLabel={t('extension.backToPlugins')}
           onAction={() => router.push("/plugins")}
         />
       </AppLayout>
@@ -192,10 +198,10 @@ export default function InstallPluginPage() {
 
   if (!activeServer) {
     return (
-      <AppLayout title="Install Plugin">
+      <AppLayout title={t('nav.installPlugin')}>
         <EmptyState
-          title="No Server Connected"
-          description="Connect to an eKuiper server to install plugins."
+          title={t('extension.noServerConnected')}
+          description={t('extension.connectToInstallPlugins')}
         />
       </AppLayout>
     );
@@ -204,7 +210,7 @@ export default function InstallPluginPage() {
   const docUrl = `https://ekuiper.org/docs/en/latest/plugins/${type}/${(pluginName || selectedPrebuild).toLowerCase()}.html`;
 
   return (
-    <AppLayout title="Install Plugin">
+    <AppLayout title={t('nav.installPlugin')}>
       <div className="flex flex-col gap-6 max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4">
@@ -212,7 +218,7 @@ export default function InstallPluginPage() {
             variant="ghost"
             size="icon"
             onClick={() => router.push("/plugins")}
-            aria-label="Back to plugins"
+            aria-label={t('extension.backToPlugins')}
           >
             <ArrowLeft className="size-5" />
           </Button>
@@ -220,10 +226,12 @@ export default function InstallPluginPage() {
             {getPluginIcon()}
             <div>
               <h2 className="text-2xl font-bold tracking-tight capitalize">
-                Install {type.slice(0, -1)} Plugin
+                {type === 'portables'
+                  ? t('extension.installPortableTitle')
+                  : t('extension.installPluginOfType', { type: pluginTypeLabel })}
               </h2>
               <p className="text-muted-foreground text-xs">
-                Install a prebuilt extension or local package into the eKuiper edge runtime.
+                {t('extension.installPluginPageHint')}
               </p>
             </div>
           </div>
@@ -234,10 +242,8 @@ export default function InstallPluginPage() {
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-base font-semibold">Plugin Parameters</CardTitle>
-                <CardDescription className="text-xs">
-                  Configure package source, execution arguments, and exposed symbols.
-                </CardDescription>
+                <CardTitle className="text-base font-semibold">{t('extension.pluginParameters')}</CardTitle>
+                <CardDescription className="text-xs">{t('extension.configurePluginHint')}</CardDescription>
               </div>
               {(pluginName || selectedPrebuild) && (
                 <a
@@ -246,9 +252,7 @@ export default function InstallPluginPage() {
                   rel="noopener noreferrer"
                   className="text-xs text-primary hover:underline flex items-center gap-1 font-medium"
                 >
-                  <ExternalLink className="size-3.5" />
-                  Documentation
-                </a>
+                  <ExternalLink className="size-3.5" />{t('extension.documentation')}</a>
               )}
             </div>
           </CardHeader>
@@ -257,17 +261,15 @@ export default function InstallPluginPage() {
             {type === "portables" && (
               <div className="flex items-center justify-between p-3 rounded-lg border border-border/70 bg-muted/30 text-xs">
                 <div className="flex flex-col gap-0.5">
-                  <div className="font-medium text-foreground">Portable Plugin Template</div>
-                  <div className="text-[11px] text-muted-foreground">Download reference portable plugin structure (.zip) with sample JSON manifest and runtime.</div>
+                  <div className="font-medium text-foreground">{t('extension.portableTemplate')}</div>
+                  <div className="text-[11px] text-muted-foreground">{t('extension.portableTemplateHint')}</div>
                 </div>
                 <a
                   href="/template/portable-sample.zip"
                   download="portable-sample.zip"
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-background border border-border rounded shadow-beautiful-sm hover:bg-accent active:scale-[0.97] transition-all shrink-0"
                 >
-                  <Download className="size-3.5" />
-                  Sample .zip
-                </a>
+                  <Download className="size-3.5" />{t('extension.sampleZip')}</a>
               </div>
             )}
             {type !== "portables" && (
@@ -281,25 +283,21 @@ export default function InstallPluginPage() {
                     value="prebuild"
                     className="text-xs font-medium data-[state=active]:bg-background flex items-center gap-1.5"
                   >
-                    <Download className="size-3.5" />
-                    Prebuilt Catalog
-                  </TabsTrigger>
+                    <Download className="size-3.5" />{t('extension.prebuiltCatalog')}</TabsTrigger>
                   <TabsTrigger
                     value="custom"
                     className="text-xs font-medium data-[state=active]:bg-background flex items-center gap-1.5"
                   >
-                    <Upload className="size-3.5" />
-                    Custom File / URL
-                  </TabsTrigger>
+                    <Upload className="size-3.5" />{t('extension.customFileUrl')}</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="prebuild" className="flex flex-col gap-4 mt-4 m-0 focus-visible:outline-none">
                   <div className="flex flex-col gap-1.5">
-                    <Label className="text-xs font-medium">Select Prebuilt Plugin</Label>
+                    <Label className="text-xs font-medium">{t('extension.selectPrebuilt')}</Label>
                     <Select value={selectedPrebuild} onValueChange={handlePrebuildChange}>
                       <SelectTrigger className="h-8 text-xs font-mono">
                         <SelectValue
-                          placeholder={loadingPrebuild ? "Loading prebuilts..." : "Select a plugin"}
+                          placeholder={loadingPrebuild ? t('extension.loadingPrebuilts') : t('extension.selectAPlugin')}
                         />
                       </SelectTrigger>
                       <SelectContent>
@@ -313,9 +311,7 @@ export default function InstallPluginPage() {
                       </SelectContent>
                     </Select>
                     {prebuildPlugins.length === 0 && !loadingPrebuild && (
-                      <p className="text-xs text-muted-foreground">
-                        No official prebuild binaries listed by this eKuiper version.
-                      </p>
+                      <p className="text-xs text-muted-foreground">{t('extension.noPrebuiltBinaries')}</p>
                     )}
                   </div>
                 </TabsContent>
@@ -326,30 +322,30 @@ export default function InstallPluginPage() {
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="plugin-name" className="text-xs font-medium">
-                  Plugin Name *
+                  {t('extension.pluginNameLabel')} *
                 </Label>
                 <Input
                   id="plugin-name"
                   value={pluginName}
                   onChange={(e) => setPluginName(e.target.value)}
-                  placeholder="e.g. tdengine, echo, zmq"
+                  placeholder={t('extension.pluginNamePlaceholder')}
                   className="h-8 text-xs font-mono"
                 />
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="plugin-url" className="text-xs font-medium">
-                  Package File (.zip) or Remote URL *
+                  {t('extension.pluginSourceLabel')} *
                 </Label>
                 <FileAutocomplete
                   value={fileUrl}
                   onChange={setFileUrl}
-                  placeholder="file:///tmp/plugins/my_plugin.zip or http://..."
+                  placeholder={t('extension.pluginSourcePlaceholder')}
                   accept=".zip"
-                  modalTitle="Upload Plugin Zip Package"
+                  modalTitle={t('extension.uploadPluginZip')}
                 />
                 <p className="text-[11px] text-muted-foreground">
-                  Reference an uploaded file with <code className="font-mono text-foreground">file://</code> or a downloadable HTTP link.
+                  {t('extension.uploadedFileRef')} <code className="font-mono text-foreground">file://</code>
                 </p>
               </div>
             </div>
@@ -358,17 +354,13 @@ export default function InstallPluginPage() {
             {type === "functions" && (
               <div className="flex flex-col gap-1.5 pt-2 border-t border-border">
                 <div className="flex items-center gap-1.5">
-                  <Label htmlFor="plugin-functions" className="text-xs font-medium">
-                    Exported Functions (comma-separated)
-                  </Label>
+                  <Label htmlFor="plugin-functions" className="text-xs font-medium">{t('extension.exportedFunctions')}</Label>
                   <TooltipProvider delayDuration={200}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <HelpCircle className="size-3.5 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent side="top" className="text-xs max-w-xs">
-                        Names of function symbols exported by the binary.
-                      </TooltipContent>
+                      <TooltipContent side="top" className="text-xs max-w-xs">{t('extension.exportedFunctionsHint')}</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
@@ -386,16 +378,14 @@ export default function InstallPluginPage() {
             <div className="flex flex-col gap-1.5 pt-2 border-t border-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <Label htmlFor="plugin-shell-paras" className="text-xs font-medium">
-                    Shell Parameters (shellParas)
-                  </Label>
+                  <Label htmlFor="plugin-shell-paras" className="text-xs font-medium">{t('extension.shellParameters')}</Label>
                   <TooltipProvider delayDuration={200}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <HelpCircle className="size-3.5 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
                       <TooltipContent side="top" className="text-xs max-w-xs">
-                        Extra CLI arguments passed to the install script (e.g. configuration path flags).
+                        {t('extension.extraCliArgsHint')}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -409,7 +399,7 @@ export default function InstallPluginPage() {
                     onClick={() => setShellParasText("-c, /etc/taos")}
                   >
                     <Sparkles className="size-3 mr-1" />
-                    Preset TDengine: -c, /etc/taos
+                    {t('extension.presetTdengine')}
                   </Button>
                 )}
               </div>
@@ -417,7 +407,7 @@ export default function InstallPluginPage() {
                 id="plugin-shell-paras"
                 value={shellParasText}
                 onChange={(e) => setShellParasText(e.target.value)}
-                placeholder="e.g. -c, /etc/taos"
+                placeholder={t('extension.shellParasPlaceholder')}
                 className="h-8 text-xs font-mono"
               />
             </div>
@@ -429,12 +419,10 @@ export default function InstallPluginPage() {
                 size="sm"
                 onClick={() => router.push("/plugins")}
                 disabled={installing}
-              >
-                Cancel
-              </Button>
+              >{t('common.cancel')}</Button>
               <Button size="sm" onClick={handleInstall} disabled={installing} className="gap-1.5">
                 {installing ? <Loader2 className="size-3.5 animate-spin" /> : <Plug className="size-3.5" />}
-                {installing ? "Installing..." : "Install Plugin"}
+                {installing ? t('extension.installing') : t('extension.installPlugin')}
               </Button>
             </div>
           </CardContent>

@@ -5,6 +5,8 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import type { FlowSemanticChange } from '@/lib/flows/model/flow-diff';
 
+import { useT } from '@/lib/i18n';
+import type { Translate } from '@/lib/i18n';
 /**
  * FS-0096: presentational semantic diff between two Flow specs/revisions.
  *
@@ -62,6 +64,7 @@ function stringifyValue(value: unknown): string {
 }
 
 function TruncatedValue({ value }: { value: unknown }) {
+  const t = useT();
   const full = stringifyValue(value);
   if (full.length <= REVISION_DIFF_TRUNCATE_AT) {
     return (
@@ -83,9 +86,7 @@ function TruncatedValue({ value }: { value: unknown }) {
         {truncated}
       </code>{' '}
       <details className="mt-1">
-        <summary className="cursor-pointer text-[11px] text-muted-foreground">
-          Show full value
-        </summary>
+        <summary className="cursor-pointer text-[11px] text-muted-foreground">{t('flow.showFullValue')}</summary>
         <pre className="mt-1 max-h-32 max-w-full overflow-auto whitespace-pre-wrap break-all rounded bg-muted p-2 font-mono text-[11px]">
           {full}
         </pre>
@@ -96,13 +97,15 @@ function TruncatedValue({ value }: { value: unknown }) {
 
 function describeChange(
   change: FlowSemanticChange,
-  nodeNames?: RevisionNodeNameLookup,
+  nodeNames: RevisionNodeNameLookup | undefined,
+  // Passed in rather than called as a hook: this is a plain helper, not a component.
+  t: Translate,
 ): React.ReactNode {
   switch (change.kind) {
     case 'node-added':
       return (
         <span>
-          Added node{' '}
+          {t('flow.addedNode')}{' '}
           <strong className="font-medium">
             {formatNodeLabel(change.nodeId, nodeNames)}
           </strong>
@@ -111,7 +114,7 @@ function describeChange(
     case 'node-removed':
       return (
         <span>
-          Removed node{' '}
+          {t('flow.removedNode')}{' '}
           <strong className="font-medium">
             {formatNodeLabel(change.nodeId, nodeNames)}
           </strong>
@@ -130,7 +133,7 @@ function describeChange(
     case 'node-type-changed':
       return (
         <span>
-          Changed type of{' '}
+          {t('flow.changedTypeOf')}{' '}
           <strong className="font-medium">
             {formatNodeLabel(change.nodeId, nodeNames)}
           </strong>{' '}
@@ -147,18 +150,18 @@ function describeChange(
     case 'node-config-changed':
       return (
         <span>
-          Changed configuration of{' '}
+          {t('flow.changedConfigOf')}{' '}
           <strong className="font-medium">
             {formatNodeLabel(change.nodeId, nodeNames)}
           </strong>
         </span>
       );
     case 'options-changed':
-      return <span>Changed flow rule options</span>;
+      return <span>{t('flow.changedRuleOptions')}</span>;
     case 'edge-added':
       return (
         <span>
-          Added connection{' '}
+          {t('flow.addedConnection')}{' '}
           <code className="rounded bg-muted px-1 font-mono text-[11px]">
             {change.edgeId}
           </code>
@@ -167,7 +170,7 @@ function describeChange(
     case 'edge-removed':
       return (
         <span>
-          Removed connection{' '}
+          {t('flow.removedConnection')}{' '}
           <code className="rounded bg-muted px-1 font-mono text-[11px]">
             {change.edgeId}
           </code>
@@ -183,6 +186,7 @@ export function RevisionDiff({
   nodeNames,
   className,
 }: RevisionDiffProps) {
+  const t = useT();
   if (changes.length === 0) {
     return (
       <p
@@ -197,7 +201,7 @@ export function RevisionDiff({
 
   return (
     <ul
-      aria-label="Semantic changes"
+      aria-label={t('flow.semanticChanges')}
       className={cn('flex flex-col gap-2', className)}
       data-testid="revision-diff-list"
     >
@@ -219,7 +223,7 @@ export function RevisionDiff({
             data-testid="revision-diff-change"
             data-change-kind={change.kind}
           >
-            <div>{describeChange(change, nodeNames)}</div>
+            <div>{describeChange(change, nodeNames, t)}</div>
             {change.kind === 'node-config-changed' ? (
               <ul
                 className="mt-1.5 flex flex-col gap-1.5"
@@ -246,7 +250,7 @@ export function RevisionDiff({
             {change.kind === 'options-changed' ? (
               <ul
                 className="mt-1.5 flex flex-col gap-1.5"
-                aria-label="Changed flow options"
+                aria-label={t('flow.changedFlowOptions')}
               >
                 {change.changes.map((property) => (
                   <li

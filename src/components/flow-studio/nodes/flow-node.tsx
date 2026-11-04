@@ -27,6 +27,7 @@ import {
 } from "@/stores/flow-runtime-store";
 import { useFlowEditorStore } from "@/stores/flow-editor-store";
 
+import { useT } from '@/lib/i18n';
 /**
  * Subset of FlowNodeDefinition metadata the canvas chrome may render.
  *
@@ -193,6 +194,7 @@ function formatFlowNodeMetricSummary(
  * dead weight. No behavior change: same props still render the same chrome.
  */
 function FlowNodeView({ data, selected }: FlowNodeProps) {
+  const t = useT();
   // FS-0105: fine-grained runtime subscription. The node reads only its own
   // metrics entry (keyed by the editor document id + its own node id) with a
   // shallow comparison, so a metrics update for an unrelated node with
@@ -214,7 +216,7 @@ function FlowNodeView({ data, selected }: FlowNodeProps) {
   const category = data.definition?.category ?? data.category;
   const inputs = resolvePorts(data.inputs, data.definition?.inputs);
   const outputs = resolvePorts(data.outputs, data.definition?.outputs);
-  const title = data.name || "Unnamed node";
+  const title = data.name || t('flow.unnamedNode');
   // FS-0148: presentation metadata. Guards fail open to the legacy chrome
   // (category mark, neutral style, displayName subtitle) without throwing.
   const iconMark = resolveFlowNodeIconMark(data.definition?.icon);
@@ -368,15 +370,13 @@ function FlowNodeView({ data, selected }: FlowNodeProps) {
           <span
             className="inline-flex items-center rounded border flow-studio-unsupported-badge px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
             data-testid="flow-node-unsupported"
-            title="Unknown node type. The saved node is preserved."
-          >
-            Unsupported
-          </span>
+            title={t('flow.unknownNodeType')}
+          >{t('flow.unsupported')}</span>
         </div>
       ) : null}
 
       <span className="sr-only">
-        {selected === true ? "Selected" : "Not selected"}
+        {selected === true ? "Selected" : t('flow.notSelected')}
       </span>
 
       <div

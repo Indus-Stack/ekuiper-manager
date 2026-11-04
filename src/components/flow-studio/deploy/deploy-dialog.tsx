@@ -14,6 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { FlowDiagnostic } from "@/lib/flows/model/diagnostic";
 
+import { useT } from '@/lib/i18n';
 export interface FlowDeploySuccessSummary {
   deploymentId: string;
   ruleId: string;
@@ -137,6 +138,7 @@ export function FlowDeployDialog({
   onClose,
   onDeployed,
 }: FlowDeployDialogProps) {
+  const t = useT();
   const [validation, setValidation] =
     React.useState<ServerValidationState>(INITIAL_VALIDATION);
   const [deploy, setDeploy] = React.useState<DeployState>(INITIAL_DEPLOY);
@@ -376,7 +378,7 @@ export function FlowDeployDialog({
     >
       <DialogContent data-testid="flow-deploy-dialog">
         <DialogHeader>
-          <DialogTitle>Deploy flow</DialogTitle>
+          <DialogTitle>{t('flow.deployFlow')}</DialogTitle>
           <DialogDescription>
             Deploy the saved draft of &ldquo;{flowName}&rdquo; to its
             registered eKuiper target. The draft is left untouched.
@@ -385,11 +387,11 @@ export function FlowDeployDialog({
 
         <div className="flex max-h-[50vh] flex-col gap-3 overflow-y-auto">
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-xs">
-            <dt className="font-medium text-muted-foreground">Target</dt>
+            <dt className="font-medium text-muted-foreground">{t('flow.target')}</dt>
             <dd data-testid="flow-deploy-target">
               {targetLabel ?? "No target configured"}
             </dd>
-            <dt className="font-medium text-muted-foreground">Semantic hash</dt>
+            <dt className="font-medium text-muted-foreground">{t('flow.semanticHash')}</dt>
             <dd>
               {semanticHash ? (
                 <code
@@ -404,25 +406,23 @@ export function FlowDeployDialog({
                 <span data-testid="flow-deploy-semantic-hash">unknown</span>
               )}
             </dd>
-            <dt className="font-medium text-muted-foreground">Semantic</dt>
+            <dt className="font-medium text-muted-foreground">{t('flow.semantic')}</dt>
             <dd data-testid="flow-deploy-semantic-status">
               {semanticDirty
                 ? "Unsaved semantic changes"
                 : "No unsaved semantic changes"}
             </dd>
-            <dt className="font-medium text-muted-foreground">Layout</dt>
+            <dt className="font-medium text-muted-foreground">{t('flow.layout')}</dt>
             <dd data-testid="flow-deploy-layout-status">
               {layoutDirty
                 ? "Unsaved layout changes (visual only)"
                 : "No unsaved layout changes"}
             </dd>
           </dl>
-          <p className="text-xs text-muted-foreground">
-            Layout-only changes never affect the deployed runtime.
-          </p>
+          <p className="text-xs text-muted-foreground">{t('flow.layoutOnlyHint')}</p>
 
-          <section aria-label="Server validation">
-            <h4 className="mb-1.5 text-xs font-semibold">Server validation</h4>
+          <section aria-label={t('flow.serverValidation')}>
+            <h4 className="mb-1.5 text-xs font-semibold">{t('flow.serverValidation')}</h4>
             {validation.phase === "loading" || validation.phase === "idle" ? (
               <p
                 className="text-xs text-muted-foreground"
@@ -496,8 +496,8 @@ export function FlowDeployDialog({
           </section>
 
           {deploy.phase === "failed" ? (
-            <section aria-label="Deploy result">
-              <h4 className="mb-1.5 text-xs font-semibold">Deploy failed</h4>
+            <section aria-label={t('flow.deployResult')}>
+              <h4 className="mb-1.5 text-xs font-semibold">{t('flow.deployFailed')}</h4>
               {deploy.error ? (
                 <div
                   role="alert"
@@ -513,7 +513,7 @@ export function FlowDeployDialog({
                   className="rounded-md border border-destructive/30 bg-destructive/10 px-2.5 py-1.5 text-xs text-destructive"
                   data-testid="flow-deploy-error"
                 >
-                  Deploy was rejected
+                  {t('flow.deployRejected')}
                   {deploy.stage ? ` at stage ${deploy.stage}` : ""}. The draft
                   was left untouched.
                 </div>

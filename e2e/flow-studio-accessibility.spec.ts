@@ -79,10 +79,18 @@ test('command palette and picker are keyboard operable with Escape close', async
   try {
     await openStudio(page, flowId);
 
-    // Critical controls are discoverable by role/name.
-    await expect(page.getByRole('button', { name: 'Commands' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'History' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Deploy flow' })).toBeVisible();
+    // Critical controls are discoverable by role/name AND expose visible text.
+    const commandsBtn = page.getByRole('button', { name: 'Commands' });
+    await expect(commandsBtn).toBeVisible();
+    await expect(commandsBtn).toHaveText('Commands');
+    const historyBtn = page.getByRole('button', { name: 'History' });
+    await expect(historyBtn).toBeVisible();
+    await expect(historyBtn).toHaveText('History');
+    const deployBtn = page.getByRole('button', { name: 'Deploy flow' });
+    await expect(deployBtn).toBeVisible();
+    await expect(deployBtn).toHaveText('Deploy');
+    await expect(page.getByTestId('flow-bottom-panel-tab-definition')).toHaveText('Definition');
+    await expect(page.getByTestId('flow-bottom-panel-tab-test')).toHaveText('Test Output');
 
     // Palette search is a labeled, focusable searchbox.
     const paletteSearch = page
@@ -196,6 +204,80 @@ test('node selection exposes labeled inspector fields and typing guards Delete',
     );
     expect(unexpectedErrors).toEqual([]);
   } finally {
+    await deleteFlowBestEffort(page, flowId);
+  }
+});
+
+test('locale switch to zh-CN updates visible labels, supports Chinese command search, and preserves editor state and saved locale', async ({
+  page,
+}) => {
+  test.setTimeout(180_000);
+  await ensureSignedIn(page);
+  const errors = captureUnexpectedErrors(page);
+  const flowId = await createFlow(page, `e2e-a11y-zh-${Date.now()}`);
+
+  try {
+    await openStudio(page, flowId);
+    await addMemorySourceViaQuickPicker(page);
+
+    const nodes = page.locator('.react-flow__node');
+    await expect(nodes).toHaveCount(1);
+    await nodes.first().click();
+
+    const inspector = page.getByTestId('node-inspector');
+    await expect(inspector).toBeVisible({ timeout: 10_000 });
+    const displayName = page.getByLabel('Display name');
+    await displayName.fill('zh-sensor-node');
+    const topic = page.getByLabel(/Topic/);
+    await topic.fill('zh/telemetry');
+
+    // Switch language via header toggle while editor is populated and node is selected.
+    await page.getByRole('button', { name: 'Language' }).click();
+    await page.getByRole('menuitem', { name: '简体中文' }).click();
+
+    // Visible Chinese text updates immediately without losing node selection or unsaved input values.
+    await expect(page.getByRole('button', { name: '部署流程' })).toHaveText('部署');
+    await expect(page.getByTestId('flow-command-palette-open')).toHaveText('命令');
+    await expect(page.getByTestId('flow-bottom-panel-tab-definition')).toHaveText('定义');
+    await expect(page.getByTestId('flow-bottom-panel-tab-test')).toHaveText('测试输出');
+    await expect(inspector.locator('h2')).toHaveText('检查器');
+    await expect(page.getByTestId('node-inspector-delete')).toHaveText('删除节点');
+    await expect(page.getByLabel('显示名称')).toHaveValue('zh-sensor-node');
+    await expect(page.getByLabel(/Topic/)).toHaveValue('zh/telemetry');
+
+    // Command palette searches and invokes commands in Chinese.
+    await page.keyboard.press('Control+k');
+    const paletteInput = page.getByTestId('flow-command-palette-input');
+    await expect(paletteInput).toBeVisible({ timeout: 10_000 });
+    await paletteInput.fill('显示定义面板');
+    const showDefinitionCommand = page.getByTestId('flow-command-show-definition');
+    await expect(showDefinitionCommand).toBeVisible({ timeout: 10_000 });
+    await expect(showDefinitionCommand).toHaveText('显示定义面板');
+    await page.keyboard.press('Enter');
+    await expect(paletteInput).toBeHidden({ timeout: 10_000 });
+    await expect(page.getByTestId('flow-bottom-panel-tab-definition')).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+
+    // Reload and verify saved zh-CN locale is reapplied.
+    await page.reload();
+    await expect(page.getByTestId('flow-studio-shell')).toBeVisible();
+    await expect(page.getByRole('button', { name: '部署流程' })).toHaveText('部署');
+    await expect(page.getByTestId('flow-bottom-panel-tab-definition')).toHaveText('定义');
+
+    const unexpectedErrors = errors.filter(
+      (message) => !/404 \(Not Found\)/.test(message),
+    );
+    expect(unexpectedErrors).toEqual([]);
+  } finally {
+    if (!page.isClosed()) {
+      await page
+        .evaluate(() => {
+          window.localStorage.removeItem('ekuiper.locale');
+        })
+        .catch(() => {});
+    }
     await deleteFlowBestEffort(page, flowId);
   }
 });

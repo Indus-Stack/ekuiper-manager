@@ -66,6 +66,8 @@ import {
 } from '@/lib/ekuiper/rule-designer';
 import type { MetadataDetail, MetadataItem, Rule, RuleOptions, Sink } from '@/lib/ekuiper/types';
 import { useServerStore } from '@/stores/server-store';
+import { useT, useI18n, toShortLang } from '@/lib/i18n';
+import type { MessageKey, Translate } from '@/lib/i18n';
 
 type DesignerStep = 'query' | 'actions' | 'options';
 type QueryMode = 'visual' | 'sql';
@@ -81,11 +83,18 @@ const EMPTY_QUERY: QueryDraft = {
   limit: '',
 };
 
-const STEP_ITEMS: Array<{ id: DesignerStep; label: string; description: string; icon: typeof Database }> = [
-  { id: 'query', label: 'Source & query', description: 'Choose data and shape it', icon: Database },
-  { id: 'actions', label: 'Outputs', description: 'Choose where results go', icon: Send },
-  { id: 'options', label: 'Runtime', description: 'Review processing options', icon: Settings2 },
-];
+// Labels are message keys resolved at render time: this lives outside the
+// component, so no hook is available here.
+const STEP_ITEMS: Array<{
+  id: DesignerStep;
+  labelKey: MessageKey;
+  descriptionKey: MessageKey;
+  icon: typeof Database;
+}> = [
+    { id: 'query', labelKey: 'rule.stepQuery', descriptionKey: 'rule.stepQueryHint', icon: Database },
+    { id: 'actions', labelKey: 'rule.stepOutputs', descriptionKey: 'rule.stepOutputsHint', icon: Send },
+    { id: 'options', labelKey: 'rule.stepRuntime', descriptionKey: 'rule.stepRuntimeHint', icon: Settings2 },
+  ];
 
 function isObject(value: unknown): value is JsonObject {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -95,9 +104,19 @@ function optionNumber(value: unknown): string {
   return typeof value === 'number' ? String(value) : '';
 }
 
-function actionLabel(type: string): string {
-  return BUILTIN_SINKS.find((sink) => sink.type === type)?.label
-    ?? type.replace(/(^|[-_])([a-z])/g, (_, prefix: string, letter: string) => `${prefix ? ' ' : ''}${letter.toUpperCase()}`);
+/** BUILTIN_SINKS and KNOWN_FIELDS store catalog keys ('sinklabel.*') rather
+ *  than English, so every consumer must resolve them through `t`. */
+function localized(t: Translate, value: string | undefined): string {
+  if (!value) return '';
+  // Catalog entries are tagged 'sinklabel.x' / 'sinkdesc.x' / 'sinkhint.x';
+  // the catalog stores them under the `rule` namespace without that prefix.
+  const match = /^sink(?:label|desc|hint)\.(.+)$/.exec(value);
+  return match ? t(`rule.${match[1]}` as MessageKey) : value;
+}
+
+function actionLabel(type: string, t: Translate): string {
+  return localized(t, BUILTIN_SINKS.find((sink) => sink.type === type)?.label)
+    || type.replace(/(^|[-_])([a-z])/g, (_, prefix: string, letter: string) => `${prefix ? ' ' : ''}${letter.toUpperCase()}`);
 }
 
 function FieldEditor({
@@ -109,17 +128,20 @@ function FieldEditor({
   value: unknown;
   onChange: (value: unknown) => void;
 }) {
+  const t = useT();
+  const label = localized(t, field.label);
+  const hint = localized(t, field.hint);
   if (field.kind === 'boolean') {
     return (
       <label className="flex items-start justify-between gap-4 rounded-lg border bg-muted/20 p-3">
         <span>
-          <span className="block text-sm font-medium">{field.label}</span>
-          {field.hint && <span className="mt-1 block text-xs text-muted-foreground">{field.hint}</span>}
+          <span className="block text-sm font-medium">{label}</span>
+          {hint && <span className="mt-1 block text-xs text-muted-foreground">{hint}</span>}
         </span>
         <Switch
           checked={value === true}
           onCheckedChange={(checked) => onChange(checked)}
-          aria-label={field.label}
+          aria-label={label}
         />
       </label>
     );
@@ -137,11 +159,11 @@ function FieldEditor({
   return (
     <div className="flex flex-col gap-2">
       <Label htmlFor={`sink-field-${field.key}`}>
-        {field.label}{field.required && <span className="ml-1 text-destructive">*</span>}
+        {label}{field.required && <span className="ml-1 text-destructive">*</span>}
       </Label>
       {field.options?.length ? (
         <Select value={displayed || undefined} onValueChange={update}>
-          <SelectTrigger id={`sink-field-${field.key}`}><SelectValue placeholder="Select a value" /></SelectTrigger>
+          <SelectTrigger id={`sink-field-${field.key}`}><SelectValue placeholder={t('rule.selectAValue')} /></SelectTrigger>
           <SelectContent>
             <SelectGroup>
               {field.options.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}
@@ -167,7 +189,7 @@ function FieldEditor({
           autoComplete={field.kind === 'secret' ? 'new-password' : undefined}
         />
       )}
-      {field.hint && <p className="text-xs text-muted-foreground">{field.hint}</p>}
+      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
 }
@@ -183,6 +205,7 @@ function JsonObjectEditor({
   disabled?: boolean;
   onApply: (value: JsonObject) => void;
 }) {
+  const t = useT();
   const [text, setText] = React.useState(() => JSON.stringify(value, null, 2));
   const [dirty, setDirty] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -199,7 +222,7 @@ function JsonObjectEditor({
       setDirty(false);
       setError('');
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : `Invalid ${label}`);
+      setError(reason instanceof Error ? reason.message : t('rule.invalidField', { label }));
     }
   };
 
@@ -216,7 +239,7 @@ function JsonObjectEditor({
       {error && <p role="alert" className="text-xs text-destructive">{error}</p>}
       {!disabled && (
         <div className="flex justify-end">
-          <Button type="button" variant="outline" size="sm" disabled={!dirty} onClick={apply}>Apply JSON</Button>
+          <Button type="button" variant="outline" size="sm" disabled={!dirty} onClick={apply}>{t('rule.applyJson')}</Button>
         </div>
       )}
     </div>
@@ -246,6 +269,9 @@ function ActionCard({
   onRemove: () => void;
   onMove: (direction: -1 | 1) => void;
 }) {
+  const t = useT();
+  const { locale } = useI18n();
+  const lang = toShortLang(locale);
   const [activeTab, setActiveTab] = React.useState<'properties' | 'delivery' | 'json'>('properties');
   const [testing, setTesting] = React.useState(false);
   const [sinkConfModalOpen, setSinkConfModalOpen] = React.useState(false);
@@ -268,13 +294,13 @@ function ActionCard({
   const propList = Array.isArray(metadata?.properties)
     ? metadata.properties
     : (metadata?.properties as any)?.default ?? [];
-  const fields = sinkFields(action.type, propList);
+  const fields = sinkFields(action.type, propList, lang);
 
   const sinkDesc =
-    BUILTIN_SINKS.find((sink) => sink.type === action.type)?.description ??
+    localized(t, BUILTIN_SINKS.find((sink) => sink.type === action.type)?.description) ||
     (metadata?.about?.description
-      ? i18nLabel(metadata.about.description)
-      : 'Installed eKuiper sink.');
+      ? i18nLabel(metadata.about.description, lang)
+      : t('rule.installedSink'));
 
   const sinkBaseOptions: SinkBaseOptions = {
     omitIfEmpty: typeof action.config.omitIfEmpty === 'boolean' ? action.config.omitIfEmpty : undefined,
@@ -286,8 +312,8 @@ function ActionCard({
       typeof action.config.delimiter === 'string'
         ? action.config.delimiter
         : typeof action.config.delimited === 'string'
-        ? action.config.delimited
-        : undefined,
+          ? action.config.delimited
+          : undefined,
     dataTemplate: typeof action.config.dataTemplate === 'string' ? action.config.dataTemplate : undefined,
     concurrency: typeof action.config.concurrency === 'number' ? action.config.concurrency : undefined,
     bufferLength: typeof action.config.bufferLength === 'number' ? action.config.bufferLength : undefined,
@@ -379,9 +405,9 @@ function ActionCard({
     try {
       const res = await ekuiperClient.testConnection('sinks', action.type, action.config);
       if (res.success) {
-        toast.success(`Connection to "${action.type}" sink test succeeded`);
+        toast.success(t('rule.sinkTestSuccess', { type: action.type }));
       } else {
-        toast.error(`Sink connection test failed: ${res.error || res.message || 'Unknown error'}`);
+        toast.error(t('rule.sinkTestFailed', { error: res.error || res.message || t('rule.unknownError') }));
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Sink connection test request failed');
@@ -411,7 +437,7 @@ function ActionCard({
                 <SelectGroup>
                   {sinkTypes.map((type) => (
                     <SelectItem key={type} value={type} className="font-mono text-xs">
-                      {actionLabel(type)} ({type})
+                      {actionLabel(type, t)} ({type})
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -419,17 +445,16 @@ function ActionCard({
             </Select>
             {metadata?.about?.helpUrl && (
               <a
-                href={i18nLabel(metadata.about.helpUrl)}
+                href={i18nLabel(metadata.about.helpUrl, lang)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs text-primary hover:underline flex items-center gap-1 ml-2"
-              >
-                Documentation <ExternalLink className="size-3" aria-hidden="true" />
+              >{t('rule.documentation')}<ExternalLink className="size-3" aria-hidden="true" />
               </a>
             )}
             {metadata?.about?.installed === false && (
               <Badge variant="outline" className="text-[10px]">
-                Not installed
+                {t('rule.notInstalled')}
               </Badge>
             )}
           </div>
@@ -445,7 +470,7 @@ function ActionCard({
             onClick={() => void handleTestConnection()}
           >
             <Play className={`size-3 ${testing ? 'animate-spin' : ''}`} aria-hidden="true" />
-            Test
+            {t('rule.test')}
           </Button>
           <Button
             type="button"
@@ -453,7 +478,7 @@ function ActionCard({
             size="icon"
             className="size-8"
             onClick={() => onMove(-1)}
-            aria-label={`Move output ${index + 1} up`}
+            aria-label={t('rule.moveOutputUp', { index: index + 1 })}
           >
             <ChevronUp className="size-4" aria-hidden="true" />
           </Button>
@@ -463,7 +488,7 @@ function ActionCard({
             size="icon"
             className="size-8"
             onClick={() => onMove(1)}
-            aria-label={`Move output ${index + 1} down`}
+            aria-label={t('rule.moveOutputDown', { index: index + 1 })}
           >
             <ChevronDown className="size-4" aria-hidden="true" />
           </Button>
@@ -473,7 +498,7 @@ function ActionCard({
             size="icon"
             className="size-8 text-destructive"
             onClick={onRemove}
-            aria-label={`Remove output ${index + 1}`}
+            aria-label={t('rule.removeOutput', { index: index + 1 })}
           >
             <Trash2 className="size-4" aria-hidden="true" />
           </Button>
@@ -481,45 +506,42 @@ function ActionCard({
       </CardHeader>
       <CardContent className="p-4 flex flex-col gap-4">
         {/* Navigation tabs inside the action card */}
-        <div className="inline-flex items-center p-1 rounded-lg bg-muted/60 border border-border/40 gap-1 text-xs select-none" role="tablist" aria-label="Output configuration tabs">
+        <div className="inline-flex items-center p-1 rounded-lg bg-muted/60 border border-border/40 gap-1 text-xs select-none" role="tablist" aria-label={t('rule.outputTabs')}>
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === 'properties'}
             onClick={() => setActiveTab('properties')}
-            className={`px-3 py-1.5 rounded-md font-medium transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] ${
-              activeTab === 'properties'
+            className={`px-3 py-1.5 rounded-md font-medium transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] ${activeTab === 'properties'
                 ? 'bg-background text-foreground shadow-beautiful-sm'
                 : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-            }`}
+              }`}
           >
-            Sink Properties
+            {t('rule.sinkProperties')}
           </button>
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === 'delivery'}
             onClick={() => setActiveTab('delivery')}
-            className={`px-3 py-1.5 rounded-md font-medium transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] ${
-              activeTab === 'delivery'
+            className={`px-3 py-1.5 rounded-md font-medium transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] ${activeTab === 'delivery'
                 ? 'bg-background text-foreground shadow-beautiful-sm'
                 : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-            }`}
+              }`}
           >
-            Delivery & Buffer
+            {t('rule.deliveryBuffer')}
           </button>
           <button
             type="button"
             role="tab"
             aria-selected={activeTab === 'json'}
             onClick={() => setActiveTab('json')}
-            className={`px-3 py-1.5 rounded-md font-medium transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] ${
-              activeTab === 'json'
+            className={`px-3 py-1.5 rounded-md font-medium transition-[background-color,color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] ${activeTab === 'json'
                 ? 'bg-background text-foreground shadow-beautiful-sm'
                 : 'text-muted-foreground hover:text-foreground hover:bg-background/40'
-            }`}
+              }`}
           >
-            Raw JSON
+            {t('rule.rawJson')}
           </button>
         </div>
 
@@ -529,7 +551,7 @@ function ActionCard({
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <Label htmlFor={`sink-resource-id-${index}`} className="text-xs font-medium">
-                  Resource ID
+                  {t('rule.resourceId')}
                 </Label>
                 <Button
                   type="button"
@@ -539,7 +561,7 @@ function ActionCard({
                   className="h-6 text-[11px] text-emerald-600 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
                 >
                   <Plus className="size-3" />
-                  Add sink template
+                  {t('rule.addSinkTemplate')}
                 </Button>
               </div>
               <Select
@@ -552,12 +574,12 @@ function ActionCard({
                 }}
               >
                 <SelectTrigger id={`sink-resource-id-${index}`} className="h-9 text-xs font-mono">
-                  <SelectValue placeholder="Select" />
+                  <SelectValue placeholder={t('rule.select')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     <SelectItem value="__NONE__" className="text-xs italic text-muted-foreground">
-                      Select
+                      {t('rule.select')}
                     </SelectItem>
                     {sinkTemplates.map((st) => (
                       <SelectItem key={st} value={st} className="text-xs font-mono">
@@ -624,7 +646,7 @@ function ActionCard({
             )}
             <JsonObjectEditor
               value={(revealSensitive ? action.config : redactSensitive(action.config)) as JsonObject}
-              label={`${actionLabel(action.type)} configuration JSON`}
+              label={`${actionLabel(action.type, t)} configuration JSON`}
               disabled={!revealSensitive}
               onApply={(config) => onChange({ ...action, config })}
             />
@@ -647,6 +669,7 @@ function ActionCard({
 }
 
 export function RuleDesigner({ id }: { id?: string }) {
+  const t = useT();
   const router = useRouter();
   const { servers, activeServerId } = useServerStore();
   const active = servers.find((node) => node.id === activeServerId);
@@ -768,7 +791,7 @@ export function RuleDesigner({ id }: { id?: string }) {
   ])].sort(), [actions, sinkCatalog]);
 
   const filteredResources = resources.filter((resource) => resource.name.toLowerCase().includes(resourceFilter.toLowerCase()));
-  const filteredSinks = sinkTypes.filter((type) => `${type} ${actionLabel(type)}`.toLowerCase().includes(sinkFilter.toLowerCase()));
+  const filteredSinks = sinkTypes.filter((type) => `${type} ${actionLabel(type, t)}`.toLowerCase().includes(sinkFilter.toLowerCase()));
 
   const changeQuery = (key: keyof QueryDraft, value: string) => {
     setGraph(undefined);
@@ -832,7 +855,7 @@ export function RuleDesigner({ id }: { id?: string }) {
       } else {
         await ekuiperClient.createRule(rule);
       }
-      toast.success(`Rule ${id ? 'updated' : 'created'}`);
+      toast.success(t(id ? 'rule.ruleUpdated' : 'rule.ruleCreated'));
       router.push(`/rules/${encodeURIComponent(rule.id)}`);
       router.refresh();
     } catch (reason) {
@@ -885,38 +908,38 @@ export function RuleDesigner({ id }: { id?: string }) {
   };
 
   return (
-    <AppLayout title={id ? 'Edit rule' : 'Rule designer'}>
+    <AppLayout title={id ? t('rule.editRule', { id }) : t('rule.ruleDesignerTitle')}>
       <div className="mx-auto max-w-[1500px] flex flex-col gap-5">
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" asChild><Link href={id ? `/rules/${encodeURIComponent(id)}` : '/rules'} aria-label="Back to rules"><ArrowLeft className="size-5" /></Link></Button>
             <div>
-              <div className="flex items-center gap-2"><Workflow className="size-6 text-primary" /><h2 className="text-2xl font-semibold tracking-tight">{id ? `Edit ${id}` : 'Rule designer'}</h2></div>
-              <p className="mt-1 text-sm text-muted-foreground">Build visually, inspect the generated rule, and validate it on {active?.name ?? 'the selected node'}.</p>
+              <div className="flex items-center gap-2"><Workflow className="size-6 text-primary" /><h2 className="text-2xl font-semibold tracking-tight">{id ? t('rule.editRule', { id }) : t('rule.ruleDesigner')}</h2></div>
+              <p className="mt-1 text-sm text-muted-foreground">{t('rule.designerSubtitle', { node: active?.name ?? t('rule.selectedNode') })}</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={() => void validate()} disabled={loading || !active}>Validate with eKuiper</Button>
-            <Button onClick={() => void save()} disabled={saving || loading || !active}>{saving ? 'Saving…' : id ? 'Save changes' : 'Create rule'}</Button>
+            <Button variant="outline" onClick={() => void validate()} disabled={loading || !active}>{t('rule.validateWithEkuiper')}</Button>
+            <Button onClick={() => void save()} disabled={saving || loading || !active}>{saving ? t('stream.saving') : id ? t('rule.saveChanges') : t('rule.createRule')}</Button>
           </div>
         </div>
 
         {!active && (
           <Alert variant="destructive">
-            <AlertDescription>Select an eKuiper node before designing a rule.</AlertDescription>
+            <AlertDescription>{t('rule.selectNodeBeforeDesign')}</AlertDescription>
           </Alert>
         )}
         {graph && (
           <Alert variant="warning">
             <CircleAlert className="size-4" aria-hidden="true" />
-            <AlertTitle>Graph rule in raw-definition mode</AlertTitle>
+            <AlertTitle>{t('rule.graphRawMode')}</AlertTitle>
             <AlertDescription>The visual SQL builder cannot represent graph rules. The graph is preserved exactly in the Rule JSON pane.</AlertDescription>
           </Alert>
         )}
 
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.72fr)]">
           <div className="flex flex-col gap-5">
-            <div className="grid gap-2 sm:grid-cols-3" role="tablist" aria-label="Rule designer steps">
+            <div className="grid gap-2 sm:grid-cols-3" role="tablist" aria-label={t('rule.designerSteps')}>
               {STEP_ITEMS.map((item, index) => {
                 const Icon = item.icon;
                 const selected = step === item.id;
@@ -927,12 +950,11 @@ export function RuleDesigner({ id }: { id?: string }) {
                     aria-selected={selected}
                     aria-current={selected ? 'step' : undefined}
                     onClick={() => setStep(item.id)}
-                    className={`rounded-xl border p-3 text-left transition-[border-color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                      selected ? 'border-primary bg-primary/5 shadow-beautiful-sm' : 'border-border/60 hover:bg-muted/50 hover:border-border'
-                    }`}
+                    className={`rounded-xl border p-3 text-left transition-[border-color,background-color,box-shadow,transform] duration-150 ease-out active:scale-[0.98] select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${selected ? 'border-primary bg-primary/5 shadow-beautiful-sm' : 'border-border/60 hover:bg-muted/50 hover:border-border'
+                      }`}
                   >
-                    <span className="flex items-center gap-2"><span className={`flex size-7 items-center justify-center rounded-full text-xs font-semibold ${selected ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>{index + 1}</span><Icon className="size-4" aria-hidden="true" /><span className="font-medium">{item.label}</span></span>
-                    <span className="mt-1 block pl-9 text-xs text-muted-foreground">{item.description}</span>
+                    <span className="flex items-center gap-2"><span className={`flex size-7 items-center justify-center rounded-full text-xs font-semibold ${selected ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>{index + 1}</span><Icon className="size-4" aria-hidden="true" /><span className="font-medium">{t(item.labelKey)}</span></span>
+                    <span className="mt-1 block pl-9 text-xs text-muted-foreground">{t(item.descriptionKey)}</span>
                   </button>
                 );
               })}
@@ -942,12 +964,12 @@ export function RuleDesigner({ id }: { id?: string }) {
               <div id="rule-editor-card" className="flex flex-col gap-5">
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">Identity</CardTitle>
-                    <CardDescription>Configure unique identifier and descriptive label.</CardDescription>
+                    <CardTitle className="text-lg">{t('rule.identity')}</CardTitle>
+                    <CardDescription>{t('rule.identityHint')}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex flex-col gap-4">
                     <div className="flex flex-col gap-1.5">
-                      <Label htmlFor="rule-id">Rule ID <span className="text-destructive">*</span></Label>
+                      <Label htmlFor="rule-id">{t('rule.ruleId')}<span className="text-destructive">*</span></Label>
                       <Input
                         id="rule-id"
                         value={ruleId}
@@ -957,64 +979,64 @@ export function RuleDesigner({ id }: { id?: string }) {
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <Label htmlFor="rule-name">Name</Label>
+                      <Label htmlFor="rule-name">{t('rule.name')}</Label>
                       <Input
                         id="rule-name"
                         value={ruleName}
                         onChange={(event) => setRuleName(event.target.value)}
-                        placeholder="Record data to a file and use File source for data playback"
+                        placeholder={t('rule.playbackHint')}
                       />
                     </div>
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardHeader className="pb-3"><div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><CardTitle className="text-lg">Query</CardTitle><CardDescription>Choose the structured builder or edit eKuiper SQL directly.</CardDescription></div><Tabs value={queryMode} onValueChange={(value) => { setQueryMode(value as QueryMode); if (value === 'sql' && !sql) setSql(buildSql(query)); }}><TabsList><TabsTrigger value="visual">Visual</TabsTrigger><TabsTrigger value="sql">SQL</TabsTrigger></TabsList></Tabs></div></CardHeader>
+                  <CardHeader className="pb-3"><div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><CardTitle className="text-lg">{t('rule.query')}</CardTitle><CardDescription>{t('rule.builderHint')}</CardDescription></div><Tabs value={queryMode} onValueChange={(value) => { setQueryMode(value as QueryMode); if (value === 'sql' && !sql) setSql(buildSql(query)); }}><TabsList><TabsTrigger value="visual">{t('rule.visual')}</TabsTrigger><TabsTrigger value="sql">{t('rule.sql')}</TabsTrigger></TabsList></Tabs></div></CardHeader>
                   <CardContent>
                     {queryMode === 'visual' ? (
                       <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-3">
-                          <Label htmlFor="rule-designer-data-source">Data source</Label>
-                          <div className="relative"><Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" aria-hidden="true" /><Input id="rule-designer-data-source" value={resourceFilter} onChange={(event) => setResourceFilter(event.target.value)} className="pl-9" placeholder="Find a stream or table" aria-label="Find a stream or table" /></div>
+                          <Label htmlFor="rule-designer-data-source">{t('rule.dataSource')}</Label>
+                          <div className="relative"><Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" aria-hidden="true" /><Input id="rule-designer-data-source" value={resourceFilter} onChange={(event) => setResourceFilter(event.target.value)} className="pl-9" placeholder={t('rule.findStream')} aria-label={t('rule.findStream')} /></div>
                           <div className="grid max-h-56 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
                             {filteredResources.map((resource) => (
                               <button key={`${resource.kind}-${resource.name}`} type="button" onClick={() => changeQuery('source', resource.name)} aria-pressed={query.source === resource.name} className={`flex items-center justify-between rounded-lg border p-3 text-left transition-colors ${query.source === resource.name ? 'border-primary bg-primary/5' : 'hover:bg-muted/50'}`}>
-                                <span className="min-w-0"><span className="block truncate text-sm font-medium" title={resource.name}>{resource.name}</span><span className="text-xs capitalize text-muted-foreground">{resource.kind}</span></span>
+                                <span className="min-w-0"><span className="block truncate text-sm font-medium" title={resource.name}>{resource.name}</span><span className="text-xs text-muted-foreground">{resource.kind === 'table' ? t('nav.tables') : t('nav.streams')}</span></span>
                                 {query.source === resource.name && <Check className="size-4 text-primary" aria-hidden="true" />}
                               </button>
                             ))}
-                            {!filteredResources.length && <p className="col-span-full rounded-lg border border-dashed p-4 text-sm text-muted-foreground">No matching streams or tables on this node. You can still enter a name below.</p>}
+                            {!filteredResources.length && <p className="col-span-full rounded-lg border border-dashed p-4 text-sm text-muted-foreground">{t('rule.noResourcesMatch')}</p>}
                           </div>
-                          <Input aria-label="Source name" value={query.source} onChange={(event) => changeQuery('source', event.target.value)} placeholder="Or enter a source name" />
+                          <Input aria-label={t('rule.sourceName')} value={query.source} onChange={(event) => changeQuery('source', event.target.value)} placeholder={t('rule.orEnterSourceName')} />
                         </div>
                         <div className="grid gap-4 sm:grid-cols-2">
-                          <div className="flex flex-col gap-2 sm:col-span-2"><Label htmlFor="query-fields">Select fields</Label><Textarea id="query-fields" value={query.fields} onChange={(event) => changeQuery('fields', event.target.value)} className="min-h-20 font-mono text-sm" placeholder="*, temperature, avg(power) AS mean_power" /></div>
-                          <div className="flex flex-col gap-2 sm:col-span-2"><Label htmlFor="query-where">Filter (WHERE)</Label><Input id="query-where" value={query.where} onChange={(event) => changeQuery('where', event.target.value)} placeholder="temperature > 80" /></div>
-                          <div className="flex flex-col gap-2"><Label htmlFor="query-group">Group by</Label><Input id="query-group" value={query.groupBy} onChange={(event) => changeQuery('groupBy', event.target.value)} placeholder="deviceId, TUMBLINGWINDOW(ss, 10)" /></div>
-                          <div className="flex flex-col gap-2"><Label htmlFor="query-having">Having</Label><Input id="query-having" value={query.having} onChange={(event) => changeQuery('having', event.target.value)} placeholder="count(*) > 2" /></div>
-                          <div className="flex flex-col gap-2"><Label htmlFor="query-order">Order by</Label><Input id="query-order" value={query.orderBy} onChange={(event) => changeQuery('orderBy', event.target.value)} placeholder="temperature DESC" /></div>
-                          <div className="flex flex-col gap-2"><Label htmlFor="query-limit">Limit</Label><Input id="query-limit" type="number" min="1" value={query.limit} onChange={(event) => changeQuery('limit', event.target.value)} placeholder="100" /></div>
+                          <div className="flex flex-col gap-2 sm:col-span-2"><Label htmlFor="query-fields">{t('rule.selectFields')}</Label><Textarea id="query-fields" value={query.fields} onChange={(event) => changeQuery('fields', event.target.value)} className="min-h-20 font-mono text-sm" placeholder="*, temperature, avg(power) AS mean_power" /></div>
+                          <div className="flex flex-col gap-2 sm:col-span-2"><Label htmlFor="query-where">{t('rule.filterWhere')}</Label><Input id="query-where" value={query.where} onChange={(event) => changeQuery('where', event.target.value)} placeholder="temperature > 80" /></div>
+                          <div className="flex flex-col gap-2"><Label htmlFor="query-group">{t('rule.groupBy')}</Label><Input id="query-group" value={query.groupBy} onChange={(event) => changeQuery('groupBy', event.target.value)} placeholder="deviceId, TUMBLINGWINDOW(ss, 10)" /></div>
+                          <div className="flex flex-col gap-2"><Label htmlFor="query-having">{t('rule.having')}</Label><Input id="query-having" value={query.having} onChange={(event) => changeQuery('having', event.target.value)} placeholder="count(*) > 2" /></div>
+                          <div className="flex flex-col gap-2"><Label htmlFor="query-order">{t('rule.orderBy')}</Label><Input id="query-order" value={query.orderBy} onChange={(event) => changeQuery('orderBy', event.target.value)} placeholder="temperature DESC" /></div>
+                          <div className="flex flex-col gap-2"><Label htmlFor="query-limit">{t('rule.limit')}</Label><Input id="query-limit" type="number" min="1" value={query.limit} onChange={(event) => changeQuery('limit', event.target.value)} placeholder="100" /></div>
                         </div>
                       </div>
                     ) : (
-                      <div className="flex flex-col gap-2"><Label htmlFor="rule-sql">eKuiper SQL</Label><Textarea id="rule-sql" value={sql} onChange={(event) => { setGraph(undefined); setSql(event.target.value); setValidation(null); }} className="min-h-72 font-mono text-sm" spellCheck={false} placeholder="SELECT * FROM sensor WHERE temperature > 80" /><p className="text-xs text-muted-foreground">Switching to Visual is safe only when the query can be represented by the fields above.</p></div>
+                      <div className="flex flex-col gap-2"><Label htmlFor="rule-sql">eKuiper SQL</Label><Textarea id="rule-sql" value={sql} onChange={(event) => { setGraph(undefined); setSql(event.target.value); setValidation(null); }} className="min-h-72 font-mono text-sm" spellCheck={false} placeholder={t('rule.selectExample')} /><p className="text-xs text-muted-foreground">Switching to Visual is safe only when the query can be represented by the fields above.</p></div>
                     )}
                   </CardContent>
                 </Card>
-                <div className="flex justify-end"><Button onClick={() => setStep('actions')}>Continue to outputs<ArrowRight className="ml-2 size-4" aria-hidden="true" /></Button></div>
+                <div className="flex justify-end"><Button onClick={() => setStep('actions')}>{t('rule.continueToOutputs')}<ArrowRight className="ml-2 size-4" aria-hidden="true" /></Button></div>
               </div>
             )}
 
             {step === 'actions' && (
               <div className="flex flex-col gap-5">
                 <Card>
-                  <CardHeader><CardTitle className="text-lg">Add an output</CardTitle><CardDescription>Available types combine eKuiper&apos;s installed metadata with supported built-in editors.</CardDescription></CardHeader>
+                  <CardHeader><CardTitle className="text-lg">{t('rule.addOutput')}</CardTitle><CardDescription>{t('rule.addOutputHint')}</CardDescription></CardHeader>
                   <CardContent className="flex flex-col gap-3">
-                    <div className="relative"><Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" aria-hidden="true" /><Input value={sinkFilter} onChange={(event) => setSinkFilter(event.target.value)} className="pl-9" placeholder="Find a sink" aria-label="Find a sink" /></div>
+                    <div className="relative"><Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" aria-hidden="true" /><Input value={sinkFilter} onChange={(event) => setSinkFilter(event.target.value)} className="pl-9" placeholder={t('rule.findSink')} aria-label={t('rule.findSink')} /></div>
                     <div className="grid max-h-64 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
                       {filteredSinks.map((type) => {
                         const known = BUILTIN_SINKS.find((sink) => sink.type === type);
                         const detected = sinkCatalog.some((sink) => sink.name === type);
-                        return <button key={type} type="button" onClick={() => addAction(type)} className="group rounded-lg border p-3 text-left transition-[border-color,background-color,transform] duration-150 ease-out active:scale-[0.99] hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><span className="flex items-center justify-between gap-2"><span className="font-medium">{actionLabel(type)}</span><Plus className="size-4 text-muted-foreground group-hover:text-primary" aria-hidden="true" /></span><span className="mt-1 block text-xs text-muted-foreground">{known?.description ?? 'Installed eKuiper sink.'}</span><Badge variant="outline" className="mt-2 text-[10px]">{detected ? 'Reported by node' : 'Built-in editor'}</Badge></button>;
+                        return <button key={type} type="button" onClick={() => addAction(type)} className="group rounded-lg border p-3 text-left transition-[border-color,background-color,transform] duration-150 ease-out active:scale-[0.99] hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"><span className="flex items-center justify-between gap-2"><span className="font-medium">{actionLabel(type, t)}</span><Plus className="size-4 text-muted-foreground group-hover:text-primary" aria-hidden="true" /></span><span className="mt-1 block text-xs text-muted-foreground">{localized(t, known?.description) || t('rule.installedSink')}</span><Badge variant="outline" className="mt-2 text-[10px]">{detected ? t('rule.reportedByNode') : t('rule.builtInEditor')}</Badge></button>;
                       })}
                     </div>
                   </CardContent>
@@ -1035,30 +1057,30 @@ export function RuleDesigner({ id }: { id?: string }) {
                       onMove={(direction) => moveAction(index, direction)}
                     />
                   ))}
-                  {!actions.length && <div className="rounded-xl border border-dashed p-10 text-center"><Send className="mx-auto mb-3 size-8 text-muted-foreground" aria-hidden="true" /><p className="font-medium">No outputs yet</p><p className="mt-1 text-sm text-muted-foreground">Select a sink from the catalog above.</p></div>}
+                  {!actions.length && <div className="rounded-xl border border-dashed p-10 text-center"><Send className="mx-auto mb-3 size-8 text-muted-foreground" aria-hidden="true" /><p className="font-medium">{t('rule.noOutputsYet')}</p><p className="mt-1 text-sm text-muted-foreground">{t('rule.selectSinkHint')}</p></div>}
                 </div>
-                <div className="flex justify-between"><Button variant="outline" onClick={() => setStep('query')}><ArrowLeft className="mr-2 size-4" aria-hidden="true" />Back</Button><Button onClick={() => setStep('options')}>Continue to runtime<ArrowRight className="ml-2 size-4" aria-hidden="true" /></Button></div>
+                <div className="flex justify-between"><Button variant="outline" onClick={() => setStep('query')}><ArrowLeft className="mr-2 size-4" aria-hidden="true" />{t('rule.back')}</Button><Button onClick={() => setStep('options')}>{t('rule.continueToRuntime')}<ArrowRight className="ml-2 size-4" aria-hidden="true" /></Button></div>
               </div>
             )}
 
             {step === 'options' && (
               <div className="flex flex-col gap-5">
                 <Card>
-                  <CardHeader><CardTitle className="text-lg">Runtime behavior</CardTitle><CardDescription>Only non-default options are sent. Unknown official options are retained in Advanced JSON.</CardDescription></CardHeader>
+                  <CardHeader><CardTitle className="text-lg">{t('rule.runtimeBehavior')}</CardTitle><CardDescription>{t('rule.runtimeBehaviorHint')}</CardDescription></CardHeader>
                   <CardContent className="flex flex-col gap-5">
                     <div className="grid gap-3 sm:grid-cols-2">
-                      {[['isEventTime', 'Use event time', 'Use event timestamps for windowing.'], ['sendMetaToSink', 'Send metadata to sinks', 'Include source metadata in result output.'], ['sendError', 'Send errors to sinks', 'Forward processing errors to configured sinks.']].map(([key, label, description]) => <label key={key} className="flex items-start justify-between gap-3 rounded-lg border p-3 hover:bg-muted/30 transition-colors cursor-pointer"><span><span className="block text-sm font-medium">{label}</span><span className="mt-1 block text-xs text-muted-foreground">{description}</span></span><Switch checked={options[key] === true} onCheckedChange={(checked) => option(key, checked)} aria-label={label} /></label>)}
+                      {[['isEventTime', t('rule.isEventTime'), t('rule.isEventTimeHint')], ['sendMetaToSink', t('rule.sendMetaToSink'), t('rule.sendMetaToSinkHint')], ['sendError', t('rule.sendError'), t('rule.sendErrorHint')]].map(([key, label, description]) => <label key={key} className="flex items-start justify-between gap-3 rounded-lg border p-3 hover:bg-muted/30 transition-colors cursor-pointer"><span><span className="block text-sm font-medium">{label}</span><span className="mt-1 block text-xs text-muted-foreground">{description}</span></span><Switch checked={options[key] === true} onCheckedChange={(checked) => option(key, checked)} aria-label={label} /></label>)}
                     </div>
                     <div className="grid gap-4 sm:grid-cols-2">
-                      {[['concurrency', 'Concurrency'], ['bufferLength', 'Buffer length'], ['checkpointInterval', 'Checkpoint interval (ms)'], ['lateTolerance', 'Late tolerance (ms)']].map(([key, label]) => <div key={key} className="flex flex-col gap-2"><Label htmlFor={`option-${key}`}>{label}</Label><Input id={`option-${key}`} type="number" min="0" value={optionNumber(options[key])} onChange={(event) => option(key, event.target.value ? Number(event.target.value) : undefined)} /></div>)}
-                      <div className="flex flex-col gap-2"><Label htmlFor="option-qos">QoS</Label><Select value={options.qos == null ? 'unset' : String(options.qos)} onValueChange={(value) => option('qos', value === 'unset' ? undefined : Number(value))}><SelectTrigger id="option-qos"><SelectValue /></SelectTrigger><SelectContent><SelectGroup><SelectItem value="unset">Engine default</SelectItem><SelectItem value="0">At most once (0)</SelectItem><SelectItem value="1">At least once (1)</SelectItem><SelectItem value="2">Exactly once (2)</SelectItem></SelectGroup></SelectContent></Select></div>
+                      {[['concurrency', t('rule.concurrency')], ['bufferLength', t('rule.bufferLength')], ['checkpointInterval', t('rule.checkpointInterval')], ['lateTolerance', t('rule.lateTolerance')]].map(([key, label]) => <div key={key} className="flex flex-col gap-2"><Label htmlFor={`option-${key}`}>{label}</Label><Input id={`option-${key}`} type="number" min="0" value={optionNumber(options[key])} onChange={(event) => option(key, event.target.value ? Number(event.target.value) : undefined)} /></div>)}
+                      <div className="flex flex-col gap-2"><Label htmlFor="option-qos">{t('rule.qos')}</Label><Select value={options.qos == null ? 'unset' : String(options.qos)} onValueChange={(value) => option('qos', value === 'unset' ? undefined : Number(value))}><SelectTrigger id="option-qos"><SelectValue /></SelectTrigger><SelectContent><SelectGroup><SelectItem value="unset">{t('rule.engineDefault')}</SelectItem><SelectItem value="0">{t('rule.qosAtMostOnce')}</SelectItem><SelectItem value="1">{t('rule.qosAtLeastOnce')}</SelectItem><SelectItem value="2">{t('rule.qosExactlyOnce')}</SelectItem></SelectGroup></SelectContent></Select></div>
                     </div>
-                    <div className="flex flex-col gap-2"><Label htmlFor="rule-tags">Tags</Label><Input id="rule-tags" value={tags} onChange={(event) => setTags(event.target.value)} placeholder="production, temperature" /><p className="text-xs text-muted-foreground">Comma-separated; useful for match and bulk operations.</p></div>
-                    {!id && <label className="flex items-start gap-3 rounded-lg border p-4 hover:bg-muted/30 transition-colors cursor-pointer"><Checkbox checked={triggered} onCheckedChange={(checked) => setTriggered(Boolean(checked))} aria-label="Start after creation" /><span><span className="block text-sm font-medium">Start after creation</span><span className="mt-1 block text-xs text-muted-foreground">Off by default so you can review the saved rule before it processes data.</span></span></label>}
-                    <div className="border-t pt-4"><p className="mb-2 text-sm font-medium">Advanced options JSON</p><JsonObjectEditor value={options} label="Rule options JSON" onApply={setOptions} /></div>
+                    <div className="flex flex-col gap-2"><Label htmlFor="rule-tags">{t('rule.tags')}</Label><Input id="rule-tags" value={tags} onChange={(event) => setTags(event.target.value)} placeholder="production, temperature" /><p className="text-xs text-muted-foreground">{t('rule.tagsHint')}</p></div>
+                    {!id && <label className="flex items-start gap-3 rounded-lg border p-4 hover:bg-muted/30 transition-colors cursor-pointer"><Checkbox checked={triggered} onCheckedChange={(checked) => setTriggered(Boolean(checked))} aria-label={t('rule.startAfterCreation')} /><span><span className="block text-sm font-medium">{t('rule.startAfterCreation')}</span><span className="mt-1 block text-xs text-muted-foreground">{t('rule.startAfterCreationHint')}</span></span></label>}
+                    <div className="border-t pt-4"><p className="mb-2 text-sm font-medium">{t('rule.advancedOptionsJson')}</p><JsonObjectEditor value={options} label={t('rule.ruleOptionsJson')} onApply={setOptions} /></div>
                   </CardContent>
                 </Card>
-                <div className="flex justify-between"><Button variant="outline" onClick={() => setStep('actions')} className="touch-manipulation"><ArrowLeft className="mr-2 size-4" aria-hidden="true" />Back</Button><Button onClick={() => void validate()} disabled={validating || loading} className="touch-manipulation">{validating && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}Validate with eKuiper</Button></div>
+                <div className="flex justify-between"><Button variant="outline" onClick={() => setStep('actions')} className="touch-manipulation"><ArrowLeft className="mr-2 size-4" aria-hidden="true" />{t('rule.back')}</Button><Button onClick={() => void validate()} disabled={validating || loading} className="touch-manipulation">{validating && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}{t('rule.validateWithEkuiper')}</Button></div>
               </div>
             )}
           </div>
@@ -1066,21 +1088,21 @@ export function RuleDesigner({ id }: { id?: string }) {
           <div className="xl:sticky xl:top-4 xl:self-start">
             <Card className="overflow-hidden shadow-beautiful-md">
               <CardHeader className="border-b bg-muted/20 pb-4">
-                <div className="flex items-start justify-between gap-3"><div><CardTitle className="flex items-center gap-2 text-lg"><Code2 className="size-5" aria-hidden="true" />Generated definition</CardTitle><CardDescription className="mt-1">The exact payload sent to eKuiper.</CardDescription></div><Button type="button" variant="ghost" size="icon" onClick={() => { setRevealSensitive((value) => !value); setDefinitionDirty(false); }} aria-label={revealSensitive ? 'Mask sensitive values' : 'Reveal sensitive values'} className="touch-manipulation">{revealSensitive ? <EyeOff className="size-4" aria-hidden="true" /> : <Eye className="size-4" aria-hidden="true" />}</Button></div>
-                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs"><Badge variant="outline">{query.source || 'source'}</Badge><ArrowRight className="size-3 text-muted-foreground" aria-hidden="true" /><Badge variant="secondary">SQL</Badge><ArrowRight className="size-3 text-muted-foreground" aria-hidden="true" />{actions.length ? actions.map((action) => <Badge key={action.key} variant="outline">{actionLabel(action.type)}</Badge>) : <Badge variant="outline">no output</Badge>}</div>
+                <div className="flex items-start justify-between gap-3"><div><CardTitle className="flex items-center gap-2 text-lg"><Code2 className="size-5" aria-hidden="true" />{t('rule.generatedDefinition')}</CardTitle><CardDescription className="mt-1">{t('rule.exactPayload')}</CardDescription></div><Button type="button" variant="ghost" size="icon" onClick={() => { setRevealSensitive((value) => !value); setDefinitionDirty(false); }} aria-label={revealSensitive ? 'Mask sensitive values' : 'Reveal sensitive values'} className="touch-manipulation">{revealSensitive ? <EyeOff className="size-4" aria-hidden="true" /> : <Eye className="size-4" aria-hidden="true" />}</Button></div>
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs"><Badge variant="outline">{query.source || t('rule.sourcePlaceholder')}</Badge><ArrowRight className="size-3 text-muted-foreground" aria-hidden="true" /><Badge variant="secondary">{t('rule.sql')}</Badge><ArrowRight className="size-3 text-muted-foreground" aria-hidden="true" />{actions.length ? actions.map((action) => <Badge key={action.key} variant="outline">{actionLabel(action.type, t)}</Badge>) : <Badge variant="outline">{t('rule.noOutput')}</Badge>}</div>
               </CardHeader>
               <CardContent className="p-4 flex flex-col gap-4">
                 <Tabs defaultValue="definition">
-                  <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="definition">Rule JSON</TabsTrigger><TabsTrigger value="sql">SQL</TabsTrigger></TabsList>
+                  <TabsList className="grid w-full grid-cols-2"><TabsTrigger value="definition">{t('rule.ruleJson')}</TabsTrigger><TabsTrigger value="sql">{t('rule.sql')}</TabsTrigger></TabsList>
                   <TabsContent value="definition" className="flex flex-col gap-2 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-150">
-                    {!revealSensitive && <p className="rounded-md bg-muted p-2 text-xs text-muted-foreground">Sensitive fields are masked and raw editing is locked. Reveal them to edit the full definition.</p>}
-                    <Textarea aria-label="Rule JSON" value={definitionText} disabled={!revealSensitive} onChange={(event) => { setDefinitionText(event.target.value); setDefinitionDirty(true); setDefinitionError(''); }} className="min-h-[32rem] resize-y font-mono text-xs leading-5" spellCheck={false} />
+                    {!revealSensitive && <p className="rounded-md bg-muted p-2 text-xs text-muted-foreground">{t('rule.sensitiveMasked')}</p>}
+                    <Textarea aria-label={t('rule.ruleJson')} value={definitionText} disabled={!revealSensitive} onChange={(event) => { setDefinitionText(event.target.value); setDefinitionDirty(true); setDefinitionError(''); }} className="min-h-[32rem] resize-y font-mono text-xs leading-5" spellCheck={false} />
                     {definitionError && (
                       <Alert variant="destructive">
                         <AlertDescription>{definitionError}</AlertDescription>
                       </Alert>
                     )}
-                    {revealSensitive && <div className="flex justify-end gap-2"><Button type="button" variant="outline" size="sm" disabled={!definitionDirty} onClick={() => { setDefinitionDirty(false); setDefinitionError(''); }} className="touch-manipulation">Discard</Button><Button type="button" size="sm" disabled={!definitionDirty} onClick={applyDefinition} className="touch-manipulation">Apply definition</Button></div>}
+                    {revealSensitive && <div className="flex justify-end gap-2"><Button type="button" variant="outline" size="sm" disabled={!definitionDirty} onClick={() => { setDefinitionDirty(false); setDefinitionError(''); }} className="touch-manipulation">{t('rule.discard')}</Button><Button type="button" size="sm" disabled={!definitionDirty} onClick={applyDefinition} className="touch-manipulation">{t('rule.applyDefinition')}</Button></div>}
                   </TabsContent>
                   <TabsContent value="sql" className="data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-150"><pre className="min-h-64 whitespace-pre-wrap rounded-lg bg-muted p-4 font-mono text-sm">{graph ? 'Graph rule — inspect Rule JSON' : effectiveSql || 'Choose a source to generate SQL'}</pre></TabsContent>
                 </Tabs>
@@ -1088,11 +1110,11 @@ export function RuleDesigner({ id }: { id?: string }) {
                 <div className="grid grid-cols-2 gap-2">
                   <Button variant="outline" onClick={() => void validate()} disabled={validating || loading || !active} className="touch-manipulation">
                     {validating && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}
-                    Validate
+                    {t('rule.validate')}
                   </Button>
                   <Button onClick={() => void save()} disabled={saving || validating || loading || !active} className="touch-manipulation">
                     {saving && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}
-                    {saving ? 'Saving…' : id ? 'Save changes' : 'Create rule'}
+                    {saving ? t('stream.saving') : id ? t('rule.saveChanges') : t('rule.createRule')}
                   </Button>
                 </div>
               </CardContent>

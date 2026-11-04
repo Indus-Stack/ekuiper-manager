@@ -49,7 +49,9 @@ import { ekuiperClient } from "@/lib/ekuiper/client";
 import { Service } from "@/lib/ekuiper/types";
 import { toast } from "sonner";
 
+import { useT } from '@/lib/i18n';
 export default function ServiceDetailPage() {
+  const t = useT();
   const router = useRouter();
   const params = useParams() as { name: string };
   const name = decodeURIComponent(params.name);
@@ -103,8 +105,8 @@ export default function ServiceDetailPage() {
     return (
       <AppLayout title={`Service: ${name}`}>
         <ErrorState
-          title="No Server Connected"
-          description="Please connect to an eKuiper server to view service details."
+          title={t('extension.noServerConnected')}
+          description={t('extension.connectToViewService')}
         />
       </AppLayout>
     );
@@ -113,7 +115,7 @@ export default function ServiceDetailPage() {
   if (loading) {
     return (
       <AppLayout title={`Service: ${name}`}>
-        <LoadingPage label="Loading service details..." />
+        <LoadingPage label={t('extension.loadingServiceDetails')} />
       </AppLayout>
     );
   }
@@ -122,7 +124,7 @@ export default function ServiceDetailPage() {
     return (
       <AppLayout title={`Service: ${name}`}>
         <ErrorState
-          title="Failed to Load Service"
+          title={t('extension.failedToLoadService')}
           description={error || "Service not found"}
           onRetry={fetchService}
         />
@@ -159,36 +161,31 @@ export default function ServiceDetailPage() {
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-4">
-              <Button variant="outline" size="icon" onClick={() => router.back()} aria-label="Go back">
+              <Button variant="outline" size="icon" onClick={() => router.back()} aria-label={t('extension.goBack')}>
                 <ArrowLeft className="size-4" aria-hidden="true" />
               </Button>
               <h2 className="text-3xl font-bold tracking-tight">{name}</h2>
             </div>
-            <p className="text-muted-foreground ml-12">
-              External service integration
-            </p>
+            <p className="text-muted-foreground ml-12">{t('extension.externalServiceIntegration')}</p>
           </div>
           <div className="flex items-center gap-2">
-            <StatusBadge status="info" label="Registered" />
+            <StatusBadge status="info" label={t('extension.registered')} />
             <Button variant="outline" onClick={() => setUpdateOpen(true)}>
-              <Upload className="mr-2 size-4" aria-hidden="true" />Update package
-            </Button>
+              <Upload className="mr-2 size-4" aria-hidden="true" />{t('extension.updatePackage')}</Button>
           </div>
         </div>
 
         {/* About Card */}
         <Card>
           <CardHeader>
-            <CardTitle>About Service</CardTitle>
-            <CardDescription>
-              Details and metadata provided by the service author
-            </CardDescription>
+            <CardTitle>{t('extension.aboutService')}</CardTitle>
+            <CardDescription>{t('extension.serviceDetailHint')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {service.about?.author && (
                 <div className="flex flex-col gap-3">
-                  <h4 className="text-sm font-medium text-muted-foreground">Author</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('extension.author')}</h4>
                   <div className="flex flex-col gap-2">
                     {service.about.author.name && (
                       <div className="flex items-center gap-2">
@@ -217,9 +214,7 @@ export default function ServiceDetailPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-500 hover:underline"
-                        >
-                          Website
-                        </a>
+                        >{t('extension.website')}</a>
                       </div>
                     )}
                   </div>
@@ -237,7 +232,7 @@ export default function ServiceDetailPage() {
 
               {service.about?.helpUrl && (
                 <div className="flex flex-col gap-3">
-                  <h4 className="text-sm font-medium text-muted-foreground">Documentation</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground">{t('extension.documentation')}</h4>
                   <div className="flex items-center gap-2 text-sm">
                     <HelpCircle className="size-4 text-muted-foreground" aria-hidden="true" />
                     <a
@@ -245,9 +240,7 @@ export default function ServiceDetailPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-500 hover:underline"
-                    >
-                      Help URL
-                    </a>
+                    >{t('extension.helpUrl')}</a>
                   </div>
                 </div>
               )}
@@ -259,13 +252,9 @@ export default function ServiceDetailPage() {
         <Tabs defaultValue="interfaces">
           <TabsList>
             <TabsTrigger value="interfaces">
-              <Server className="mr-2 size-4" aria-hidden="true" />
-              Interfaces
-            </TabsTrigger>
+              <Server className="mr-2 size-4" aria-hidden="true" />{t('extension.interfaces')}</TabsTrigger>
             <TabsTrigger value="functions">
-              <Zap className="mr-2 size-4" aria-hidden="true" />
-              Functions
-              <Badge variant="secondary" className="ml-2">
+              <Zap className="mr-2 size-4" aria-hidden="true" />{t('extension.functions')}<Badge variant="secondary" className="ml-2">
                 {functions.length}
               </Badge>
             </TabsTrigger>
@@ -289,16 +278,16 @@ export default function ServiceDetailPage() {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-muted-foreground">Schema Type:</span>
+                      <span className="text-muted-foreground">{t('extension.schemaType')}</span>
                       <span className="ml-2 font-medium">{iface.schemaType}</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Schema File:</span>
+                      <span className="text-muted-foreground">{t('extension.schemaFile')}</span>
                       <span className="ml-2 font-medium">{iface.schemaFile}</span>
                     </div>
                     {iface.options && (
                       <div className="col-span-full">
-                        <span className="text-muted-foreground d-block mb-1">Options:</span>
+                        <span className="text-muted-foreground d-block mb-1">{t('extension.options')}</span>
                         <pre className="bg-muted p-2 rounded text-xs overflow-x-auto">
                           {JSON.stringify(iface.options, null, 2)}
                         </pre>
@@ -309,9 +298,7 @@ export default function ServiceDetailPage() {
               </Card>
             ))}
             {(!service.interfaces || Object.keys(service.interfaces).length === 0) && (
-              <div className="text-center p-8 text-muted-foreground">
-                No interfaces defined for this service
-              </div>
+              <div className="text-center p-8 text-muted-foreground">{t('extension.noServiceInterfaces')}</div>
             )}
           </TabsContent>
 
@@ -321,9 +308,9 @@ export default function ServiceDetailPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Function</TableHead>
-                      <TableHead>Service Name</TableHead>
-                      <TableHead>Interface</TableHead>
+                      <TableHead>{t('extension.functionColumn')}</TableHead>
+                      <TableHead>{t('extension.serviceName')}</TableHead>
+                      <TableHead>{t('extension.interfaceColumn')}</TableHead>
                       <TableHead className="w-[100px]"></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -343,17 +330,13 @@ export default function ServiceDetailPage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => router.push(`/services/functions/${func.name}`)}
-                          >
-                            Details
-                          </Button>
+                          >{t('extension.details')}</Button>
                         </TableCell>
                       </TableRow>
                     ))}
                     {functions.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                          No functions exposed by this service
-                        </TableCell>
+                        <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">{t('extension.noServiceFunctions')}</TableCell>
                       </TableRow>
                     )}
                   </TableBody>
@@ -367,15 +350,15 @@ export default function ServiceDetailPage() {
       <Dialog open={updateOpen} onOpenChange={setUpdateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Update service package</DialogTitle>
-            <DialogDescription>Provide a new zip-package URI that the selected eKuiper node can read.</DialogDescription>
+            <DialogTitle>{t('extension.updateServicePackage')}</DialogTitle>
+            <DialogDescription>{t('extension.updatePackageHint')}</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="service-package-uri">Service Package URI</Label>
+            <Label htmlFor="service-package-uri">{t('extension.servicePackageUri')}</Label>
             <Input id="service-package-uri" value={packageUri} onChange={(event) => setPackageUri(event.target.value)} placeholder="https://example.com/my-service.zip" />
           </div>
           <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setUpdateOpen(false)} className="touch-manipulation">Cancel</Button>
+            <Button variant="outline" onClick={() => setUpdateOpen(false)} className="touch-manipulation">{t('common.cancel')}</Button>
             <Button onClick={() => void updateService()} disabled={updating || !packageUri.trim()} className="touch-manipulation">
               {updating && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}Update service
             </Button>

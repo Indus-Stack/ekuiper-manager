@@ -4,6 +4,7 @@ import * as React from "react";
 import { useServerStore } from "@/stores/server-store";
 import { ekuiperClient } from "@/lib/ekuiper/client";
 import { AppLayout } from "@/components/layout";
+import { useT } from '@/lib/i18n';
 import { DataTable } from "@/components/common/data-table";
 import { StatusBadge, EmptyState, ErrorState, ConfirmDialog } from "@/components/common";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,7 @@ interface JSUDFListItem {
 }
 
 export default function FunctionsPage() {
+  const t = useT();
     const router = useRouter();
     const { servers, activeServerId } = useServerStore();
     const activeServer = servers.find((s) => s.id === activeServerId);
@@ -70,7 +72,7 @@ export default function FunctionsPage() {
                 setBuiltinFuncs(data || {});
             }
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to fetch functions");
+            setError(err instanceof Error ? err.message : t('extension.failedFetchFunctions'));
         } finally {
             setLoading(false);
         }
@@ -89,7 +91,7 @@ export default function FunctionsPage() {
             setDeleteId(null);
             fetchData();
         } catch (err) {
-            toast.error(`Failed to delete function: ${err instanceof Error ? err.message : "Unknown error"}`);
+            toast.error(`Failed to delete function: ${err instanceof Error ? err.message : t('extension.unknownError')}`);
         }
     };
 
@@ -100,9 +102,7 @@ export default function FunctionsPage() {
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Function ID
-                    <ArrowUpDown className="ml-2 size-4" />
+                >{t('extension.functionId')}<ArrowUpDown className="ml-2 size-4" />
                 </Button>
             ),
             cell: ({ row }) => (
@@ -114,7 +114,7 @@ export default function FunctionsPage() {
         },
         {
             id: "actions",
-            header: "Actions",
+            header: t('extension.actionsColumn'),
             cell: ({ row }) => {
                 return (
                     <DropdownMenu>
@@ -128,16 +128,12 @@ export default function FunctionsPage() {
                                 <DropdownMenuItem
                                     onClick={() => router.push(`/functions/javascript/${encodeURIComponent(row.original.id)}`)}
                                 >
-                                    <FileCode className="mr-2 size-4" />
-                                    Edit
-                                </DropdownMenuItem>
+                                    <FileCode className="mr-2 size-4" />{t('common.edit')}</DropdownMenuItem>
                                 <DropdownMenuItem
                                     className="text-destructive"
                                     onClick={() => setDeleteId(row.original.id)}
                                 >
-                                    <Trash2 className="mr-2 size-4" />
-                                    Delete
-                                </DropdownMenuItem>
+                                    <Trash2 className="mr-2 size-4" />{t('extension.delete')}</DropdownMenuItem>
                             </DropdownMenuGroup>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -149,7 +145,7 @@ export default function FunctionsPage() {
     const extColumns: ColumnDef<ExternalFunction>[] = [
         {
             accessorKey: "name",
-            header: "Function Name",
+            header: t('extension.functionNameColumn'),
             cell: ({ row }) => (
                 <div className="flex items-center gap-2">
                     <Network className="size-4 text-blue-500" />
@@ -159,14 +155,14 @@ export default function FunctionsPage() {
         },
         {
             accessorKey: "serviceName",
-            header: "Service",
+            header: t('extension.serviceColumn'),
             cell: ({ row }) => (
                 <StatusBadge status="default" label={row.getValue("serviceName")} showIcon={false} />
             ),
         },
         {
             accessorKey: "interfaceName",
-            header: "Interface",
+            header: t('extension.interfaceColumn'),
         },
         {
             id: "actions",
@@ -185,82 +181,72 @@ export default function FunctionsPage() {
 
     if (!activeServer) {
         return (
-            <AppLayout title="Functions">
+            <AppLayout title={t('nav.functions')}>
                 <EmptyState
-                    title="No Server Connected"
-                    description="Connect to an eKuiper server to manage functions."
+                    title={t('extension.noServerConnected')}
+                    description={t('extension.connectToManageFunctions')}
                 />
             </AppLayout>
         );
     }
 
     return (
-        <AppLayout title="Functions">
+        <AppLayout title={t('nav.functions')}>
             <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-bold tracking-tight">Functions</h2>
-                        <p className="text-muted-foreground">
-                            Manage custom and built-in functions
-                        </p>
+                        <h2 className="text-2xl font-bold tracking-tight">{t('extension.functions')}</h2>
+                        <p className="text-muted-foreground">{t('extension.functionsHint')}</p>
                     </div>
                     {activeTab === "javascript" && (
                         <Button onClick={() => router.push("/functions/javascript/new")}>
-                            <Plus className="mr-2 size-4" />
-                            Create Function
-                        </Button>
+                            <Plus className="mr-2 size-4" />{t('extension.createFunction')}</Button>
                     )}
                 </div>
 
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                     <TabsList>
                         <TabsTrigger value="javascript">
-                            <Code2 className="mr-2 size-4" />
-                            JavaScript UDFs
-                        </TabsTrigger>
+                            <Code2 className="mr-2 size-4" />{t('extension.javascriptUdFs')}</TabsTrigger>
                         <TabsTrigger value="services">
-                            <Network className="mr-2 size-4" />
-                            Service Functions
-                        </TabsTrigger>
+                            <Network className="mr-2 size-4" />{t('extension.serviceFunctions')}</TabsTrigger>
                         <TabsTrigger value="reference">
-                            <BookOpen className="mr-2 size-4" />
-                            Built-in Reference
-                        </TabsTrigger>
+                            <BookOpen className="mr-2 size-4" />{t('extension.builtinReference')}</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="javascript">
                         {error ? (
-                            <ErrorState title="Error" description={error} onRetry={fetchData} />
+                            <ErrorState title={t('common.error')} description={error} onRetry={fetchData} />
                         ) : (
                             <DataTable
                                 columns={jsColumns}
                                 data={jsUdfs}
                                 searchKey="id"
-                                searchPlaceholder="Search UDFs..."
+                                searchPlaceholder={t('extension.searchUdFs')}
                                 loading={loading}
-                                emptyMessage="No JavaScript UDFs found"
+                                emptyMessage={t('extension.noJsUdFs')}
                             />
                         )}
                     </TabsContent>
 
                     <TabsContent value="services">
                         {error ? (
-                            <ErrorState title="Error" description={error} onRetry={fetchData} />
+                            <ErrorState title={t('common.error')} description={error} onRetry={fetchData} />
                         ) : (
                             <DataTable
                                 columns={extColumns}
                                 data={externalFuncs}
                                 searchKey="name"
-                                searchPlaceholder="Search service functions..."
+                                searchPlaceholder={t('extension.searchServiceFunctions')}
                                 loading={loading}
-                                emptyMessage="No external functions found"
+                                emptyMessage={t('extension.noExternalFunctions')}
                             />
                         )}
                     </TabsContent>
 
                     <TabsContent value="reference">
                         {error ? (
-                            <ErrorState title="Error" description={error} onRetry={fetchData} />
+                            <ErrorState title={t('common.error')} description={error} onRetry={fetchData} />
                         ) : (
                             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                                 {Object.entries(builtinFuncs).map(([category, funcs]) => (
@@ -279,7 +265,7 @@ export default function FunctionsPage() {
                                 ))}
                                 {Object.keys(builtinFuncs).length === 0 && !loading && (
                                     <div className="col-span-full">
-                                        <EmptyState title="No Built-in Functions Found" description="Could not load built-in function reference." />
+                                        <EmptyState title={t('extension.noBuiltinFunctions')} description={t('extension.builtinReferenceFailed')} />
                                     </div>
                                 )}
                             </div>
@@ -290,7 +276,7 @@ export default function FunctionsPage() {
                 <ConfirmDialog
                     open={!!deleteId}
                     onOpenChange={(open) => !open && setDeleteId(null)}
-                    title="Delete Function"
+                    title={t('extension.deleteFunction')}
                     description={`Are you sure you want to delete function "${deleteId}"? Rules using this function may stop working.`}
                     onConfirm={handleDeleteJSUDF}
                     variant="danger"

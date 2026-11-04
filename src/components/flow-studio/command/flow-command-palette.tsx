@@ -11,6 +11,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 
+import { useT } from '@/lib/i18n';
 export interface FlowCommandPaletteProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -64,6 +65,7 @@ export function FlowCommandPalette({
   canFitView,
   onFitView,
 }: FlowCommandPaletteProps) {
+  const t = useT();
   const run = React.useCallback(
     (command: () => void) => {
       onOpenChange(false);
@@ -75,13 +77,13 @@ export function FlowCommandPalette({
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
       <CommandInput
-        placeholder="Type a command…"
-        aria-label="Flow command palette"
+        placeholder={t('flow.typeCommand')}
+        aria-label={t('flow.flowCommandPalette')}
         data-testid="flow-command-palette-input"
       />
-      <CommandList aria-label="Flow commands">
-        <CommandEmpty>No commands found.</CommandEmpty>
-        <CommandGroup heading="Flow">
+      <CommandList aria-label={t('flow.flowCommands')}>
+        <CommandEmpty>{t('flow.noCommandsFound')}</CommandEmpty>
+        <CommandGroup heading={t('flow.flow')}>
           <CommandItem
             disabled={!canAddNode}
             onSelect={() => run(onAddNode)}
@@ -94,30 +96,30 @@ export function FlowCommandPalette({
             onSelect={() => run(onDeploy)}
             data-testid="flow-command-deploy"
           >
-            <span>Deploy flow</span>
+            <span>{t('flow.deployFlow')}</span>
           </CommandItem>
         </CommandGroup>
-        <CommandGroup heading="Panels">
+        <CommandGroup heading={t('flow.panels')}>
           <CommandItem
             disabled={!panelsAvailable}
             onSelect={() => run(onShowValidation)}
             data-testid="flow-command-show-validation"
           >
-            <span>Show validation panel</span>
+            <span>{t('flow.showValidationPanel')}</span>
           </CommandItem>
           <CommandItem
             disabled={!panelsAvailable}
             onSelect={() => run(onShowDefinition)}
             data-testid="flow-command-show-definition"
           >
-            <span>Show definition panel</span>
+            <span>{t('flow.showDefinitionPanel')}</span>
           </CommandItem>
           <CommandItem
             disabled={!panelsAvailable}
             onSelect={() => run(onShowTestOutput)}
             data-testid="flow-command-show-test-output"
           >
-            <span>Show test output panel</span>
+            <span>{t('flow.showTestOutputPanel')}</span>
           </CommandItem>
           <CommandItem
             disabled={!panelsAvailable}
@@ -127,13 +129,13 @@ export function FlowCommandPalette({
             <span>{historyOpen ? "Hide history" : "Show history"}</span>
           </CommandItem>
         </CommandGroup>
-        <CommandGroup heading="View">
+        <CommandGroup heading={t('flow.view')}>
           <CommandItem
             disabled={!canFitView}
             onSelect={() => run(onFitView)}
             data-testid="flow-command-fit-view"
           >
-            <span>Fit view</span>
+            <span>{t('flow.fitView')}</span>
           </CommandItem>
         </CommandGroup>
       </CommandList>

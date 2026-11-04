@@ -8,6 +8,7 @@ import { createRoot, type Root } from 'react-dom/client';
 
 import { FlowCanvas } from '../flow-canvas';
 
+import { withI18n } from '@/test-utils/with-i18n';
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 if ((globalThis as Record<string, unknown>)['structuredClone'] === undefined) {
@@ -71,15 +72,14 @@ async function renderCanvas(
   const root = createRoot(container);
   mounted.push({ container, root });
   await act(async () => {
-    root.render(
-      <FlowCanvas
+    root.render(withI18n(<FlowCanvas
         nodes={baseNodes()}
         edges={baseEdges()}
         selectedNodeIds={[]}
         selectedEdgeIds={[]}
         {...props}
       />,
-    );
+    ));
   });
   return { container, root };
 }
@@ -133,15 +133,14 @@ describe('P1: canvas selection round trip', () => {
     const { container, root } = await renderCanvas({ onSelectionChange });
 
     await act(async () => {
-      root.render(
-        <FlowCanvas
+      root.render(withI18n(<FlowCanvas
           nodes={baseNodes()}
           edges={baseEdges()}
           selectedNodeIds={['node-b']}
           selectedEdgeIds={[]}
           onSelectionChange={onSelectionChange}
         />,
-      );
+      ));
     });
 
     // Real behaviour: the store-driven id appears selected in the DOM
@@ -155,15 +154,14 @@ describe('P1: canvas selection round trip', () => {
 
     // And clearing the store selection clears the DOM (undo/delete path).
     await act(async () => {
-      root.render(
-        <FlowCanvas
+      root.render(withI18n(<FlowCanvas
           nodes={baseNodes()}
           edges={baseEdges()}
           selectedNodeIds={[]}
           selectedEdgeIds={[]}
           onSelectionChange={onSelectionChange}
         />,
-      );
+      ));
     });
     expect(getNodeEl(container, 'node-b')?.classList.contains('selected')).toBe(
       false,
@@ -178,15 +176,14 @@ describe('P1: canvas selection round trip', () => {
     });
 
     await act(async () => {
-      root.render(
-        <FlowCanvas
+      root.render(withI18n(<FlowCanvas
           nodes={baseNodes()}
           edges={baseEdges()}
           selectedNodeIds={['node-a']}
           selectedEdgeIds={[]}
           onSelectionChange={onSelectionChange}
         />,
-      );
+      ));
       await new Promise((resolve) => setTimeout(resolve, 50));
     });
 

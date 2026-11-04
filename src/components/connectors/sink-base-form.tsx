@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 
+import { useT } from '@/lib/i18n';
 export interface SinkBaseOptions {
   omitIfEmpty?: boolean;
   sendSingle?: boolean;
@@ -58,6 +59,7 @@ export function SinkBaseForm({
   availableConnections = [],
   availableSchemas = [],
 }: SinkBaseFormProps) {
+  const t = useT();
   const [showAdvanced, setShowAdvanced] = React.useState(false);
 
   const updateField = <K extends keyof SinkBaseOptions>(field: K, val: SinkBaseOptions[K]) => {
@@ -76,9 +78,7 @@ export function SinkBaseForm({
       <div className="flex flex-col gap-4 rounded-lg border bg-card p-4 text-card-foreground">
         <div className="flex items-center gap-2 border-b pb-2">
           <Send className="size-4 text-primary" />
-          <h4 className="text-xs font-semibold text-muted-foreground">
-            Delivery & Buffering Options
-          </h4>
+          <h4 className="text-xs font-semibold text-muted-foreground">{t('connector.deliveryBuffering')}</h4>
         </div>
 
         {/* Primary Delivery Controls */}
@@ -87,19 +87,15 @@ export function SinkBaseForm({
           <div className="flex items-center justify-between rounded-md border p-3 bg-muted/10">
             <div className="flex flex-col gap-0.5 pr-2">
               <div className="flex items-center gap-1.5">
-                <Label htmlFor="omit-empty" className="text-xs font-medium cursor-pointer">
-                  Omit If Empty
-                </Label>
+                <Label htmlFor="omit-empty" className="text-xs font-medium cursor-pointer">{t('connector.omitIfEmpty')}</Label>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <HelpCircle className="size-3.5 cursor-help text-muted-foreground" />
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-xs text-xs">
-                    If set to true, when query output is empty, no action message is emitted
-                  </TooltipContent>
+                  <TooltipContent side="top" className="max-w-xs text-xs">{t('connector.omitIfEmptyHint')}</TooltipContent>
                 </Tooltip>
               </div>
-              <p className="text-[11px] text-muted-foreground">Skip sending when result set is empty</p>
+              <p className="text-[11px] text-muted-foreground">{t('connector.skipWhenEmpty')}</p>
             </div>
             <Switch
               id="omit-empty"
@@ -113,19 +109,15 @@ export function SinkBaseForm({
           <div className="flex items-center justify-between rounded-md border p-3 bg-muted/10">
             <div className="flex flex-col gap-0.5 pr-2">
               <div className="flex items-center gap-1.5">
-                <Label htmlFor="send-single" className="text-xs font-medium cursor-pointer">
-                  Send Single
-                </Label>
+                <Label htmlFor="send-single" className="text-xs font-medium cursor-pointer">{t('connector.sendSingle')}</Label>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <HelpCircle className="size-3.5 cursor-help text-muted-foreground" />
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-xs text-xs">
-                    If true, emit one sink message per result row rather than an array of rows
-                  </TooltipContent>
+                  <TooltipContent side="top" className="max-w-xs text-xs">{t('connector.sendSingleHint')}</TooltipContent>
                 </Tooltip>
               </div>
-              <p className="text-[11px] text-muted-foreground">Emit each row as an individual message</p>
+              <p className="text-[11px] text-muted-foreground">{t('connector.emitPerRow')}</p>
             </div>
             <Switch
               id="send-single"
@@ -138,16 +130,12 @@ export function SinkBaseForm({
           {/* format */}
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center gap-1.5">
-              <Label htmlFor="sink-format" className="text-xs font-medium">
-                Output Format
-              </Label>
+              <Label htmlFor="sink-format" className="text-xs font-medium">{t('connector.outputFormat')}</Label>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <HelpCircle className="size-3.5 cursor-help text-muted-foreground" />
                 </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs text-xs">
-                  Format of payload emitted to the sink (JSON, binary, delimited, or protobuf)
-                </TooltipContent>
+                <TooltipContent side="top" className="max-w-xs text-xs">{t('connector.formatHint')}</TooltipContent>
               </Tooltip>
             </div>
             <Select
@@ -161,15 +149,15 @@ export function SinkBaseForm({
               disabled={disabled}
             >
               <SelectTrigger id="sink-format" className="h-9 text-xs">
-                <SelectValue placeholder="Select format" />
+                <SelectValue placeholder={t('connector.selectFormat')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="json" className="text-xs">JSON</SelectItem>
-                  <SelectItem value="binary" className="text-xs">Binary</SelectItem>
-                  <SelectItem value="delimited" className="text-xs">Delimited (CSV/TSV)</SelectItem>
-                  <SelectItem value="protobuf" className="text-xs">Protobuf</SelectItem>
-                  <SelectItem value="custom" className="text-xs">Custom Schema</SelectItem>
+                  <SelectItem value="json" className="text-xs">{t('connector.jsonFormat')}</SelectItem>
+                  <SelectItem value="binary" className="text-xs">{t('connector.binaryFormat')}</SelectItem>
+                  <SelectItem value="delimited" className="text-xs">{t('connector.delimited')}</SelectItem>
+                  <SelectItem value="protobuf" className="text-xs">{t('connector.protobufFormat')}</SelectItem>
+                  <SelectItem value="custom" className="text-xs">{t('connector.customSchema')}</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -178,9 +166,7 @@ export function SinkBaseForm({
           {/* Delimiter (when delimited) */}
           {format === 'delimited' && (
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="sink-delimited" className="text-xs font-medium">
-                Delimiter
-              </Label>
+              <Label htmlFor="sink-delimited" className="text-xs font-medium">{t('connector.delimiter')}</Label>
               <Input
                 id="sink-delimited"
                 value={values.delimited ?? ','}
@@ -196,9 +182,7 @@ export function SinkBaseForm({
           {(format === 'protobuf' || format === 'custom') && (
             <>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="sink-schema-name" className="text-xs font-medium">
-                  Schema Name
-                </Label>
+                <Label htmlFor="sink-schema-name" className="text-xs font-medium">{t('connector.schemaName')}</Label>
                 {availableSchemas.length > 0 ? (
                   <Select
                     value={values.schemaName ?? ''}
@@ -206,7 +190,7 @@ export function SinkBaseForm({
                     disabled={disabled}
                   >
                     <SelectTrigger id="sink-schema-name" className="h-9 text-xs">
-                      <SelectValue placeholder="Select schema" />
+                      <SelectValue placeholder={t('connector.selectSchema')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
@@ -231,9 +215,7 @@ export function SinkBaseForm({
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="sink-schema-message" className="text-xs font-medium">
-                  Schema Message
-                </Label>
+                <Label htmlFor="sink-schema-message" className="text-xs font-medium">{t('connector.schemaMessage')}</Label>
                 <Input
                   id="sink-schema-message"
                   value={values.schemaMessage ?? ''}
@@ -250,16 +232,12 @@ export function SinkBaseForm({
           {isSharedConnectionSupported && (
             <div className="flex flex-col gap-1.5 sm:col-span-2">
               <div className="flex items-center gap-1.5">
-                <Label htmlFor="sink-connection" className="text-xs font-medium">
-                  Shared Connection ID
-                </Label>
+                <Label htmlFor="sink-connection" className="text-xs font-medium">{t('connector.sharedConnectionId')}</Label>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <HelpCircle className="size-3.5 cursor-help text-muted-foreground" />
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-xs text-xs">
-                    Reuse connection credentials and broker pool defined in Shared Connections
-                  </TooltipContent>
+                  <TooltipContent side="top" className="max-w-xs text-xs">{t('connector.sharedConnectionHint')}</TooltipContent>
                 </Tooltip>
               </div>
               {availableConnections.length > 0 ? (
@@ -271,13 +249,11 @@ export function SinkBaseForm({
                   disabled={disabled}
                 >
                   <SelectTrigger id="sink-connection" className="h-9 text-xs font-mono">
-                    <SelectValue placeholder="None (standalone connection)" />
+                    <SelectValue placeholder={t('connector.noneStandalone')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="__NONE__" className="text-xs italic text-muted-foreground">
-                        None (standalone connection)
-                      </SelectItem>
+                      <SelectItem value="__NONE__" className="text-xs italic text-muted-foreground">{t('connector.noneStandalone')}</SelectItem>
                       {availableConnections.map((conn) => (
                         <SelectItem key={conn} value={conn} className="text-xs font-mono">
                           {conn}
@@ -303,9 +279,7 @@ export function SinkBaseForm({
           <div className="flex flex-col gap-1.5 sm:col-span-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <Label htmlFor="sink-data-template" className="text-xs font-medium">
-                  Data Template (Golang Template)
-                </Label>
+                <Label htmlFor="sink-data-template" className="text-xs font-medium">{t('connector.dataTemplate')}</Label>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <HelpCircle className="size-3.5 cursor-help text-muted-foreground" />
@@ -343,17 +317,13 @@ export function SinkBaseForm({
             ) : (
               <ChevronRight className="size-3.5" />
             )}
-            <Layers className="size-3.5" />
-            Advanced Buffering & Cache Settings
-          </Button>
+            <Layers className="size-3.5" />{t('connector.advancedBuffering')}</Button>
 
           {showAdvanced && (
             <div className="mt-3 grid grid-cols-1 gap-3 rounded-md border p-3 bg-muted/15 sm:grid-cols-2">
               {/* Concurrency */}
               <div className="flex flex-col gap-1">
-                <Label htmlFor="adv-concurrency" className="text-[11px] text-muted-foreground">
-                  Concurrency (Threads)
-                </Label>
+                <Label htmlFor="adv-concurrency" className="text-[11px] text-muted-foreground">{t('connector.concurrencyThreads')}</Label>
                 <Input
                   id="adv-concurrency"
                   type="number"
@@ -372,9 +342,7 @@ export function SinkBaseForm({
 
               {/* Buffer Length */}
               <div className="flex flex-col gap-1">
-                <Label htmlFor="adv-buffer-length" className="text-[11px] text-muted-foreground">
-                  Buffer Length
-                </Label>
+                <Label htmlFor="adv-buffer-length" className="text-[11px] text-muted-foreground">{t('connector.bufferLength')}</Label>
                 <Input
                   id="adv-buffer-length"
                   type="number"
@@ -393,9 +361,7 @@ export function SinkBaseForm({
 
               {/* Resend Interval */}
               <div className="flex flex-col gap-1">
-                <Label htmlFor="adv-resend-interval" className="text-[11px] text-muted-foreground">
-                  Resend Interval (ms)
-                </Label>
+                <Label htmlFor="adv-resend-interval" className="text-[11px] text-muted-foreground">{t('connector.resendInterval')}</Label>
                 <Input
                   id="adv-resend-interval"
                   type="number"
@@ -414,9 +380,7 @@ export function SinkBaseForm({
 
               {/* Buffer Page Size */}
               <div className="flex flex-col gap-1">
-                <Label htmlFor="adv-page-size" className="text-[11px] text-muted-foreground">
-                  Buffer Page Size
-                </Label>
+                <Label htmlFor="adv-page-size" className="text-[11px] text-muted-foreground">{t('connector.bufferPageSize')}</Label>
                 <Input
                   id="adv-page-size"
                   type="number"
@@ -436,12 +400,8 @@ export function SinkBaseForm({
               {/* Enable Cache */}
               <div className="flex items-center justify-between sm:col-span-2 rounded border p-2 bg-background">
                 <div className="flex flex-col gap-0.5">
-                  <Label htmlFor="adv-enable-cache" className="text-xs font-medium cursor-pointer">
-                    Enable Sink Cache
-                  </Label>
-                  <p className="text-[10px] text-muted-foreground">
-                    Store messages locally when the downstream target is temporarily disconnected
-                  </p>
+                  <Label htmlFor="adv-enable-cache" className="text-xs font-medium cursor-pointer">{t('connector.enableSinkCache')}</Label>
+                  <p className="text-[10px] text-muted-foreground">{t('connector.storeWhenDisconnected')}</p>
                 </div>
                 <Switch
                   id="adv-enable-cache"
@@ -454,9 +414,7 @@ export function SinkBaseForm({
               {values.enableCache && (
                 <>
                   <div className="flex flex-col gap-1">
-                    <Label htmlFor="adv-mem-thresh" className="text-[11px] text-muted-foreground">
-                      Memory Cache Threshold
-                    </Label>
+                    <Label htmlFor="adv-mem-thresh" className="text-[11px] text-muted-foreground">{t('connector.memoryCacheThreshold')}</Label>
                     <Input
                       id="adv-mem-thresh"
                       type="number"
@@ -474,9 +432,7 @@ export function SinkBaseForm({
                   </div>
 
                   <div className="flex flex-col gap-1">
-                    <Label htmlFor="adv-max-disk" className="text-[11px] text-muted-foreground">
-                      Max Disk Cache (bytes)
-                    </Label>
+                    <Label htmlFor="adv-max-disk" className="text-[11px] text-muted-foreground">{t('connector.maxDiskCache')}</Label>
                     <Input
                       id="adv-max-disk"
                       type="number"
@@ -494,9 +450,7 @@ export function SinkBaseForm({
                   </div>
 
                   <div className="flex items-center justify-between sm:col-span-2 rounded border p-2 bg-background">
-                    <Label htmlFor="adv-clean-stop" className="text-xs font-medium cursor-pointer">
-                      Clean Cache At Rule Stop
-                    </Label>
+                    <Label htmlFor="adv-clean-stop" className="text-xs font-medium cursor-pointer">{t('connector.cleanCacheAtStop')}</Label>
                     <Switch
                       id="adv-clean-stop"
                       checked={Boolean(values.cleanCacheAtStop)}

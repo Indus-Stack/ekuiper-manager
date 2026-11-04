@@ -9,6 +9,7 @@ import { createRoot, type Root } from 'react-dom/client';
 import { PropertyField } from '../property-field';
 import type { FlowPropertyDefinition } from '@/lib/flows/registry/node-definition';
 
+import { withI18n } from '@/test-utils/with-i18n';
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 function buildSelectDefinition(optionCount: number): FlowPropertyDefinition {
@@ -35,7 +36,7 @@ async function renderField(
   const root = createRoot(container);
   mounted.push({ container, root });
   await act(async () => {
-    root.render(<PropertyField definition={definition} value={value} onChange={onChange} />);
+    root.render(withI18n(<PropertyField definition={definition} value={value} onChange={onChange} />));
   });
   return container;
 }

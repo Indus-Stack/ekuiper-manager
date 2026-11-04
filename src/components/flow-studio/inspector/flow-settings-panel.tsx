@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import type { FlowDocument, FlowRuleOptions } from "@/lib/flows/model/flow-document";
 import { FLOW_EDITOR_HISTORY_LIMIT, useFlowEditorStore } from "@/stores/flow-editor-store";
 
+import { useT } from '@/lib/i18n';
 /**
  * Flow-level rule options panel (FS-0152).
  *
@@ -29,21 +30,22 @@ import { FLOW_EDITOR_HISTORY_LIMIT, useFlowEditorStore } from "@/stores/flow-edi
  *   dirty-state comparison, and autosave exactly like semantic node edits.
  */
 export function FlowSettingsPanel({ className }: { className?: string }) {
+  const t = useT();
   const document = useFlowEditorStore((state) => state.document);
   const options = document?.spec.options;
 
   if (!document) {
     return (
       <section
-        aria-label="Flow settings panel"
+        aria-label={t('flow.flowSettingsPanel')}
         className={cn("flex flex-col", className)}
         data-testid="flow-settings-panel"
       >
         <div className="shrink-0 border-b px-4 py-3">
-          <h2 className="text-sm font-semibold leading-tight">Flow settings</h2>
+          <h2 className="text-sm font-semibold leading-tight">{t('flow.flowSettings')}</h2>
         </div>
         <div className="px-4 py-3">
-          <p className="text-xs text-muted-foreground">No flow loaded.</p>
+          <p className="text-xs text-muted-foreground">{t('flow.noFlowLoaded')}</p>
         </div>
       </section>
     );
@@ -53,20 +55,18 @@ export function FlowSettingsPanel({ className }: { className?: string }) {
 
   return (
     <section
-      aria-label="Flow settings panel"
+      aria-label={t('flow.flowSettingsPanel')}
       className={cn("flex flex-col", className)}
       data-testid="flow-settings-panel"
     >
       <div className="shrink-0 border-b px-4 py-3">
-        <h2 className="text-sm font-semibold leading-tight">Flow settings</h2>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          Advanced eKuiper rule options. Empty fields run at engine defaults.
-        </p>
+        <h2 className="text-sm font-semibold leading-tight">{t('flow.flowSettings')}</h2>
+        <p className="mt-0.5 text-xs text-muted-foreground">{t('flow.advancedRuleOptions')}</p>
       </div>
       <div className="flex flex-col gap-4 px-4 py-3">
         <NumberOptionRow
-          label="Concurrency"
-          description="Parallelism for rule execution. Engine default is 1."
+          label={t('flow.concurrency')}
+          description={t('flow.concurrencyHint')}
           testId="flow-settings-concurrency"
           value={options?.concurrency}
           min={1}
@@ -74,8 +74,8 @@ export function FlowSettingsPanel({ className }: { className?: string }) {
           optionKey="concurrency"
         />
         <NumberOptionRow
-          label="Buffer length"
-          description="Per-rule message buffer size."
+          label={t('flow.bufferLength')}
+          description={t('flow.bufferLengthHint')}
           testId="flow-settings-buffer-length"
           value={options?.bufferLength}
           min={1}
@@ -84,7 +84,7 @@ export function FlowSettingsPanel({ className }: { className?: string }) {
         />
         <QosOptionRow value={options?.qos} />
         <TextOptionRow
-          label="Checkpoint interval"
+          label={t('flow.checkpointInterval')}
           description="State checkpoint interval in milliseconds or as a duration (e.g. 5000 or 5s)."
           testId="flow-settings-checkpoint-interval"
           value={options?.checkpointInterval}
@@ -92,14 +92,14 @@ export function FlowSettingsPanel({ className }: { className?: string }) {
           optionKey="checkpointInterval"
         />
         <BooleanOptionRow
-          label="Event time"
-          description="Process events in event time instead of processing time."
+          label={t('flow.eventTime')}
+          description={t('flow.eventTimeHint')}
           testId="flow-settings-event-time"
           value={options?.isEventTime}
           optionKey="isEventTime"
         />
         <TextOptionRow
-          label="Late tolerance"
+          label={t('flow.lateTolerance')}
           description="Tolerance for late out-of-order events in milliseconds or as a duration."
           testId="flow-settings-late-tolerance"
           value={options?.lateTolerance}
@@ -107,15 +107,15 @@ export function FlowSettingsPanel({ className }: { className?: string }) {
           optionKey="lateTolerance"
         />
         <BooleanOptionRow
-          label="Send metadata to sink"
-          description="Forward message metadata to sinks."
+          label={t('flow.sendMeta')}
+          description={t('flow.sendMetaHint')}
           testId="flow-settings-send-meta"
           value={options?.sendMetaToSink}
           optionKey="sendMetaToSink"
         />
         <BooleanOptionRow
-          label="Send errors"
-          description="Forward error messages downstream."
+          label={t('flow.sendErrors')}
+          description={t('flow.sendErrorsHint')}
           testId="flow-settings-send-error"
           value={options?.sendError}
           optionKey="sendError"
@@ -129,9 +129,7 @@ export function FlowSettingsPanel({ className }: { className?: string }) {
             commitOptionsUpdate(undefined);
           }}
           data-testid="flow-settings-reset"
-        >
-          Reset to defaults
-        </Button>
+        >{t('flow.resetToDefaults')}</Button>
       </div>
     </section>
   );
@@ -333,6 +331,7 @@ function BooleanOptionRow({
 }
 
 function QosOptionRow({ value }: { value: unknown }) {
+  const t = useT();
   const fieldId = React.useId();
   const descriptionId = `${fieldId}-description`;
   const options = [
@@ -344,11 +343,11 @@ function QosOptionRow({ value }: { value: unknown }) {
   const domValue = matched ? String(matched.value) : "";
   return (
     <div className="flex flex-col gap-1.5" data-testid="flow-settings-qos">
-      <Label htmlFor={fieldId}>QoS</Label>
+      <Label htmlFor={fieldId}>{t('flow.qos')}</Label>
       <select
         id={fieldId}
         aria-describedby={descriptionId}
-        aria-label="QoS"
+        aria-label={t('flow.qos')}
         className={cn(
           "flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-beautiful-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
         )}
@@ -358,16 +357,14 @@ function QosOptionRow({ value }: { value: unknown }) {
           patchFlowOptions({ qos: raw === "" ? undefined : Number(raw) });
         }}
       >
-        <option value="">Engine default (0)</option>
+        <option value="">{t('flow.engineDefaultZero')}</option>
         {options.map((option) => (
           <option key={String(option.value)} value={String(option.value)}>
             {option.label}
           </option>
         ))}
       </select>
-      <p id={descriptionId} className="text-xs text-muted-foreground">
-        Delivery guarantee for rule execution.
-      </p>
+      <p id={descriptionId} className="text-xs text-muted-foreground">{t('flow.qosDescription')}</p>
     </div>
   );
 }

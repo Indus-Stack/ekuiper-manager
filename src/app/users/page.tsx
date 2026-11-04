@@ -4,6 +4,8 @@ import * as React from 'react';
 import { Copy, KeyRound, Loader2, MoreHorizontal, Plus, Shield, Trash2, UserRound, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout';
+import { useT, useI18n } from '@/lib/i18n';
+import type { Translate } from '@/lib/i18n';
 import { ConfirmDialog } from '@/components/common';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -37,12 +39,15 @@ interface UserRecord {
   createdAt: string;
 }
 
-async function getError(response: Response): Promise<string> {
+/** `t` is passed in: this runs outside the component, where no hook is available. */
+async function getError(response: Response, t: Translate): Promise<string> {
   const payload = await response.json().catch(() => null);
-  return payload?.error?.message ?? `Request failed (${response.status})`;
+  return payload?.error?.message ?? t('page.requestFailed', { status: response.status });
 }
 
 export default function UsersPage() {
+  const { locale } = useI18n();
+  const t = useT();
   const [users, setUsers] = React.useState<UserRecord[]>([]);
   const [currentUserId, setCurrentUserId] = React.useState('');
   const [allowed, setAllowed] = React.useState<boolean | null>(null);
@@ -64,7 +69,7 @@ export default function UsersPage() {
     }
     setAllowed(true);
     const response = await fetch('/api/users', { cache: 'no-store' });
-    if (!response.ok) throw new Error(await getError(response));
+    if (!response.ok) throw new Error(await getError(response, t));
     setUsers((await response.json()).users);
   }, []);
 
@@ -78,7 +83,7 @@ export default function UsersPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, role }),
       });
-      if (!response.ok) throw new Error(await getError(response));
+      if (!response.ok) throw new Error(await getError(response, t));
       const payload = await response.json();
       setTemporaryPassword(payload.temporaryPassword);
       setAddOpen(false);
@@ -96,7 +101,7 @@ export default function UsersPage() {
   const resetPassword = async () => {
     if (!resetUser) return;
     const response = await fetch(`/api/users/${encodeURIComponent(resetUser.id)}/reset-password`, { method: 'POST' });
-    if (!response.ok) toast.error(await getError(response));
+    if (!response.ok) toast.error(await getError(response, t));
     else {
       setTemporaryPassword((await response.json()).temporaryPassword);
       setResetUser(null);
@@ -108,7 +113,7 @@ export default function UsersPage() {
   const removeUser = async () => {
     if (!deleteUser) return;
     const response = await fetch(`/api/users/${encodeURIComponent(deleteUser.id)}`, { method: 'DELETE' });
-    if (!response.ok) toast.error(await getError(response));
+    if (!response.ok) toast.error(await getError(response, t));
     else {
       setDeleteUser(null);
       await load();
@@ -118,26 +123,26 @@ export default function UsersPage() {
 
   if (allowed === false) {
     return (
-      <AppLayout title="Users">
+      <AppLayout title={t('nav.users')}>
         <Card className="mx-auto max-w-xl">
-          <CardHeader><CardTitle>Owner access required</CardTitle><CardDescription>Only an owner can add, reset, or delete Manager users.</CardDescription></CardHeader>
+          <CardHeader><CardTitle>{t('page.ownerAccessRequired')}</CardTitle><CardDescription>{t('page.ownerOnlyHint')}</CardDescription></CardHeader>
         </Card>
       </AppLayout>
     );
   }
 
   return (
-    <AppLayout title="Users">
+    <AppLayout title={t('nav.users')}>
       <div className="mx-auto max-w-5xl flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Manager users</h2>
-            <p className="mt-1 text-muted-foreground">Simple local accounts for this installation.</p>
+            <h2 className="text-2xl font-semibold tracking-tight">{t('page.managerUsers')}</h2>
+            <p className="mt-1 text-muted-foreground">{t('page.localAccountsHint')}</p>
           </div>
-          <Button onClick={() => setAddOpen(true)}><Plus className="mr-2 size-4" aria-hidden="true" />Add user</Button>
+          <Button onClick={() => setAddOpen(true)}><Plus className="mr-2 size-4" aria-hidden="true" />{t('page.addUser')}</Button>
         </div>
         <Card>
-          <CardHeader><CardTitle className="flex items-center gap-2"><Users className="size-5" aria-hidden="true" />Accounts</CardTitle><CardDescription>Resetting a password signs the user out everywhere.</CardDescription></CardHeader>
+          <CardHeader><CardTitle className="flex items-center gap-2"><Users className="size-5" aria-hidden="true" />{t('page.accounts')}</CardTitle><CardDescription>{t('page.resetPasswordHint')}</CardDescription></CardHeader>
           <CardContent className="divide-y p-0">
             {users.map((user) => (
               <div key={user.id} className="flex items-center gap-4 px-6 py-4" data-testid="user-row">
@@ -145,23 +150,23 @@ export default function UsersPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="truncate font-medium" title={user.username}>{user.username}</p>
-                    <Badge variant={user.role === 'OWNER' ? 'default' : 'secondary'}>{user.role === 'OWNER' ? 'Owner' : 'User'}</Badge>
-                    {user.mustChangePassword && <Badge variant="outline">Password change required</Badge>}
-                    {user.id === currentUserId && <span className="text-xs text-muted-foreground">You</span>}
+                    <Badge variant={user.role === 'OWNER' ? 'default' : 'secondary'}>{user.role === 'OWNER' ? t('layout.owner') : t('layout.user')}</Badge>
+                    {user.mustChangePassword && <Badge variant="outline">{t('page.passwordChangeRequired')}</Badge>}
+                    {user.id === currentUserId && <span className="text-xs text-muted-foreground">{t('page.you')}</span>}
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">Last sign in: {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : 'Never'}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('page.lastSignIn', { when: user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString(locale) : t('page.never') })}</p>
                 </div>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" aria-label={`Actions for ${user.username}`}><MoreHorizontal className="size-4" aria-hidden="true" /></Button></DropdownMenuTrigger>
+                  <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" aria-label={t('page.actionsForUser', { name: user.username })}><MoreHorizontal className="size-4" aria-hidden="true" /></Button></DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuGroup>
-                      <DropdownMenuItem onSelect={() => setResetUser(user)}><KeyRound className="mr-2 size-4" aria-hidden="true" />Reset password</DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => setResetUser(user)}><KeyRound className="mr-2 size-4" aria-hidden="true" />{t('page.resetPassword')}</DropdownMenuItem>
                     </DropdownMenuGroup>
                     {user.id !== currentUserId && (
                       <>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                          <DropdownMenuItem className="text-destructive" onSelect={() => setDeleteUser(user)}><Trash2 className="mr-2 size-4" aria-hidden="true" />Delete user</DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive" onSelect={() => setDeleteUser(user)}><Trash2 className="mr-2 size-4" aria-hidden="true" />{t('page.deleteUser')}</DropdownMenuItem>
                         </DropdownMenuGroup>
                       </>
                     )}
@@ -175,25 +180,25 @@ export default function UsersPage() {
 
       <Dialog open={addOpen} onOpenChange={setAddOpen}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Add user</DialogTitle><DialogDescription>A temporary password is generated and shown once.</DialogDescription></DialogHeader>
+          <DialogHeader><DialogTitle>{t('page.addUser')}</DialogTitle><DialogDescription>{t('page.tempPasswordHint')}</DialogDescription></DialogHeader>
           <div className="flex flex-col gap-4 py-2">
-            <div className="flex flex-col gap-2"><Label htmlFor="new-username">Username</Label><Input id="new-username" value={username} onChange={(event) => setUsername(event.target.value)} placeholder="operator" autoFocus /></div>
-            <div className="flex flex-col gap-2"><Label htmlFor="new-role">Role</Label><select id="new-role" value={role} onChange={(event) => setRole(event.target.value as 'OWNER' | 'USER')} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm touch-manipulation"><option value="USER">User — operate eKuiper</option><option value="OWNER">Owner — also manage users and nodes</option></select></div>
+            <div className="flex flex-col gap-2"><Label htmlFor="new-username">{t('page.username')}</Label><Input id="new-username" value={username} onChange={(event) => setUsername(event.target.value)} placeholder="operator" autoFocus /></div>
+            <div className="flex flex-col gap-2"><Label htmlFor="new-role">{t('page.role')}</Label><select id="new-role" value={role} onChange={(event) => setRole(event.target.value as 'OWNER' | 'USER')} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base md:text-sm touch-manipulation"><option value="USER">{t('page.roleUserOption')}</option><option value="OWNER">{t('page.roleOwnerOption')}</option></select></div>
           </div>
-          <DialogFooter className="flex-col-reverse sm:flex-row gap-2"><Button variant="outline" onClick={() => setAddOpen(false)} className="touch-manipulation">Cancel</Button><Button data-testid="confirm-add-user" onClick={() => void createUser()} disabled={saving || !username} className="touch-manipulation">{saving && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}{saving ? 'Adding…' : 'Add user'}</Button></DialogFooter>
+          <DialogFooter className="flex-col-reverse sm:flex-row gap-2"><Button variant="outline" onClick={() => setAddOpen(false)} className="touch-manipulation">{t('common.cancel')}</Button><Button data-testid="confirm-add-user" onClick={() => void createUser()} disabled={saving || !username} className="touch-manipulation">{saving && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}{saving ? 'Adding…' : 'Add user'}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
 
       <Dialog open={Boolean(temporaryPassword)} onOpenChange={(open) => !open && setTemporaryPassword('')}>
         <DialogContent>
-          <DialogHeader><DialogTitle>Temporary password</DialogTitle><DialogDescription>Copy this now. It will not be shown again, and the user must change it after signing in.</DialogDescription></DialogHeader>
-          <div className="flex items-center gap-2 rounded-md border bg-muted p-3"><code className="min-w-0 flex-1 break-all font-mono text-sm">{temporaryPassword}</code><Button variant="outline" size="icon" aria-label="Copy temporary password" onClick={() => { void navigator.clipboard.writeText(temporaryPassword); toast.success('Copied'); }} className="touch-manipulation shrink-0"><Copy className="size-4" aria-hidden="true" /></Button></div>
-          <DialogFooter><Button onClick={() => setTemporaryPassword('')} className="w-full sm:w-auto touch-manipulation">Done</Button></DialogFooter>
+          <DialogHeader><DialogTitle>{t('page.temporaryPassword')}</DialogTitle><DialogDescription>Copy this now. It will not be shown again, and the user must change it after signing in.</DialogDescription></DialogHeader>
+          <div className="flex items-center gap-2 rounded-md border bg-muted p-3"><code className="min-w-0 flex-1 break-all font-mono text-sm">{temporaryPassword}</code><Button variant="outline" size="icon" aria-label={t('page.copyTempPassword')} onClick={() => { void navigator.clipboard.writeText(temporaryPassword); toast.success('Copied'); }} className="touch-manipulation shrink-0"><Copy className="size-4" aria-hidden="true" /></Button></div>
+          <DialogFooter><Button onClick={() => setTemporaryPassword('')} className="w-full sm:w-auto touch-manipulation">{t('page.done')}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
 
-      <ConfirmDialog open={Boolean(resetUser)} onOpenChange={(open) => !open && setResetUser(null)} title="Reset password?" description={`Reset ${resetUser?.username ?? 'this user'}'s password and revoke all active sessions?`} confirmLabel="Reset password" onConfirm={resetPassword} />
-      <ConfirmDialog open={Boolean(deleteUser)} onOpenChange={(open) => !open && setDeleteUser(null)} title="Delete user?" description={`Permanently delete ${deleteUser?.username ?? 'this user'} and revoke all sessions?`} confirmLabel="Delete user" variant="danger" onConfirm={removeUser} />
+      <ConfirmDialog open={Boolean(resetUser)} onOpenChange={(open) => !open && setResetUser(null)} title={t('page.resetPasswordTitle')} description={`Reset ${resetUser?.username ?? 'this user'}'s password and revoke all active sessions?`} confirmLabel="Reset password" onConfirm={resetPassword} />
+      <ConfirmDialog open={Boolean(deleteUser)} onOpenChange={(open) => !open && setDeleteUser(null)} title={t('page.deleteUserTitle')} description={`Permanently delete ${deleteUser?.username ?? 'this user'} and revoke all sessions?`} confirmLabel="Delete user" variant="danger" onConfirm={removeUser} />
     </AppLayout>
   );
 }

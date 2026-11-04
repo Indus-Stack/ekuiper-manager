@@ -13,6 +13,7 @@ import type { FlowDiagnostic } from "@/lib/flows/model/diagnostic";
 import { useFlowEditorStore } from "@/stores/flow-editor-store";
 import { NodeInspector } from "./node-inspector";
 
+import { useT } from '@/lib/i18n';
 export interface NodeFocusDialogProps {
   open: boolean;
   nodeId: string | null;
@@ -45,6 +46,7 @@ export function NodeFocusDialog({
   documentDiagnostics,
   onClose,
 }: NodeFocusDialogProps) {
+  const t = useT();
   const document = useFlowEditorStore((state) => state.document);
   const focusedName = React.useMemo(() => {
     if (!document || !nodeId) return null;
@@ -64,11 +66,10 @@ export function NodeFocusDialog({
       >
         <DialogHeader>
           <DialogTitle data-testid="flow-node-focus-dialog-title">
-            {focusedName ? `Edit node — ${focusedName}` : "Edit node"}
+            {focusedName ? `Edit node — ${focusedName}` : t('flow.editNode')}
           </DialogTitle>
           <DialogDescription>
-            Same editor as the side inspector. Changes save through the
-            existing draft autosave; closing this dialog saves nothing extra.
+            {t('flow.sameEditorHint')}
           </DialogDescription>
         </DialogHeader>
         {nodeId ? (

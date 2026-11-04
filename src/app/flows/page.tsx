@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Loader2, Plus, RefreshCw, Search, Workflow } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout';
+import { useT } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -36,6 +37,7 @@ function formatUpdated(value: string): string {
 }
 
 export default function FlowsPage() {
+  const t = useT();
   const router = useRouter();
   const [flows, setFlows] = React.useState<FlowListRecord[]>([]);
   const [search, setSearch] = React.useState('');
@@ -111,22 +113,18 @@ export default function FlowsPage() {
   );
 
   return (
-    <AppLayout title="Flows">
+    <AppLayout title={t('nav.flows')}>
       <div className="mx-auto max-w-7xl flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Flows</h2>
-            <p className="mt-1 text-muted-foreground">Visual stream-processing flows, deployed as eKuiper graph rules.</p>
+            <h2 className="text-2xl font-semibold tracking-tight">{t('flow.flowsTitle')}</h2>
+            <p className="mt-1 text-muted-foreground">{t('flow.flowsHint')}</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => void load()} disabled={loading}>
-              <RefreshCw className={`mr-2 size-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
-              Refresh
-            </Button>
+              <RefreshCw className={`mr-2 size-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />{t('flow.refresh')}</Button>
             <Button onClick={() => { setCreateName(''); setCreateError(''); setCreateOpen(true); }}>
-              <Plus className="mr-2 size-4" aria-hidden="true" />
-              New flow
-            </Button>
+              <Plus className="mr-2 size-4" aria-hidden="true" />{t('flow.newFlow')}</Button>
           </div>
         </div>
         <div className="relative max-w-sm">
@@ -134,8 +132,8 @@ export default function FlowsPage() {
           <Input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search flows"
-            aria-label="Search flows"
+            placeholder={t('flow.searchFlows')}
+            aria-label={t('flow.searchFlows')}
             className="pl-9"
           />
         </div>
@@ -162,11 +160,9 @@ export default function FlowsPage() {
           <Card className="border-dashed">
             <CardContent className="flex flex-col items-center py-14 text-center">
               <Workflow className="mb-4 size-10 text-muted-foreground" aria-hidden="true" />
-              <h3 className="font-semibold">{search ? 'No matching flows' : 'No flows yet'}</h3>
+              <h3 className="font-semibold">{search ? t('flow.noMatchingFlows') : t('flow.noFlowsYet')}</h3>
               {!search && (
-                <Button className="mt-5" onClick={() => { setCreateName(''); setCreateError(''); setCreateOpen(true); }}>
-                  Create first flow
-                </Button>
+                <Button className="mt-5" onClick={() => { setCreateName(''); setCreateError(''); setCreateOpen(true); }}>{t('flow.createFirstFlow')}</Button>
               )}
             </CardContent>
           </Card>
@@ -199,11 +195,11 @@ export default function FlowsPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>New flow</DialogTitle>
-            <DialogDescription>Create a flow, then design it in Flow Studio.</DialogDescription>
+            <DialogTitle>{t('flow.newFlow')}</DialogTitle>
+            <DialogDescription>{t('flow.createFlowHint')}</DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2 py-2">
-            <Label htmlFor="new-flow-name">Flow name</Label>
+            <Label htmlFor="new-flow-name">{t('flow.flowName')}</Label>
             <Input
               id="new-flow-name"
               value={createName}
@@ -220,9 +216,7 @@ export default function FlowsPage() {
             )}
           </div>
           <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setCreateOpen(false)} disabled={creating} className="touch-manipulation">
-              Cancel
-            </Button>
+            <Button variant="outline" onClick={() => setCreateOpen(false)} disabled={creating} className="touch-manipulation">{t('common.cancel')}</Button>
             <Button onClick={() => void create()} disabled={creating || !createName.trim()} className="touch-manipulation">
               {creating && <Loader2 className="mr-2 size-4 animate-spin" aria-hidden="true" />}
               {creating ? 'Creating…' : 'Create flow'}

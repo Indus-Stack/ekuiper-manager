@@ -974,7 +974,17 @@ export class EKuiperClient {
   // ---------------------------------------------------------------------------
 
   async listJSUDFs(): Promise<string[]> {
-    return this.request<string[]>("/udf/javascript");
+    // A node without the JS UDF feature answers 404 here; that is an empty
+    // list, not a failure worth showing as an error banner.
+    try {
+      const list = await this.request<string[]>("/udf/javascript");
+      return Array.isArray(list) ? list : [];
+    } catch (error) {
+      if (error instanceof Error && /^(HTTP 404|404 page not found)/i.test(error.message)) {
+        return [];
+      }
+      throw error;
+    }
   }
 
   async getJSUDF(id: string): Promise<JSUDF> {

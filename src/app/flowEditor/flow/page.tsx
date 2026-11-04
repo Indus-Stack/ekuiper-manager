@@ -6,7 +6,9 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Workflow } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+import { useT } from '@/lib/i18n';
 export default function FlowEditorPage() {
+  const t = useT();
   const router = useRouter();
 
   React.useEffect(() => {
@@ -20,9 +22,7 @@ export default function FlowEditorPage() {
       <p className="text-xs text-muted-foreground">eKuiper Flow Studio has replaced legacy external editors.</p>
       <Button asChild variant="outline" size="sm" className="text-xs">
         <Link href="/flows">
-          <ArrowLeft className="mr-1.5 size-3.5" />
-          Go to Flow Studio
-        </Link>
+          <ArrowLeft className="mr-1.5 size-3.5" />{t('admin.goToFlowStudio')}</Link>
       </Button>
     </div>
   );

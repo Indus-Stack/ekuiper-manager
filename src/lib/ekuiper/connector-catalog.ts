@@ -97,7 +97,7 @@ export const BUILTIN_SOURCE_PROPERTIES: Record<string, MetadataProperty[]> = {
       optional: true,
       default: 1,
       values: [0, 1, 2],
-      label: { en: 'QoS', zh: '服务质量' },
+      label: { en: 'QoS', zh: 'QoS' },
     },
     {
       name: 'insecureSkipVerify',
@@ -609,7 +609,7 @@ export const BUILTIN_SINK_PROPERTIES: Record<string, MetadataProperty[]> = {
       optional: true,
       default: 1,
       values: [0, 1, 2],
-      label: { en: 'QoS', zh: '服务质量' },
+      label: { en: 'QoS', zh: 'QoS' },
     },
     {
       name: 'retained',

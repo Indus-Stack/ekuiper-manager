@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import type { FlowDeploymentArtifact } from "@/lib/flows/compiler/types";
 import type { FlowDiagnostic } from "@/lib/flows/model/diagnostic";
 
+import { useT } from '@/lib/i18n';
 export interface DefinitionPanelProps {
   flowId: string;
   className?: string;
@@ -57,6 +58,7 @@ function isDeploymentArtifact(value: unknown): value is FlowDeploymentArtifact {
  * pre/code block. Monaco is intentionally not loaded here.
  */
 export function DefinitionPanel({ flowId, className }: DefinitionPanelProps) {
+  const t = useT();
   const [artifact, setArtifact] = React.useState<FlowDeploymentArtifact | null>(
     null,
   );
@@ -86,7 +88,7 @@ export function DefinitionPanel({ flowId, className }: DefinitionPanelProps) {
           return;
         }
         if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-          setError("Unexpected compile response.");
+          setError(t('flow.unexpectedCompile'));
           setLoaded(true);
           return;
         }
@@ -147,7 +149,7 @@ export function DefinitionPanel({ flowId, className }: DefinitionPanelProps) {
           {loading
             ? "Loading…"
             : artifact
-              ? "Refresh definition"
+              ? t('flow.refreshDefinition')
               : "Load definition"}
         </Button>
         {loaded && !loading && !error ? (
@@ -211,8 +213,7 @@ export function DefinitionPanel({ flowId, className }: DefinitionPanelProps) {
           className="text-xs text-muted-foreground"
           data-testid="flow-definition-empty"
         >
-          Not loaded yet. Loading the definition is read-only and does not
-          deploy.
+          {t('flow.definitionNotLoaded')}
         </p>
       ) : null}
     </div>
