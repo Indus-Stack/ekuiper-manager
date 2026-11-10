@@ -4,7 +4,15 @@
 import * as React from 'react';
 import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
-import { DEFAULT_THEME, THEME_STORAGE_KEY, ThemeProvider, isTheme, useTheme } from '@/lib/theme';
+import {
+  DEFAULT_THEME,
+  LEGACY_THEME_STORAGE_KEY,
+  THEME_INIT_SCRIPT,
+  THEME_STORAGE_KEY,
+  ThemeProvider,
+  isTheme,
+  useTheme,
+} from '@/lib/theme';
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -121,6 +129,48 @@ describe('theme', () => {
     expect(api.theme).toBe('dark');
     expect(api.resolvedTheme).toBe('dark');
     expect(() => api.setTheme('light')).not.toThrow();
+  });
+
+  it('falls back to legacy theme key when ekuiper.theme is absent', async () => {
+    window.localStorage.setItem(LEGACY_THEME_STORAGE_KEY, 'light');
+    new Function(THEME_INIT_SCRIPT)();
+    expect(document.documentElement.classList.contains('dark')).toBe(false);
+    expect(document.documentElement.style.colorScheme).toBe('light');
+
+    await mount();
+    expect(api.theme).toBe('light');
+    expect(api.resolvedTheme).toBe('light');
+    expect(document.documentElement.classList.contains('dark')).toBe(false);
+  });
+
+  it('prefers ekuiper.theme over legacy theme key in startup script and provider', async () => {
+    window.localStorage.setItem(LEGACY_THEME_STORAGE_KEY, 'light');
+    window.localStorage.setItem(THEME_STORAGE_KEY, 'dark');
+    document.documentElement.classList.remove('dark');
+
+    new Function(THEME_INIT_SCRIPT)();
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
+    expect(document.documentElement.style.colorScheme).toBe('dark');
+
+    await mount();
+    expect(api.theme).toBe('dark');
+    expect(api.resolvedTheme).toBe('dark');
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
+  });
+
+  it('ignores invalid legacy theme values and respects invalid ekuiper.theme', async () => {
+    window.localStorage.setItem(LEGACY_THEME_STORAGE_KEY, 'purple');
+    new Function(THEME_INIT_SCRIPT)();
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
+    await mount();
+    expect(api.theme).toBe('dark');
+
+    window.localStorage.setItem(LEGACY_THEME_STORAGE_KEY, 'light');
+    window.localStorage.setItem(THEME_STORAGE_KEY, 'purple');
+    new Function(THEME_INIT_SCRIPT)();
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
+    await mount();
+    expect(api.theme).toBe('dark');
   });
 });
 

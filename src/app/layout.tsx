@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { THEME_INIT_SCRIPT } from "@/lib/theme/config";
 
 export const metadata: Metadata = {
   title: "eKuiper Manager",
   description: "A focused, self-hosted workspace for operating eKuiper.",
   keywords: ["eKuiper", "IoT", "rule engine", "streaming"],
 };
-
-const THEME_INIT_SCRIPT = `(function(){try{var t=localStorage.getItem('ekuiper.theme');var d=t==='light'?false:t==='system'?window.matchMedia('(prefers-color-scheme: dark)').matches:true;var e=document.documentElement;e.classList.toggle('dark',d);e.style.colorScheme=d?'dark':'light';}catch(_){}})();`;
 
 export default function RootLayout({
   children,

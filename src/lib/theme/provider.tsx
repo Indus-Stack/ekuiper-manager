@@ -2,7 +2,14 @@
 
 import * as React from 'react';
 
-import { DEFAULT_THEME, THEME_STORAGE_KEY, isTheme, type ResolvedTheme, type Theme } from './config';
+import {
+  DEFAULT_THEME,
+  LEGACY_THEME_STORAGE_KEY,
+  THEME_STORAGE_KEY,
+  isTheme,
+  type ResolvedTheme,
+  type Theme,
+} from './config';
 
 interface ThemeContextValue {
   theme: Theme;
@@ -25,7 +32,11 @@ const DARK_QUERY = '(prefers-color-scheme: dark)';
 function readStoredTheme(): Theme {
   try {
     const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-    return isTheme(stored) ? stored : DEFAULT_THEME;
+    if (stored !== null && stored !== '') {
+      return isTheme(stored) ? stored : DEFAULT_THEME;
+    }
+    const legacy = window.localStorage.getItem(LEGACY_THEME_STORAGE_KEY);
+    return isTheme(legacy) ? legacy : DEFAULT_THEME;
   } catch {
     return DEFAULT_THEME;
   }

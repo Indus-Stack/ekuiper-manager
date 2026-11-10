@@ -7,7 +7,7 @@ import { Check, Globe, LogOut, Monitor, Moon, Settings, Sun, UserRound } from 'l
 import { ServerSelector } from './server-selector';
 import { MobileNav } from './mobile-nav';
 import { LOCALES, LOCALE_LABELS, useI18n, type Locale } from '@/lib/i18n';
-import { THEMES, useTheme, type Theme } from '@/lib/theme';
+import { THEMES, isTheme, useTheme, type Theme } from '@/lib/theme';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -15,6 +15,8 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
@@ -35,6 +37,37 @@ const THEME_LABEL_KEYS = {
   system: 'admin.systemTheme',
 } as const;
 
+function ThemeRadioItems({
+  theme,
+  onSelectTheme,
+  className,
+}: {
+  theme: Theme;
+  onSelectTheme: (theme: Theme) => void;
+  className?: string;
+}) {
+  const { t } = useI18n();
+  return (
+    <DropdownMenuRadioGroup
+      className={className}
+      value={theme}
+      onValueChange={(value) => {
+        if (isTheme(value)) onSelectTheme(value);
+      }}
+    >
+      {THEMES.map((option: Theme) => {
+        const Icon = THEME_ICONS[option];
+        return (
+          <DropdownMenuRadioItem key={option} value={option} className="cursor-pointer">
+            <Icon className="mr-2 size-4" aria-hidden="true" />
+            {t(THEME_LABEL_KEYS[option])}
+          </DropdownMenuRadioItem>
+        );
+      })}
+    </DropdownMenuRadioGroup>
+  );
+}
+
 export function Header({ title }: HeaderProps) {
   const router = useRouter();
   const { locale, setLocale, t } = useI18n();
@@ -54,12 +87,12 @@ export function Header({ title }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-border/80 bg-background/80 backdrop-blur-md px-4">
-      <div className="flex min-w-0 items-center gap-3">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between gap-2 border-b border-border/80 bg-background/80 backdrop-blur-md px-3 sm:px-4">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         <MobileNav />
         <h1 className="truncate text-base font-semibold md:text-lg" title={title ?? 'eKuiper Manager'}>{title ?? 'eKuiper Manager'}</h1>
       </div>
-      <div className="flex items-center gap-1.5">
+      <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
         <ServerSelector />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -83,7 +116,7 @@ export function Header({ title }: HeaderProps) {
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label={t('admin.theme')}>
+            <Button variant="ghost" size="icon" className="hidden sm:inline-flex" aria-label={t('admin.theme')}>
               {resolvedTheme === 'dark' ? (
                 <Moon className="size-4" aria-hidden="true" />
               ) : (
@@ -94,19 +127,7 @@ export function Header({ title }: HeaderProps) {
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuLabel>{t('admin.theme')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {THEMES.map((option: Theme) => {
-              const Icon = THEME_ICONS[option];
-              return (
-                <DropdownMenuItem key={option} onSelect={() => setTheme(option)}>
-                  <Check
-                    className={`mr-2 size-4 ${option === theme ? 'opacity-100' : 'opacity-0'}`}
-                    aria-hidden="true"
-                  />
-                  <Icon className="mr-2 size-4" aria-hidden="true" />
-                  {t(THEME_LABEL_KEYS[option])}
-                </DropdownMenuItem>
-              );
-            })}
+            <ThemeRadioItems theme={theme} onSelectTheme={setTheme} />
           </DropdownMenuContent>
         </DropdownMenu>
         <DropdownMenu>
@@ -135,6 +156,9 @@ export function Header({ title }: HeaderProps) {
                 <LogOut className="mr-2 size-4" aria-hidden="true" /> {t('layout.signOut')}
               </DropdownMenuItem>
             </DropdownMenuGroup>
+            <DropdownMenuSeparator className="sm:hidden" />
+            <DropdownMenuLabel className="sm:hidden">{t('admin.theme')}</DropdownMenuLabel>
+            <ThemeRadioItems className="sm:hidden" theme={theme} onSelectTheme={setTheme} />
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

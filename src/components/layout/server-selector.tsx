@@ -24,7 +24,7 @@ export function ServerSelector() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="max-w-[140px] sm:max-w-[220px] md:max-w-[260px] gap-2 touch-manipulation" aria-label={t('layout.selectNodeButton')}>
+        <Button variant="outline" className="max-w-[116px] sm:max-w-[220px] md:max-w-[260px] gap-1.5 px-2.5 sm:gap-2 sm:px-4 touch-manipulation" aria-label={t('layout.selectNodeButton')}>
           <Server className="size-4 shrink-0" aria-hidden="true" />
           <span className="truncate" title={active?.name ?? t('layout.selectNode')}>{active?.name ?? t('layout.selectNode')}</span>
           {active?.version && (

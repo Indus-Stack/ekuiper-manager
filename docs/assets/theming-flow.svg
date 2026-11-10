@@ -18,8 +18,9 @@
 
   <!-- Box 2 -->
   <rect x="176" y="34" width="144" height="72" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
-  <text x="248" y="64" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#0f172a">Inline script</text>
-  <text x="248" y="84" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#475569">ekuiper.theme</text>
+  <text x="248" y="62" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#0f172a">Inline script</text>
+  <text x="248" y="80" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10.5" fill="#475569">ekuiper.theme</text>
+  <text x="248" y="95" text-anchor="middle" font-family="ui-monospace, monospace" font-size="9.5" fill="#64748b">fallback: theme</text>
 
   <line x1="320" y1="70" x2="350" y2="70" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)" />
 

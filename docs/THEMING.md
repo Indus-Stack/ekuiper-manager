@@ -16,8 +16,9 @@ You can change the theme from the header or from the Settings page. Both control
 
 ### Use the header menu
 
-1. Select the sun or moon icon in the top-right header bar.
-2. Select **Light**, **Dark**, or **System**.
+1. On wide screens, select the sun or moon icon in the top-right header bar.
+2. On narrow mobile screens, open the account menu in the top-right corner and find **Theme**.
+3. Select **Light**, **Dark**, or **System**.
 
 ### Use the Settings page
 
@@ -32,11 +33,11 @@ The browser stores your choice locally in `localStorage`.
 ![Theme flow](assets/theming-flow.svg)
 
 1. The root layout in `src/app/layout.tsx` includes a small inline script in `<head>`.
-2. Before the page paints, the script reads `ekuiper.theme` from `localStorage`.
+2. Before the page paints, the script reads `ekuiper.theme` from `localStorage`. If `ekuiper.theme` is absent, it reads the legacy `theme` key.
 3. If the stored value is `light`, the script removes the `dark` class from `<html>`.
 4. If the stored value is `system`, the script checks `(prefers-color-scheme: dark)` and sets the `dark` class to match.
 5. If no value is stored or the value is invalid, the script keeps the `dark` class.
-6. After React mounts, `ThemeProvider` in `src/lib/theme/provider.tsx` reads `ekuiper.theme` and listens for system preference changes.
+6. After React mounts, `ThemeProvider` reads the stored key (`ekuiper.theme`, or legacy `theme` when absent). It then listens for system preference changes.
 7. `ThemeProvider` provides `theme`, `resolvedTheme`, and `setTheme` through `useTheme()`.
 
 ## Design tokens
