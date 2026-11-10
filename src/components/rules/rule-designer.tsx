@@ -558,7 +558,7 @@ function ActionCard({
                   variant="outline"
                   size="sm"
                   onClick={() => setSinkConfModalOpen(true)}
-                  className="h-6 text-[11px] text-emerald-600 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
+                  className="h-6 text-[11px] text-emerald-700 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
                 >
                   <Plus className="size-3" />
                   {t('rule.addSinkTemplate')}

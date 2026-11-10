@@ -56,6 +56,7 @@ Full support will arrive by the end of this year when reKuiper reaches a stable 
 | **Visual rule designer** | Assemble rule inputs, SQL, and ordered actions visually; inspect generated eKuiper SQL/JSON; validate before creating. |
 | **Flow Studio (Beta)** | Visual DAG flow editor with 17 built-in nodes, declarative extensions, Flow-to-eKuiper compilation, preflight deploy/undeploy, revision history/diff/rollback, and 1 Hz runtime operator metrics. |
 | **Bilingual UI (`en-US` & `zh-CN`)** | Complete English and Simplified Chinese localization across all workspaces, Flow Studio, Rule Designer, and connector metadata with live locale switching. |
+| **Light & Dark Themes** | Light, dark, and system themes with a persistent choice in Settings and the header. |
 | **Rule diagnostics** | Status, topology, output schema, explain plan, trace controls, and trace results live together in the rule workspace. |
 | **Resources** | Shared connections, installed connector metadata, protobuf/custom schemas, schema upload, and managed uploads. |
 | **Extensions** | Native and portable plugins, portable status, UDF symbols, JavaScript UDFs, and external services. |
@@ -249,6 +250,7 @@ The Manager obtains a migration lock and applies committed migrations before acc
 - [Interactive eKuiper v2.4.1 API reference](https://ankur-paan.github.io/ekuiper-manager/)
 - [Development plan and backlog](DEVELOPMENT_PLAN.md)
 - [AI Assistant and Operations Agent](docs/AI_ASSISTANT.md)
+- [Theming guide](docs/THEMING.md)
 - [Security policy](SECURITY.md)
 - [Contributing guide](CONTRIBUTING.md)
 

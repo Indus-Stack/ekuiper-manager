@@ -433,7 +433,7 @@ export function FlowDeployDialog({
             ) : null}
             {validation.phase === "valid" ? (
               <p
-                className="text-xs font-medium text-emerald-600 dark:text-emerald-400"
+                className="text-xs font-medium text-emerald-700 dark:text-emerald-400"
                 data-testid="flow-deploy-validation-summary"
               >
                 Server: valid — the saved draft can be deployed.

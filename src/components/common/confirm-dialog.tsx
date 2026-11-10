@@ -41,7 +41,7 @@ const variantConfig: Record<
   },
   warning: {
     icon: AlertTriangle,
-    iconClass: "text-amber-600 dark:text-amber-400",
+    iconClass: "text-amber-700 dark:text-amber-400",
     buttonClass: "bg-amber-600 text-white hover:bg-amber-700",
     iconBgClass: "bg-amber-500/10",
   },

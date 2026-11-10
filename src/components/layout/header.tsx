@@ -3,10 +3,11 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Check, Globe, LogOut, Settings, UserRound } from 'lucide-react';
+import { Check, Globe, LogOut, Monitor, Moon, Settings, Sun, UserRound } from 'lucide-react';
 import { ServerSelector } from './server-selector';
 import { MobileNav } from './mobile-nav';
 import { LOCALES, LOCALE_LABELS, useI18n, type Locale } from '@/lib/i18n';
+import { THEMES, useTheme, type Theme } from '@/lib/theme';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -27,9 +28,17 @@ interface SessionUser {
   role: 'OWNER' | 'USER';
 }
 
+const THEME_ICONS = { light: Sun, dark: Moon, system: Monitor } as const;
+const THEME_LABEL_KEYS = {
+  light: 'admin.light',
+  dark: 'admin.dark',
+  system: 'admin.systemTheme',
+} as const;
+
 export function Header({ title }: HeaderProps) {
   const router = useRouter();
   const { locale, setLocale, t } = useI18n();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const [user, setUser] = React.useState<SessionUser | null>(null);
 
   React.useEffect(() => {
@@ -70,6 +79,34 @@ export function Header({ title }: HeaderProps) {
                 {LOCALE_LABELS[option]}
               </DropdownMenuItem>
             ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label={t('admin.theme')}>
+              {resolvedTheme === 'dark' ? (
+                <Moon className="size-4" aria-hidden="true" />
+              ) : (
+                <Sun className="size-4" aria-hidden="true" />
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuLabel>{t('admin.theme')}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {THEMES.map((option: Theme) => {
+              const Icon = THEME_ICONS[option];
+              return (
+                <DropdownMenuItem key={option} onSelect={() => setTheme(option)}>
+                  <Check
+                    className={`mr-2 size-4 ${option === theme ? 'opacity-100' : 'opacity-0'}`}
+                    aria-hidden="true"
+                  />
+                  <Icon className="mr-2 size-4" aria-hidden="true" />
+                  {t(THEME_LABEL_KEYS[option])}
+                </DropdownMenuItem>
+              );
+            })}
           </DropdownMenuContent>
         </DropdownMenu>
         <DropdownMenu>

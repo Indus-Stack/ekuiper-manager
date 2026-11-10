@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **Light and dark themes**: A complete light palette, a theme provider with `light`, `dark`, and `system` options (default `dark`), a theme menu in the header, a Theme card in Settings, no-flash theme initialisation, and theme-aware Monaco editors and React Flow canvas. Fixes the theme part of #178.
+
 ## [1.4.0] - 2026-11-04
 
 ### Added

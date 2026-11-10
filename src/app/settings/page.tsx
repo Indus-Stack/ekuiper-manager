@@ -8,17 +8,30 @@ import {
   Globe,
   HelpCircle,
   KeyRound,
+  Monitor,
+  Moon,
   Server,
+  Sun,
   Users,
 } from 'lucide-react';
 import { AppLayout } from '@/components/layout';
 import { LOCALES, LOCALE_LABELS, useI18n, type Locale } from '@/lib/i18n';
+import { THEMES, useTheme, type Theme } from '@/lib/theme';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { useT } from '@/lib/i18n';
+
+const THEME_ICONS = { light: Sun, dark: Moon, system: Monitor } as const;
+const THEME_LABEL_KEYS = {
+  light: 'admin.light',
+  dark: 'admin.dark',
+  system: 'admin.systemTheme',
+} as const;
+
 export default function SettingsPage() {
   const { locale, setLocale, t } = useI18n();
+  const { theme, setTheme } = useTheme();
 
   return (
     <AppLayout title={t('nav.settings')}>
@@ -118,6 +131,37 @@ export default function SettingsPage() {
                   {LOCALE_LABELS[option]}
                 </Button>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Appearance */}
+        <Card className="border-border/80 bg-card/60">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Sun className="size-5 text-primary" />
+              {t('admin.theme')}
+            </CardTitle>
+            <CardDescription className="text-xs">{t('admin.themeHint')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div role="group" aria-label={t('admin.theme')} className="flex flex-wrap gap-2">
+              {THEMES.map((option: Theme) => {
+                const Icon = THEME_ICONS[option];
+                return (
+                  <Button
+                    key={option}
+                    variant={theme === option ? 'default' : 'outline'}
+                    size="sm"
+                    className="gap-2 text-xs"
+                    aria-pressed={theme === option}
+                    onClick={() => setTheme(option)}
+                  >
+                    <Icon className="size-3.5" aria-hidden="true" />
+                    {t(THEME_LABEL_KEYS[option])}
+                  </Button>
+                );
+              })}
             </div>
           </CardContent>
         </Card>

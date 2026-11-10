@@ -269,7 +269,7 @@ function CreateSchemaContent() {
                 </div>
 
                 {contentMode === "text" ? (
-                  <div className="flex-1 min-h-0 bg-[#1e1e1e]">
+                  <div className="flex-1 min-h-0 bg-background">
                     <CodeEditor
                       value={protoContent}
                       onChange={setProtoContent}

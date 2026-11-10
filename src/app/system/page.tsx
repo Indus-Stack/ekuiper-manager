@@ -202,7 +202,7 @@ export default function SystemPage() {
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('admin.engineVersion')}</span>
-                <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <div className="p-1.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-400">
                   <ShieldCheck className="size-4" />
                 </div>
               </div>
@@ -240,7 +240,7 @@ export default function SystemPage() {
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('admin.architecture')}</span>
-                <div className="p-1.5 rounded-md bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
+                <div className="p-1.5 rounded-md bg-cyan-500/10 text-cyan-700 dark:text-cyan-400">
                   <Cpu className="size-4" />
                 </div>
               </div>

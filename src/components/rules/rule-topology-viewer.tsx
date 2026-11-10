@@ -439,11 +439,11 @@ export function RuleTopologyViewer({
                     <div className="grid grid-cols-3 gap-1 pt-1.5 border-t border-border/60 text-center font-mono text-[10px]">
                       <div className="bg-muted/30 rounded py-0.5" title="Total records in">
                         <span className="text-[9px] text-muted-foreground block">IN</span>
-                        <span className="text-emerald-500 font-medium font-mono">{node.recordsIn}</span>
+                        <span className="text-emerald-700 dark:text-emerald-400 font-medium font-mono">{node.recordsIn}</span>
                       </div>
                       <div className="bg-muted/30 rounded py-0.5" title="Total records out">
                         <span className="text-[9px] text-muted-foreground block">OUT</span>
-                        <span className="text-cyan-500 font-medium font-mono">{node.recordsOut}</span>
+                        <span className="text-cyan-700 dark:text-cyan-400 font-medium font-mono">{node.recordsOut}</span>
                       </div>
                       <div className="bg-muted/30 rounded py-0.5" title="Exceptions / Errors">
                         <span className="text-[9px] text-muted-foreground block">ERR</span>

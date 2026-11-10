@@ -22,17 +22,17 @@ const statusConfig: Record<
 > = {
   success: {
     icon: CheckCircle,
-    className: "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    className: "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
     defaultLabelKey: "layout.statusSuccess",
   },
   running: {
     icon: Loader2,
-    className: "border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    className: "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
     defaultLabelKey: "layout.statusRunning",
   },
   error: {
     icon: XCircle,
-    className: "border-destructive/20 bg-destructive/10 text-destructive dark:text-red-400",
+    className: "border-destructive/20 bg-destructive/10 text-red-700 dark:text-red-400",
     defaultLabelKey: "layout.statusError",
   },
   stopped: {
@@ -42,12 +42,12 @@ const statusConfig: Record<
   },
   warning: {
     icon: AlertCircle,
-    className: "border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    className: "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400",
     defaultLabelKey: "layout.statusWarning",
   },
   pending: {
     icon: Clock,
-    className: "border-sky-500/20 bg-sky-500/10 text-sky-600 dark:text-sky-400",
+    className: "border-sky-500/20 bg-sky-500/10 text-sky-700 dark:text-sky-400",
     defaultLabelKey: "layout.statusPending",
   },
   info: {

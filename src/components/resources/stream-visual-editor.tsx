@@ -500,7 +500,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                               setIsEditConfKey(false);
                               setConfModalOpen(true);
                             }}
-                            className="h-6 text-[11px] text-emerald-600 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
+                            className="h-6 text-[11px] text-emerald-700 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
                           >
                             <Plus className="size-3" />
                             {t('stream.addConfigurationKey')}
@@ -514,7 +514,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                                 setIsEditConfKey(true);
                                 setConfModalOpen(true);
                               }}
-                              className="h-6 text-[11px] text-emerald-600 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
+                              className="h-6 text-[11px] text-emerald-700 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
                             >
                               <Edit3 className="size-3" />
                               {t('stream.editConfigurationKey')}

@@ -195,7 +195,7 @@ export default function ServiceDetailPage() {
                     {service.about.author.email && (
                       <div className="flex items-center gap-2 text-sm">
                         <Mail className="size-4 text-muted-foreground" aria-hidden="true" />
-                        <a href={`mailto:${service.about.author.email}`} className="text-blue-500 hover:underline">
+                        <a href={`mailto:${service.about.author.email}`} className="text-blue-700 dark:text-blue-400 hover:underline">
                           {service.about.author.email}
                         </a>
                       </div>
@@ -213,7 +213,7 @@ export default function ServiceDetailPage() {
                           href={service.about.author.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-500 hover:underline"
+                          className="text-blue-700 dark:text-blue-400 hover:underline"
                         >{t('extension.website')}</a>
                       </div>
                     )}
@@ -239,7 +239,7 @@ export default function ServiceDetailPage() {
                       href={service.about.helpUrl.en_US || service.about.helpUrl.zh_CN}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
+                      className="text-blue-700 dark:text-blue-400 hover:underline"
                     >{t('extension.helpUrl')}</a>
                   </div>
                 </div>

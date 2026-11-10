@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 140" role="img" aria-labelledby="theming-flow-title theming-flow-desc">
+  <title id="theming-flow-title">eKuiper Manager theme flow</title>
+  <desc id="theming-flow-desc">Diagram that shows how the inline script and ThemeProvider apply the light theme or dark theme before paint and across UI components.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b" />
+    </marker>
+  </defs>
+
+  <rect width="820" height="140" rx="8" fill="#ffffff" stroke="#e2e8f0" />
+
+  <!-- Box 1 -->
+  <rect x="20" y="34" width="124" height="72" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="82" y="64" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#0f172a">Page loads</text>
+  <text x="82" y="84" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" fill="#475569">HTML arrives</text>
+
+  <line x1="144" y1="70" x2="174" y2="70" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <!-- Box 2 -->
+  <rect x="176" y="34" width="144" height="72" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="248" y="64" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#0f172a">Inline script</text>
+  <text x="248" y="84" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#475569">ekuiper.theme</text>
+
+  <line x1="320" y1="70" x2="350" y2="70" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <!-- Box 3 -->
+  <rect x="352" y="34" width="136" height="72" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5" />
+  <text x="420" y="64" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#0f172a">HTML element</text>
+  <text x="420" y="84" text-anchor="middle" font-family="ui-monospace, monospace" font-size="11" fill="#1d4ed8">.dark + scheme</text>
+
+  <line x1="488" y1="70" x2="518" y2="70" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <!-- Box 4 -->
+  <rect x="520" y="34" width="130" height="72" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="585" y="64" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#0f172a">ThemeProvider</text>
+  <text x="585" y="84" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" fill="#475569">useTheme() state</text>
+
+  <line x1="650" y1="70" x2="680" y2="70" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <!-- Box 5 -->
+  <rect x="682" y="24" width="118" height="92" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="741" y="48" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="600" fill="#0f172a">UI Targets</text>
+  <text x="741" y="67" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" fill="#475569">Header &amp; Settings</text>
+  <text x="741" y="83" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" fill="#475569">Monaco Editor</text>
+  <text x="741" y="99" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" fill="#475569">React Flow</text>
+</svg>
+

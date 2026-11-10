@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 
 import { Textarea } from "@/components/ui/textarea";
 import { useT } from '@/lib/i18n';
+import { useTheme } from '@/lib/theme';
 
 /**
  * FS-0128: lazily-loaded Monaco input for `expression` properties.
@@ -52,6 +53,7 @@ export function ExpressionEditor({
   placeholder,
 }: ExpressionEditorProps) {
   const t = useT();
+  const { resolvedTheme } = useTheme();
   const [enhanced, setEnhanced] = React.useState(false);
 
   if (!enhanced) {
@@ -83,6 +85,7 @@ export function ExpressionEditor({
         <MonacoExpressionInput
           height="192px"
           language="javascript"
+          theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
           value={value}
           onChange={(next) => {
             onChange(next ?? "");
