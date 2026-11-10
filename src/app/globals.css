@@ -13,14 +13,14 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 221.2 83.2% 53.3%;
+    --primary: 221.2 83.2% 47%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 215.4 16.3% 42%;
 
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
@@ -30,7 +30,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 215 18% 55%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 221.2 83.2% 47%;
 
     --scrollbar-track: 0 0% 100%;
     --scrollbar-thumb: 214.3 31.8% 80%;
@@ -118,6 +118,18 @@
 }
 
 /* React Flow Customization */
+.react-flow {
+  --xy-edge-stroke: hsl(215.4 16.3% 42%);
+  --xy-edge-stroke-selected: hsl(221.2 83.2% 47%);
+  --xy-connectionline-stroke: hsl(221.2 83.2% 47%);
+}
+
+.react-flow.dark {
+  --xy-edge-stroke: hsl(215 20.2% 65.1%);
+  --xy-edge-stroke-selected: hsl(217.2 91.2% 59.8%);
+  --xy-connectionline-stroke: hsl(217.2 91.2% 59.8%);
+}
+
 .react-flow__node {
   border-radius: var(--flow-radius);
 }

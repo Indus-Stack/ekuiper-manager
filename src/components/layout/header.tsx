@@ -36,20 +36,18 @@ const THEME_LABEL_KEYS = {
   dark: 'admin.dark',
   system: 'admin.systemTheme',
 } as const;
+const DESKTOP_HEADER_QUERY = '(min-width: 640px)';
 
 function ThemeRadioItems({
   theme,
   onSelectTheme,
-  className,
 }: {
   theme: Theme;
   onSelectTheme: (theme: Theme) => void;
-  className?: string;
 }) {
   const { t } = useI18n();
   return (
     <DropdownMenuRadioGroup
-      className={className}
       value={theme}
       onValueChange={(value) => {
         if (isTheme(value)) onSelectTheme(value);
@@ -73,11 +71,21 @@ export function Header({ title }: HeaderProps) {
   const { locale, setLocale, t } = useI18n();
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [user, setUser] = React.useState<SessionUser | null>(null);
+  const [isMobileHeader, setIsMobileHeader] = React.useState(false);
 
   React.useEffect(() => {
     fetch('/api/auth/session', { cache: 'no-store' })
       .then((response) => (response.ok ? response.json() : null))
       .then((payload) => setUser(payload?.user ?? null));
+  }, []);
+
+  React.useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const query = window.matchMedia(DESKTOP_HEADER_QUERY);
+    const update = () => setIsMobileHeader(!query.matches);
+    update();
+    query.addEventListener?.('change', update);
+    return () => query.removeEventListener?.('change', update);
   }, []);
 
   const logout = async () => {
@@ -156,9 +164,13 @@ export function Header({ title }: HeaderProps) {
                 <LogOut className="mr-2 size-4" aria-hidden="true" /> {t('layout.signOut')}
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator className="sm:hidden" />
-            <DropdownMenuLabel className="sm:hidden">{t('admin.theme')}</DropdownMenuLabel>
-            <ThemeRadioItems className="sm:hidden" theme={theme} onSelectTheme={setTheme} />
+            {isMobileHeader && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel>{t('admin.theme')}</DropdownMenuLabel>
+                <ThemeRadioItems theme={theme} onSelectTheme={setTheme} />
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

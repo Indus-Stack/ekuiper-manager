@@ -72,7 +72,7 @@ Follow these rules when you create or update a UI component:
 ## Editors and Flow Studio
 
 - **Monaco Editor**: `CodeEditorImpl` and `ExpressionEditor` pass `theme={resolvedTheme === 'dark' ? 'vs-dark' : 'light'}` to Monaco.
-- **React Flow**: `FlowCanvas` passes `colorMode={resolvedTheme}` to `<ReactFlow>` so controls, background, and minimap match the active theme. Flow nodes inherit colours through `--flow-*` tokens.
+- **React Flow**: `FlowCanvas` passes `colorMode={resolvedTheme}` to `<ReactFlow>` so controls, background, and minimap match the active theme. Flow nodes use `--flow-*` tokens, and edge strokes use `--xy-edge-*` tokens for clear contrast in both themes.
 - **Notifications**: `ThemedToaster` in `src/components/providers.tsx` passes `theme={resolvedTheme}` to Sonner.
 
 ## Test

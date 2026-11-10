@@ -48,9 +48,9 @@ import { Header } from '../header';
 
 const mounted: { container: HTMLElement; root: Root }[] = [];
 
-function setupMatchMedia(prefersDark = true) {
+function setupMatchMedia(prefersDark = true, isDesktop = true) {
   window.matchMedia = ((query: string) => ({
-    matches: prefersDark,
+    matches: query.includes('min-width') ? isDesktop : prefersDark,
     media: query,
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
@@ -152,7 +152,8 @@ describe('Theme UI controls', () => {
     expect(headerButton?.querySelector('svg.lucide-moon')).toBeNull();
   });
 
-  it('exposes aria-checked radio items in Header Theme menu and Account menu', async () => {
+  it('exposes aria-checked radio items on desktop Theme menu without mounting mobile items in Account menu', async () => {
+    setupMatchMedia(true, true);
     const container = await mountUi(<Header title="Rules" />);
 
     const themeTrigger = container.querySelector('header button[aria-label="Theme"]') as HTMLButtonElement;
@@ -160,12 +161,11 @@ describe('Theme UI controls', () => {
     expect(themeTrigger.className).toContain('hidden');
     expect(themeTrigger.className).toContain('sm:inline-flex');
 
-    // Open desktop Theme dropdown via keyboard Enter (Radix triggers on pointerdown or keydown).
     await act(async () => {
       themeTrigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
     });
 
-    let radioItems = Array.from(document.body.querySelectorAll('[role="menuitemradio"]'));
+    const radioItems = Array.from(document.body.querySelectorAll('[role="menuitemradio"]'));
     expect(radioItems.map((el) => el.textContent?.trim())).toEqual(['Light', 'Dark', 'System']);
     expect(radioItems.map((el) => el.getAttribute('aria-checked'))).toEqual(['false', 'true', 'false']);
 
@@ -176,7 +176,6 @@ describe('Theme UI controls', () => {
     expect(document.documentElement.classList.contains('dark')).toBe(false);
     expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('light');
 
-    // Open Account menu (mobile section) and confirm Light is checked, then switch to System.
     const accountTrigger = container.querySelector('header button[aria-label="Account menu"]') as HTMLButtonElement;
     expect(accountTrigger).not.toBeNull();
 
@@ -184,9 +183,25 @@ describe('Theme UI controls', () => {
       accountTrigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
     });
 
-    radioItems = Array.from(document.body.querySelectorAll('[role="menuitemradio"]'));
+    const menuItems = Array.from(document.body.querySelectorAll('[role="menuitem"], [role="menuitemradio"]'));
+    expect(menuItems.map((el) => el.textContent?.trim())).toEqual(['Settings', 'Sign out']);
+    expect(document.body.querySelectorAll('[role="menuitemradio"]')).toHaveLength(0);
+  });
+
+  it('mounts theme radio items in Account menu on mobile breakpoints', async () => {
+    setupMatchMedia(true, false);
+    const container = await mountUi(<Header title="Rules" />);
+
+    const accountTrigger = container.querySelector('header button[aria-label="Account menu"]') as HTMLButtonElement;
+    expect(accountTrigger).not.toBeNull();
+
+    await act(async () => {
+      accountTrigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    });
+
+    const radioItems = Array.from(document.body.querySelectorAll('[role="menuitemradio"]'));
     expect(radioItems.map((el) => el.textContent?.trim())).toEqual(['Light', 'Dark', 'System']);
-    expect(radioItems.map((el) => el.getAttribute('aria-checked'))).toEqual(['true', 'false', 'false']);
+    expect(radioItems.map((el) => el.getAttribute('aria-checked'))).toEqual(['false', 'true', 'false']);
 
     await act(async () => {
       (radioItems[2] as HTMLElement).click();
