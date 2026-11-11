@@ -1,6 +1,6 @@
 {
   "name": "ekuiper-manager",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "A self-hosted manager for eKuiper installations",
   "private": true,
   "workspaces": [
