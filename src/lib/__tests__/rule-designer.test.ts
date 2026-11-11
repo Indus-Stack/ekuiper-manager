@@ -197,6 +197,15 @@ describe('insertFunctionIntoSql', () => {
     expect(insertFunctionIntoSql("SELECT 'a FROM b' AS x FROM demo", fn, null)).toBe(
       "SELECT 'a FROM b' AS x, array_avg(arr) FROM demo",
     );
+    expect(insertFunctionIntoSql("SELECT 'sensor\\'s from line' AS label FROM demo", fn, null)).toBe(
+      "SELECT 'sensor\\'s from line' AS label, array_avg(arr) FROM demo",
+    );
+    expect(insertFunctionIntoSql("SELECT 'sensor''s from line' AS label FROM demo", fn, null)).toBe(
+      "SELECT 'sensor''s from line' AS label, array_avg(arr) FROM demo",
+    );
+    expect(insertFunctionIntoSql('SELECT "sensor\\"s from line" AS label FROM demo', fn, null)).toBe(
+      'SELECT "sensor\\"s from line" AS label, array_avg(arr) FROM demo',
+    );
     expect(insertFunctionIntoSql('SELECT cast(x FROM y) FROM demo', fn, null)).toBe(
       'SELECT cast(x FROM y), array_avg(arr) FROM demo',
     );

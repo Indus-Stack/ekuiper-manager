@@ -106,7 +106,7 @@ Rule Designer deduplicates `changed_cols` across categories in its UI function l
 
 When an operator clicks a function in SQL mode, Manager inserts the signature using `insertFunctionIntoSql`:
 - If a text selection or caret exists, the function inserts at the cursor position.
-- If no selection exists, Manager safely inserts the function into the `SELECT` list (replacing a lone `*` or appending before `FROM`), preventing broken queries.
+- If no selection exists, Manager safely inserts the function into the `SELECT` list (replacing a lone `*` or appending before `FROM`), preventing broken queries. The SQL scanner correctly skips escaped quotes (`\'`, `\"`, `''`) and nested parentheses when finding `FROM`.
 
 ### 6.2 Post-`2.4.2` Named Sink Actions (`PR #4235`)
 

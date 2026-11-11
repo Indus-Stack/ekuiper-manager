@@ -291,7 +291,17 @@ function findTopLevelFrom(sql: string, from: number): number {
   for (let index = from; index < sql.length; index += 1) {
     const char = sql[index] as string;
     if (quote !== null) {
-      if (char === quote) quote = null;
+      if (char === '\\' && index + 1 < sql.length) {
+        index += 1;
+        continue;
+      }
+      if (char === quote) {
+        if (index + 1 < sql.length && sql[index + 1] === quote) {
+          index += 1;
+          continue;
+        }
+        quote = null;
+      }
       continue;
     }
     if (char === "'" || char === '"' || char === '`') {
