@@ -10,12 +10,17 @@
 // Types
 // =============================================================================
 
+import { resolveTargetFeatures } from '@/lib/flows/capabilities/resolve-capabilities';
+
+export type FunctionMinVersion = '2.4.2' | '2.5.0';
+
 export interface EKuiperFunction {
     name: string;
     signature: string;
     description: string;
     examples?: string[];
     returnType?: string;
+    minVersion?: FunctionMinVersion;
 }
 
 export interface FunctionCategory {
@@ -121,6 +126,7 @@ export const EKUIPER_FUNCTIONS: Record<string, EKuiperFunction[]> = {
         { name: 'array_shuffle', signature: 'array_shuffle(arr)', description: 'Randomly shuffle array', returnType: 'array' },
         { name: 'array_slice', signature: 'array_slice(arr, start, end)', description: 'Slice array', returnType: 'array' },
         { name: 'array_cardinality', signature: 'array_cardinality(arr)', description: 'Count elements', returnType: 'int' },
+        { name: 'array_avg', signature: 'array_avg(arr)', description: 'Average of numeric elements in array', returnType: 'float', minVersion: '2.4.2' },
         { name: 'kvpair_array_to_obj', signature: 'kvpair_array_to_obj(arr)', description: 'Key-value pairs to object', returnType: 'object' },
     ],
 
@@ -193,6 +199,11 @@ export const EKUIPER_FUNCTIONS: Record<string, EKuiperFunction[]> = {
         { name: 'rule_id', signature: 'rule_id()', description: 'Current rule ID', returnType: 'string' },
         { name: 'mqtt', signature: 'mqtt(topic)', description: 'Get MQTT metadata', returnType: 'any' },
         { name: 'meta', signature: 'meta(key)', description: 'Get message metadata', returnType: 'any' },
+        { name: 'meta_topic', signature: 'meta(topic)', description: 'Kafka message metadata: topic name', returnType: 'string', minVersion: '2.5.0' },
+        { name: 'meta_partition', signature: 'meta(`partition`)', description: 'Kafka message metadata: partition index', returnType: 'int', minVersion: '2.5.0' },
+        { name: 'meta_offset', signature: 'meta(offset)', description: 'Kafka message metadata: partition offset', returnType: 'int', minVersion: '2.5.0' },
+        { name: 'meta_key', signature: 'meta(key)', description: 'Kafka message metadata: message key', returnType: 'string', minVersion: '2.5.0' },
+        { name: 'meta_headers', signature: 'meta(headers)', description: 'Kafka message metadata: headers map', returnType: 'object', minVersion: '2.5.0' },
         { name: 'cardinality', signature: 'cardinality(arr)', description: 'Array/map size', returnType: 'int' },
         { name: 'typeof', signature: 'typeof(col)', description: 'Get value type', returnType: 'string' },
     ],
@@ -205,6 +216,9 @@ export const EKUIPER_FUNCTIONS: Record<string, EKuiperFunction[]> = {
         { name: 'lag', signature: 'lag(col, offset, default)', description: 'Previous row value', returnType: 'any' },
         { name: 'latest', signature: 'latest(col, ignoreNull)', description: 'Latest non-null value', returnType: 'any' },
         { name: 'acc', signature: 'acc(col)', description: 'Accumulate values', returnType: 'any' },
+        { name: 'acc_max_by', signature: 'acc_max_by(value, compare_value)', description: 'Accumulate value for the maximum compare value', returnType: 'any', minVersion: '2.4.2' },
+        { name: 'acc_min_by', signature: 'acc_min_by(value, compare_value)', description: 'Accumulate value for the minimum compare value', returnType: 'any', minVersion: '2.4.2' },
+        { name: 'acc_map_agg', signature: 'acc_map_agg(key, value)', description: 'Accumulate key-value entries into kvpair array', returnType: 'array', minVersion: '2.4.2' },
         { name: 'delay', signature: 'delay(col, period)', description: 'Retrieve value delayed by specified period', returnType: 'any' },
     ],
 
@@ -280,6 +294,44 @@ export const FUNCTION_CATEGORIES: FunctionCategory[] = [
  */
 export function getAllFunctions(): EKuiperFunction[] {
     return Object.values(EKUIPER_FUNCTIONS).flat();
+}
+
+/**
+ * Return whether `fn` is supported by the given target eKuiper version string.
+ */
+export function isFunctionSupportedForVersion(
+    fn: EKuiperFunction,
+    version?: string | null
+): boolean {
+    if (!fn.minVersion) return true;
+    const features = resolveTargetFeatures(version);
+    if (fn.minVersion === '2.4.2') return features.supportsSqlFunctions242;
+    if (fn.minVersion === '2.5.0') return features.supportsKafkaRecordMetadata;
+    return false;
+}
+
+/**
+ * Get all functions available for a target eKuiper version as a flat array.
+ */
+export function getAllFunctionsForVersion(version?: string | null): EKuiperFunction[] {
+    return getAllFunctions().filter((fn) => isFunctionSupportedForVersion(fn, version));
+}
+
+/**
+ * Search functions supported by a target eKuiper version.
+ */
+export function getFunctionsForVersion(
+    version?: string | null,
+    query = ''
+): EKuiperFunction[] {
+    const lowerQuery = query.trim().toLowerCase();
+    return getAllFunctionsForVersion(version).filter(
+        (fn) =>
+            !lowerQuery ||
+            fn.name.toLowerCase().includes(lowerQuery) ||
+            fn.signature.toLowerCase().includes(lowerQuery) ||
+            fn.description.toLowerCase().includes(lowerQuery)
+    );
 }
 
 /**

@@ -21,6 +21,7 @@ export default {
   omitIfEmptyHint: 'If set to true, when query output is empty, no action message is emitted',
   sendSingleHint: 'If true, emit one sink message per result row rather than an array of rows',
   jsonFormat: 'JSON',
+  jsonlFormat: 'JSON Lines (jsonl)',
   binaryFormat: 'Binary',
   maxDiskCache: 'Max Disk Cache (bytes)',
   memoryCacheThreshold: 'Memory Cache Threshold',

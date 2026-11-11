@@ -13,6 +13,7 @@ import {
   validateFlowPropertyTypes,
   validateFlowRequiredProperties,
 } from './property-validation';
+import { validateFlowSourceReferences } from './source-reference-validation';
 import { validateFlowStructure } from './structural';
 
 /**
@@ -52,5 +53,6 @@ export function validateFlowForEditor(
     ...validateFlowJoinTopology(document, registry),
     ...validateFlowSourceSinkPresence(document, registry),
     ...validateFlowCapabilities(document, registry, capabilityProfile),
+    ...validateFlowSourceReferences(document, capabilityProfile),
   ];
 }

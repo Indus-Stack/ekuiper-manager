@@ -36,6 +36,7 @@ import { buildFlowDirtyBaseline, computeFlowDirtyState, type FlowDirtyBaseline }
 import { createBuiltinNodeRegistry } from '@/lib/flows/registry/builtin-registry';
 import { validateExtensionNodeDescriptor } from '@/lib/flows/extensions/validate-extension';
 import { resolveTargetCapabilities } from '@/lib/flows/capabilities/resolve-capabilities';
+import { BASELINE_EKUIPER_VERSION } from '@/lib/flows/capabilities/types';
 import { canConnect } from '@/lib/flows/validation/port-compatibility';
 import { validateFlowForEditor } from '@/lib/flows/validation/editor-validation';
 import { isDefinitionSupportedByCapabilities } from '@/lib/flows/validation/capability-validation';
@@ -63,6 +64,8 @@ interface FlowDraftPayload {
 interface ManagedNodeSummary {
   id: string;
   name: string;
+  status?: string;
+  version?: string | null;
 }
 
 interface FlowDeploymentSummary {
@@ -535,16 +538,44 @@ export function FlowStudioPage({ flowId, initialDocument }: { flowId: string; in
   // NodePalette, so an extension node appears without palette source edits.
   const paletteDefinitions = React.useMemo(() => flowRegistry.list(), [flowRegistry]);
 
-  // FS-0080: normalized target capability profile for palette gating and
-  // capability validation. Temporary audited 2.4.1 reachable baseline until
-  // live target probe wiring lands in a later ticket: every current
-  // built-in stays available, so existing flows remain viewable/editable
-  // and no version comparison leaks into palette or page code (the
-  // resolver owns the only semver check).
-  const capabilityProfile = React.useMemo(
-    () => resolveTargetCapabilities({ version: '2.4.1', reachable: true }),
-    [],
-  );
+  // FS-0080: normalized target capability profile for palette gating,
+  // capability validation, and version-gated warnings. Reads live target
+  // version/status from `nodesQuery` when known, falling back to the
+  // audited 2.4.1 baseline while unprobed/untargeted so editing stays
+  // unblocked and no version comparison leaks into palette or page code.
+  const capabilityProfile = React.useMemo(() => {
+    const targetNodeId = flowQuery.data?.targetNodeId ?? null;
+    if (!targetNodeId) {
+      return resolveTargetCapabilities({
+        version: BASELINE_EKUIPER_VERSION,
+        reachable: true,
+      });
+    }
+    const match = (nodesQuery.data ?? []).find(
+      (entry) => entry.id === targetNodeId,
+    );
+    if (!match) {
+      return resolveTargetCapabilities({
+        version: BASELINE_EKUIPER_VERSION,
+        reachable: true,
+      });
+    }
+    const status = typeof match.status === 'string' ? match.status : undefined;
+    const version =
+      typeof match.version === 'string' && match.version.trim().length > 0
+        ? match.version.trim()
+        : null;
+    if (status === 'OFFLINE' || status === 'INCOMPATIBLE') {
+      return resolveTargetCapabilities({ version, reachable: false });
+    }
+    if (version) {
+      return resolveTargetCapabilities({ version, reachable: true });
+    }
+    return resolveTargetCapabilities({
+      version: BASELINE_EKUIPER_VERSION,
+      reachable: true,
+    });
+  }, [flowQuery.data, nodesQuery.data]);
 
   // FS-0068: editor validation derived from committed store state via the
   // single named pipeline in src/lib/flows/validation/editor-validation.ts

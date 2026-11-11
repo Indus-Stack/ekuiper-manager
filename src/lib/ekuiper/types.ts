@@ -71,13 +71,16 @@ export interface StreamField {
   };
 }
 
+export type StreamBufferFullPolicy = "block" | "dropOldest";
+
 export interface StreamOptions {
   DATASOURCE: string;
-  FORMAT?: "JSON" | "BINARY";
-  TYPE?: "mqtt" | "edgex" | "httppull" | "memory" | "file";
+  FORMAT?: "JSON" | "BINARY" | "JSONL" | "jsonl" | string;
+  TYPE?: "mqtt" | "edgex" | "httppull" | "memory" | "file" | string;
   KEY?: string;
   CONF_KEY?: string;
   SHARED?: boolean;
+  BUFFER_FULL_POLICY?: StreamBufferFullPolicy;
   TIMESTAMP?: string;
   TIMESTAMP_FORMAT?: string;
   STRICT_VALIDATION?: boolean;
@@ -295,6 +298,12 @@ export interface RuleValidationResult {
 export interface RuleExplainResult {
   plan: string;
   [key: string]: any;
+}
+
+// Rule scan-table snapshot entry from GET /rules/{name}/scantables (eKuiper 2.5+)
+export interface ScanTableEntry {
+  emitter: string;
+  content: Record<string, unknown>;
 }
 
 // Bulk status for all rules

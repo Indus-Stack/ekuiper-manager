@@ -1,12 +1,12 @@
 {
   "openapi": "3.0.3",
-  "x-ekuiper-version": "2.4.1",
-  "x-source-tag": "https://github.com/lf-edge/ekuiper/tree/v2.4.1",
-  "x-source-commit": "bf8c1258b2a80e41e575d674346636c9bb687d33",
+  "x-ekuiper-version": "2.4.2",
+  "x-source-tag": "https://github.com/lf-edge/ekuiper/tree/v2.4.2",
+  "x-source-commit": "7866cc05bbf4df5ec24e73614981de765f34fefb",
   "info": {
     "title": "LF Edge eKuiper REST Management API",
-    "description": "Authoritative OpenAPI contract for the management REST routes registered by LF Edge eKuiper v2.4.1. Optional components depend on build tags; JWT authentication, when enabled, expects a raw RS256 token in the Authorization header.",
-    "version": "2.4.1",
+    "description": "Authoritative OpenAPI contract for the management REST routes registered by LF Edge eKuiper v2.4.2. Optional components depend on build tags; JWT authentication, when enabled, expects a raw RS256 token in the Authorization header.",
+    "version": "2.4.2",
     "contact": {
       "name": "LF Edge eKuiper",
       "url": "https://ekuiper.org"
@@ -17,8 +17,8 @@
     }
   },
   "externalDocs": {
-    "description": "Tagged eKuiper v2.4.1 REST API documentation",
-    "url": "https://github.com/lf-edge/ekuiper/tree/v2.4.1/docs/en_US/api/restapi"
+    "description": "Tagged eKuiper v2.4.2 REST API documentation",
+    "url": "https://github.com/lf-edge/ekuiper/tree/v2.4.2/docs/en_US/api/restapi"
   },
   "servers": [
     {
@@ -97,8 +97,8 @@
         "summary": "Get eKuiper system information",
         "operationId": "getSystemInfo",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/overview.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/overview.md"
         ],
         "security": [],
         "description": "Returns version, platform, uptime, and available process metrics.",
@@ -109,9 +109,9 @@
               "text/plain": {
                 "schema": {
                   "type": "string",
-                  "description": "JSON encoded as text/plain by the v2.4.1 handler."
+                  "description": "JSON encoded as text/plain by the v2.4.2 handler."
                 },
-                "example": "{\"version\":\"2.4.1\",\"os\":\"linux\",\"arch\":\"amd64\",\"upTimeSeconds\":14,\"memoryTotal\":\"33582968832\"}",
+                "example": "{\"version\":\"2.4.2\",\"os\":\"linux\",\"arch\":\"amd64\",\"upTimeSeconds\":14,\"memoryTotal\":\"33582968832\"}",
                 "x-decoded-schema": {
                   "$ref": "#/components/schemas/SystemInfo"
                 }
@@ -127,8 +127,8 @@
         "summary": "Get eKuiper system information",
         "operationId": "getSystemInfoViaPost",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/overview.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/overview.md"
         ],
         "security": [],
         "description": "Registered compatibility alias; the tagged documentation advertises GET.",
@@ -139,9 +139,9 @@
               "text/plain": {
                 "schema": {
                   "type": "string",
-                  "description": "JSON encoded as text/plain by the v2.4.1 handler."
+                  "description": "JSON encoded as text/plain by the v2.4.2 handler."
                 },
-                "example": "{\"version\":\"2.4.1\",\"os\":\"linux\",\"arch\":\"amd64\",\"upTimeSeconds\":14,\"memoryTotal\":\"33582968832\"}",
+                "example": "{\"version\":\"2.4.2\",\"os\":\"linux\",\"arch\":\"amd64\",\"upTimeSeconds\":14,\"memoryTotal\":\"33582968832\"}",
                 "x-decoded-schema": {
                   "$ref": "#/components/schemas/SystemInfo"
                 }
@@ -159,8 +159,8 @@
         "summary": "Shut down eKuiper",
         "operationId": "stopEKuiperViaGet",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/configs.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/configs.md"
         ],
         "security": [
           {},
@@ -193,8 +193,8 @@
         "summary": "Shut down eKuiper",
         "operationId": "stopEKuiper",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/configs.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/configs.md"
         ],
         "security": [
           {},
@@ -229,8 +229,8 @@
         "summary": "Check REST server health",
         "operationId": "ping",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/overview.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/overview.md"
         ],
         "security": [],
         "responses": {
@@ -248,9 +248,9 @@
         "summary": "Dynamically reload supported configuration",
         "operationId": "patchConfigs",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/import_export.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/configs.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/import_export.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/configs.md"
         ],
         "security": [
           {},
@@ -295,8 +295,8 @@
         "summary": "Check whether metrics dump is enabled",
         "operationId": "checkMetricsDump",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/metrics_init.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/metrics_init.go"
         ],
         "security": [
           {},
@@ -330,8 +330,8 @@
         "summary": "Download collected metrics",
         "operationId": "downloadMetricsDump",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/metrics_init.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/metrics_init.go"
         ],
         "security": [
           {},
@@ -410,8 +410,8 @@
         "summary": "Execute multiple REST requests",
         "operationId": "batchRequests",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/overview.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/overview.md"
         ],
         "security": [
           {},
@@ -475,8 +475,8 @@
         "summary": "List streams",
         "operationId": "listStreams",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/streams.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/streams.md"
         ],
         "security": [
           {},
@@ -513,8 +513,8 @@
         "summary": "Execute stream SQL",
         "operationId": "createStream",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/streams.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/streams.md"
         ],
         "security": [
           {},
@@ -561,8 +561,8 @@
         "summary": "List detailed streams",
         "operationId": "listStreamsDetails",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/streams.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/streams.md"
         ],
         "security": [
           {},
@@ -601,8 +601,8 @@
         "summary": "Describe a stream",
         "operationId": "getStream",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/streams.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/streams.md"
         ],
         "security": [
           {},
@@ -644,8 +644,8 @@
         "summary": "Replace a stream",
         "operationId": "updateStream",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/streams.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/streams.md"
         ],
         "security": [
           {},
@@ -697,8 +697,8 @@
         "summary": "Delete a stream",
         "operationId": "deleteStream",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/streams.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/streams.md"
         ],
         "security": [
           {},
@@ -752,8 +752,8 @@
         "summary": "Get inferred stream schema",
         "operationId": "getStreamSchema",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/streams.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/streams.md"
         ],
         "security": [
           {},
@@ -800,8 +800,8 @@
         "summary": "List tables",
         "operationId": "listTables",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/tables.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/tables.md"
         ],
         "security": [
           {},
@@ -853,8 +853,8 @@
         "summary": "Execute table SQL",
         "operationId": "createTable",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/tables.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/tables.md"
         ],
         "security": [
           {},
@@ -901,8 +901,8 @@
         "summary": "List detailed tables",
         "operationId": "listTablesDetails",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/tables.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/tables.md"
         ],
         "security": [
           {},
@@ -956,8 +956,8 @@
         "summary": "Describe a table",
         "operationId": "getTable",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/tables.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/tables.md"
         ],
         "security": [
           {},
@@ -999,8 +999,8 @@
         "summary": "Replace a table",
         "operationId": "updateTable",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/tables.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/tables.md"
         ],
         "security": [
           {},
@@ -1052,8 +1052,8 @@
         "summary": "Delete a table",
         "operationId": "deleteTable",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/tables.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/tables.md"
         ],
         "security": [
           {},
@@ -1107,8 +1107,8 @@
         "summary": "Get inferred table schema",
         "operationId": "getTableSchema",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/tables.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/tables.md"
         ],
         "security": [
           {},
@@ -1155,8 +1155,8 @@
         "summary": "List rules with brief status",
         "operationId": "listRules",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1193,8 +1193,8 @@
         "summary": "Create and start a rule",
         "operationId": "createRule",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1241,8 +1241,8 @@
         "summary": "Describe a rule",
         "operationId": "getRule",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1284,8 +1284,8 @@
         "summary": "Create or update a rule",
         "operationId": "upsertRule",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1338,8 +1338,8 @@
         "summary": "Delete a rule",
         "operationId": "deleteRule",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1383,8 +1383,8 @@
         "summary": "Get status of all rules",
         "operationId": "getAllRuleStatus",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1423,8 +1423,8 @@
         "summary": "Get rule status and metrics",
         "operationId": "getRuleStatus",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1469,8 +1469,8 @@
         "summary": "Get typed rule status and metrics",
         "operationId": "getRuleStatusV2",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/topo/rule/state.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/topo/rule/state.go"
         ],
         "security": [
           {},
@@ -1491,7 +1491,7 @@
               "text/plain": {
                 "schema": {
                   "type": "string",
-                  "description": "JSON encoded as text/plain by the v2.4.1 handler."
+                  "description": "JSON encoded as text/plain by the v2.4.2 handler."
                 },
                 "example": "{\"status\":\"running\",\"message\":\"\",\"lastStartTimestamp\":0,\"lastStopTimestamp\":0,\"nextStartTimestamp\":0}",
                 "x-decoded-schema": {
@@ -1520,8 +1520,8 @@
         "summary": "Start a rule",
         "operationId": "startRule",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1566,8 +1566,8 @@
         "summary": "Stop a rule",
         "operationId": "stopRule",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1612,8 +1612,8 @@
         "summary": "Restart a rule",
         "operationId": "restartRule",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1657,8 +1657,8 @@
         "summary": "Get rule topology",
         "operationId": "getRuleTopology",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1702,8 +1702,8 @@
         "summary": "Get rule output schema",
         "operationId": "getRuleSchema",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1711,7 +1711,7 @@
             "JwtToken": []
           }
         ],
-        "description": "The tagged Markdown accidentally prints /rules/{id}; the v2.4.1 router and handler register /rules/{id}/schema.",
+        "description": "The tagged Markdown accidentally prints /rules/{id}; the v2.4.2 router and handler register /rules/{id}/schema.",
         "parameters": [
           {
             "$ref": "#/components/parameters/Id"
@@ -1751,8 +1751,8 @@
         "summary": "Validate a rule",
         "operationId": "validateRule",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1777,7 +1777,7 @@
               "text/plain": {
                 "schema": {
                   "type": "string",
-                  "description": "JSON encoded as text/plain by the v2.4.1 handler."
+                  "description": "JSON encoded as text/plain by the v2.4.2 handler."
                 },
                 "example": "{\"sources\":[\"demo\"],\"valid\":true}",
                 "x-decoded-schema": {
@@ -1813,8 +1813,8 @@
         "summary": "Reset a running rule stream offset",
         "operationId": "resetRuleState",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rule_state.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rule_state.go"
         ],
         "security": [
           {},
@@ -1880,8 +1880,8 @@
         "summary": "Explain a SQL rule plan",
         "operationId": "explainRule",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1926,8 +1926,8 @@
         "summary": "Get rule CPU usage over the last 30 seconds",
         "operationId": "getRuleCpuUsage",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1975,9 +1975,9 @@
         "summary": "Replace all rule tags",
         "operationId": "replaceRuleTags",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rule_tag.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rule_tag.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -1985,7 +1985,7 @@
             "JwtToken": []
           }
         ],
-        "description": "The v2.4.1 handler decodes the JSON property \"tags\". The tagged Markdown incorrectly shows \"keys\" for DELETE.",
+        "description": "The v2.4.2 handler decodes the JSON property \"tags\". The tagged Markdown incorrectly shows \"keys\" for DELETE.",
         "parameters": [
           {
             "$ref": "#/components/parameters/Name"
@@ -2023,9 +2023,9 @@
         "summary": "Add rule tags",
         "operationId": "addRuleTags",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rule_tag.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rule_tag.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -2033,7 +2033,7 @@
             "JwtToken": []
           }
         ],
-        "description": "The v2.4.1 handler decodes the JSON property \"tags\". The tagged Markdown incorrectly shows \"keys\" for DELETE.",
+        "description": "The v2.4.2 handler decodes the JSON property \"tags\". The tagged Markdown incorrectly shows \"keys\" for DELETE.",
         "parameters": [
           {
             "$ref": "#/components/parameters/Name"
@@ -2071,9 +2071,9 @@
         "summary": "Remove rule tags",
         "operationId": "removeRuleTags",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rule_tag.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rule_tag.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -2081,7 +2081,7 @@
             "JwtToken": []
           }
         ],
-        "description": "The v2.4.1 handler decodes the JSON property \"tags\". The tagged Markdown incorrectly shows \"keys\" for DELETE.",
+        "description": "The v2.4.2 handler decodes the JSON property \"tags\". The tagged Markdown incorrectly shows \"keys\" for DELETE.",
         "parameters": [
           {
             "$ref": "#/components/parameters/Name"
@@ -2121,9 +2121,9 @@
         "summary": "Find rules containing all requested tags",
         "operationId": "matchRulesByTags",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rule_tag.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rule_tag.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -2131,7 +2131,7 @@
             "JwtToken": []
           }
         ],
-        "description": "The v2.4.1 handler requires a JSON request body even though this is GET. Some intermediaries and generators do not support GET bodies. The tagged Markdown incorrectly shows \"keys\"; code and tests use \"tags\".",
+        "description": "The v2.4.2 handler requires a JSON request body even though this is GET. Some intermediaries and generators do not support GET bodies. The tagged Markdown incorrectly shows \"keys\"; code and tests use \"tags\".",
         "requestBody": {
           "required": true,
           "content": {
@@ -2175,9 +2175,9 @@
         "summary": "Bulk start rules by tag",
         "operationId": "bulkStartRules",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rule_tag.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rule_tag.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -2227,9 +2227,9 @@
         "summary": "Bulk stop rules by tag",
         "operationId": "bulkStopRules",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rule_tag.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/rules.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rule_tag.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/rules.md"
         ],
         "security": [
           {},
@@ -2279,8 +2279,8 @@
         "summary": "Create a temporary test rule",
         "operationId": "createRuleTest",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/ruletest.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/ruletest.md"
         ],
         "security": [
           {},
@@ -2301,7 +2301,7 @@
         },
         "responses": {
           "200": {
-            "description": "Test rule id and separate SSE port. v2.4.1 writes the JSON object with a text/plain Content-Type.",
+            "description": "Test rule id and separate SSE port. v2.4.2 writes the JSON object with a text/plain Content-Type.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -2328,8 +2328,8 @@
         "summary": "Start a temporary test rule",
         "operationId": "startRuleTest",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/ruletest.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/ruletest.md"
         ],
         "security": [
           {},
@@ -2373,8 +2373,8 @@
         "summary": "Stop and delete a temporary test rule",
         "operationId": "deleteRuleTest",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/ruletest.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/ruletest.md"
         ],
         "security": [
           {},
@@ -2412,8 +2412,8 @@
         "summary": "Enable tracing for a rule",
         "operationId": "enableRuleTrace",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/trace.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/trace.md"
         ],
         "security": [
           {},
@@ -2463,8 +2463,8 @@
         "summary": "Disable tracing for a rule",
         "operationId": "disableRuleTrace",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/trace.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/trace.md"
         ],
         "security": [
           {},
@@ -2501,9 +2501,9 @@
         "summary": "List recent trace IDs for a rule",
         "operationId": "listRuleTraceIds",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/tracer.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/trace.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/tracer.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/trace.md"
         ],
         "security": [
           {},
@@ -2561,9 +2561,9 @@
         "summary": "Get a trace tree",
         "operationId": "getTrace",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/tracer.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/trace.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/tracer.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/trace.md"
         ],
         "security": [
           {},
@@ -2607,8 +2607,8 @@
         "summary": "Configure remote trace collection",
         "operationId": "setTracer",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/tracer.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/tracer.go"
         ],
         "security": [
           {},
@@ -2660,8 +2660,8 @@
         "summary": "Import streams, tables, and rules",
         "operationId": "importRuleset",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/ruleset.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/ruleset.md"
         ],
         "security": [
           {},
@@ -2721,8 +2721,8 @@
         "summary": "Export streams, tables, and rules",
         "operationId": "exportRuleset",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/ruleset.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/ruleset.md"
         ],
         "security": [
           {},
@@ -2759,8 +2759,8 @@
         "summary": "List uploaded configuration files",
         "operationId": "listUploads",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/uploads.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/uploads.md"
         ],
         "security": [
           {},
@@ -2797,8 +2797,8 @@
         "summary": "Upload or replace a configuration file",
         "operationId": "uploadConfigFile",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/uploads.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/uploads.md"
         ],
         "security": [
           {},
@@ -2873,8 +2873,8 @@
         "summary": "Delete an uploaded configuration file",
         "operationId": "deleteUpload",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/uploads.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/uploads.md"
         ],
         "security": [
           {},
@@ -2919,9 +2919,9 @@
         "summary": "Export all configuration as JSON",
         "operationId": "exportData",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/import_export.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/data.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/import_export.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/data.md"
         ],
         "security": [
           {},
@@ -2956,9 +2956,9 @@
         "summary": "Export selected rules and dependencies as JSON",
         "operationId": "exportSelectedData",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/import_export.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/data.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/import_export.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/data.md"
         ],
         "security": [
           {},
@@ -3012,9 +3012,9 @@
         "summary": "Import JSON configuration",
         "operationId": "importData",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/import_export.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/data.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/import_export.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/data.md"
         ],
         "security": [
           {},
@@ -3078,7 +3078,7 @@
               "text/plain": {
                 "schema": {
                   "type": "string",
-                  "description": "JSON encoded as text/plain by the v2.4.1 handler."
+                  "description": "JSON encoded as text/plain by the v2.4.2 handler."
                 },
                 "x-decoded-schema": {
                   "$ref": "#/components/schemas/ImportConfigurationStatus"
@@ -3103,9 +3103,9 @@
         "summary": "Get latest import status",
         "operationId": "getDataImportStatus",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/import_export.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/data.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/import_export.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/data.md"
         ],
         "security": [
           {},
@@ -3141,9 +3141,9 @@
         "summary": "Start an asynchronous JSON import",
         "operationId": "startAsyncDataImport",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/async_rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/data.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/async_rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/data.md"
         ],
         "security": [
           {},
@@ -3206,7 +3206,7 @@
               "text/plain": {
                 "schema": {
                   "type": "string",
-                  "description": "JSON encoded as text/plain by the v2.4.1 handler."
+                  "description": "JSON encoded as text/plain by the v2.4.2 handler."
                 },
                 "example": "{\"id\":\"dataImport-1750000000\"}",
                 "x-decoded-schema": {
@@ -3232,9 +3232,9 @@
         "summary": "Get asynchronous task status",
         "operationId": "getAsyncTaskStatus",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/async_rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/data.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/async_rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/data.md"
         ],
         "security": [
           {},
@@ -3254,7 +3254,7 @@
               "text/plain": {
                 "schema": {
                   "type": "string",
-                  "description": "JSON encoded as text/plain by the v2.4.1 handler."
+                  "description": "JSON encoded as text/plain by the v2.4.2 handler."
                 },
                 "x-decoded-schema": {
                   "$ref": "#/components/schemas/AsyncTaskStatus"
@@ -3279,8 +3279,8 @@
         "summary": "Cancel an asynchronous task",
         "operationId": "cancelAsyncTask",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/async_rest.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/async_rest.go"
         ],
         "security": [
           {},
@@ -3322,9 +3322,9 @@
         "summary": "Export configuration as YAML",
         "operationId": "exportYamlData",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/yaml_import_export.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/data.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/yaml_import_export.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/data.md"
         ],
         "security": [
           {},
@@ -3361,9 +3361,9 @@
         "summary": "Import YAML configuration",
         "operationId": "importYamlData",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/yaml_import_export.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/data.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/yaml_import_export.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/data.md"
         ],
         "security": [
           {},
@@ -3371,7 +3371,7 @@
             "JwtToken": []
           }
         ],
-        "description": "Exactly one of content or file is required. partial and reboot are decoded but marked TODO and have no effect in v2.4.1.",
+        "description": "Exactly one of content or file is required. partial and reboot are decoded but marked TODO and have no effect in v2.4.2.",
         "requestBody": {
           "required": true,
           "content": {
@@ -3414,9 +3414,9 @@
         "summary": "List connection information and status",
         "operationId": "listConnections",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/connection.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/connection.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/connection.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/connection.md"
         ],
         "security": [
           {},
@@ -3455,7 +3455,7 @@
             "$ref": "#/components/responses/Unauthorized"
           }
         },
-        "description": "Returns all connection information and status. The v2.4.1 handler emits a text/plain Content-Type with a JSON array body and may include plaintext secret fields inside props."
+        "description": "Returns all connection information and status. The v2.4.2 handler emits a text/plain Content-Type with a JSON array body and may include plaintext secret fields inside props."
       },
       "post": {
         "tags": [
@@ -3464,9 +3464,9 @@
         "summary": "Create a named shared connection",
         "operationId": "createConnection",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/connection.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/connection.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/connection.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/connection.md"
         ],
         "security": [
           {},
@@ -3534,9 +3534,9 @@
         "summary": "Get a connection",
         "operationId": "getConnection",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/connection.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/connection.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/connection.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/connection.md"
         ],
         "security": [
           {},
@@ -3578,9 +3578,9 @@
         "summary": "Update a connection",
         "operationId": "updateConnection",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/connection.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/connection.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/connection.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/connection.md"
         ],
         "security": [
           {},
@@ -3655,9 +3655,9 @@
         "summary": "Delete a connection",
         "operationId": "deleteConnection",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/rest.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/connection.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/connection.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/rest.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/connection.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/connection.md"
         ],
         "security": [
           {},
@@ -3703,8 +3703,8 @@
         "summary": "List schemas of a type",
         "operationId": "listSchemas",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/schema_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/schemas.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/schema_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/schemas.md"
         ],
         "security": [
           {},
@@ -3746,8 +3746,8 @@
         "summary": "Create a schema",
         "operationId": "createSchema",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/schema_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/schemas.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/schema_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/schemas.md"
         ],
         "security": [
           {},
@@ -3813,8 +3813,8 @@
         "summary": "Describe a schema",
         "operationId": "getSchema",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/schema_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/schemas.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/schema_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/schemas.md"
         ],
         "security": [
           {},
@@ -3859,8 +3859,8 @@
         "summary": "Create or update a schema",
         "operationId": "updateSchema",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/schema_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/schemas.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/schema_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/schemas.md"
         ],
         "security": [
           {},
@@ -3916,8 +3916,8 @@
         "summary": "Delete a schema",
         "operationId": "deleteSchema",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/schema_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/schemas.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/schema_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/schemas.md"
         ],
         "security": [
           {},
@@ -3964,8 +3964,8 @@
         "summary": "Create or update a schema from a multipart file",
         "operationId": "uploadSchema",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/schema_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/schemas.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/schema_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/schemas.md"
         ],
         "security": [
           {},
@@ -4079,8 +4079,8 @@
         "summary": "List native sources plugins",
         "operationId": "listSourcesPlugins",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4121,8 +4121,8 @@
         "summary": "Install a native sources plugin",
         "operationId": "installSourcesPlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4176,8 +4176,8 @@
         "summary": "Describe a native sources plugin",
         "operationId": "getSourcesPlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4223,8 +4223,8 @@
         "summary": "Update a native sources plugin",
         "operationId": "updateSourcesPlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4285,8 +4285,8 @@
         "summary": "Delete a native sources plugin",
         "operationId": "deleteSourcesPlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4346,8 +4346,8 @@
         "summary": "List installable native sources plugins",
         "operationId": "listPrebuiltSourcesPlugins",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4392,8 +4392,8 @@
         "summary": "List native sinks plugins",
         "operationId": "listSinksPlugins",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4434,8 +4434,8 @@
         "summary": "Install a native sinks plugin",
         "operationId": "installSinksPlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4489,8 +4489,8 @@
         "summary": "Describe a native sinks plugin",
         "operationId": "getSinksPlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4536,8 +4536,8 @@
         "summary": "Update a native sinks plugin",
         "operationId": "updateSinksPlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4598,8 +4598,8 @@
         "summary": "Delete a native sinks plugin",
         "operationId": "deleteSinksPlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4659,8 +4659,8 @@
         "summary": "List installable native sinks plugins",
         "operationId": "listPrebuiltSinksPlugins",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4705,8 +4705,8 @@
         "summary": "List native functions plugins",
         "operationId": "listFunctionsPlugins",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4747,8 +4747,8 @@
         "summary": "Install a native functions plugin",
         "operationId": "installFunctionsPlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4802,8 +4802,8 @@
         "summary": "Describe a native functions plugin",
         "operationId": "getFunctionsPlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4849,8 +4849,8 @@
         "summary": "Update a native functions plugin",
         "operationId": "updateFunctionsPlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4911,8 +4911,8 @@
         "summary": "Delete a native functions plugin",
         "operationId": "deleteFunctionsPlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -4972,8 +4972,8 @@
         "summary": "List installable native functions plugins",
         "operationId": "listPrebuiltFunctionsPlugins",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -5018,8 +5018,8 @@
         "summary": "List portable plugins",
         "operationId": "listPortablePlugins",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/portable_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/portable_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "portable",
@@ -5060,8 +5060,8 @@
         "summary": "Install a portable plugin",
         "operationId": "installPortablePlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/portable_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/portable_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "portable",
@@ -5115,8 +5115,8 @@
         "summary": "Describe a portable plugin",
         "operationId": "getPortablePlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/portable_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/portable_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "portable",
@@ -5162,8 +5162,8 @@
         "summary": "Update a portable plugin",
         "operationId": "updatePortablePlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/portable_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/portable_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "portable",
@@ -5224,8 +5224,8 @@
         "summary": "Delete a portable plugin",
         "operationId": "deletePortablePlugin",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/portable_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/portable_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "portable",
@@ -5274,8 +5274,8 @@
         "summary": "Get portable plugin runtime status",
         "operationId": "getPortablePluginStatus",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/portable_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/portable_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "portable",
@@ -5300,7 +5300,7 @@
               "text/plain": {
                 "schema": {
                   "type": "string",
-                  "description": "JSON encoded as text/plain by the v2.4.1 handler."
+                  "description": "JSON encoded as text/plain by the v2.4.2 handler."
                 },
                 "x-decoded-schema": {
                   "$ref": "#/components/schemas/PortablePluginStatus"
@@ -5328,8 +5328,8 @@
         "summary": "List UDF symbols exported by native function plugins",
         "operationId": "listPluginUdfs",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -5372,8 +5372,8 @@
         "summary": "Find the native plugin that owns a UDF",
         "operationId": "getPluginUdfOwner",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -5421,8 +5421,8 @@
         "summary": "Register symbols exported by a function plugin",
         "operationId": "registerFunctionPluginSymbols",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/plugin_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/plugins.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/plugin_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/plugins.md"
         ],
         "x-ekuiper-build-tags": [
           "plugin",
@@ -5486,8 +5486,8 @@
         "summary": "List JavaScript UDFs",
         "operationId": "listJavascriptUdfs",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/script_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/udf.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/script_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/udf.md"
         ],
         "x-ekuiper-build-tags": [
           "script",
@@ -5528,8 +5528,8 @@
         "summary": "Create a JavaScript UDF",
         "operationId": "createJavascriptUdf",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/script_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/udf.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/script_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/udf.md"
         ],
         "x-ekuiper-build-tags": [
           "script",
@@ -5585,8 +5585,8 @@
         "summary": "Describe a JavaScript UDF",
         "operationId": "getJavascriptUdf",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/script_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/udf.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/script_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/udf.md"
         ],
         "x-ekuiper-build-tags": [
           "script",
@@ -5632,8 +5632,8 @@
         "summary": "Create or update a JavaScript UDF",
         "operationId": "updateJavascriptUdf",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/script_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/udf.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/script_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/udf.md"
         ],
         "x-ekuiper-build-tags": [
           "script",
@@ -5696,8 +5696,8 @@
         "summary": "Delete a JavaScript UDF",
         "operationId": "deleteJavascriptUdf",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/script_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/udf.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/script_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/udf.md"
         ],
         "x-ekuiper-build-tags": [
           "script",
@@ -5745,8 +5745,8 @@
         "summary": "List external services",
         "operationId": "listServices",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/service_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/services.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/service_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/services.md"
         ],
         "x-ekuiper-build-tags": [
           "service",
@@ -5787,8 +5787,8 @@
         "summary": "Register an external service",
         "operationId": "createService",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/service_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/services.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/service_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/services.md"
         ],
         "x-ekuiper-build-tags": [
           "service",
@@ -5842,8 +5842,8 @@
         "summary": "Describe an external service",
         "operationId": "getService",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/service_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/services.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/service_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/services.md"
         ],
         "x-ekuiper-build-tags": [
           "service",
@@ -5889,8 +5889,8 @@
         "summary": "Update an external service",
         "operationId": "updateService",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/service_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/services.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/service_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/services.md"
         ],
         "x-ekuiper-build-tags": [
           "service",
@@ -5950,8 +5950,8 @@
         "summary": "Delete an external service",
         "operationId": "deleteService",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/service_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/services.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/service_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/services.md"
         ],
         "x-ekuiper-build-tags": [
           "service",
@@ -6000,8 +6000,8 @@
         "summary": "List external functions",
         "operationId": "listServiceFunctions",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/service_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/services.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/service_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/services.md"
         ],
         "x-ekuiper-build-tags": [
           "service",
@@ -6044,8 +6044,8 @@
         "summary": "Describe an external function",
         "operationId": "getServiceFunction",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/service_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/services.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/service_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/services.md"
         ],
         "x-ekuiper-build-tags": [
           "service",
@@ -6093,7 +6093,7 @@
         "summary": "Get SQL function metadata",
         "operationId": "getFunctionMetadata",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6137,7 +6137,7 @@
         "summary": "Get rule-graph operator metadata",
         "operationId": "getOperatorMetadata",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6181,7 +6181,7 @@
         "summary": "List sink metadata summaries",
         "operationId": "listSinkMetadata",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6224,7 +6224,7 @@
         "summary": "Get sink metadata",
         "operationId": "getSinkMetadata",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6275,7 +6275,7 @@
         "summary": "List source metadata summaries",
         "operationId": "listSourceMetadata",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6334,7 +6334,7 @@
         "summary": "Get source metadata",
         "operationId": "getSourceMetadata",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6385,7 +6385,7 @@
         "summary": "List connection metadata summaries",
         "operationId": "listConnectionMetadata",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6428,7 +6428,7 @@
         "summary": "Get connection metadata",
         "operationId": "getConnectionMetadata",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6479,8 +6479,8 @@
         "summary": "List source configuration keys",
         "operationId": "getSourceConfigKeys",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/configKey.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/configKey.md"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6492,7 +6492,7 @@
             "JwtToken": []
           }
         ],
-        "description": "Configuration values keyed by configuration name. Despite the tagged Markdown claiming password/token redaction, the v2.4.1 handler does not call its secret-masking helper and live v2.4.1 responses can contain plaintext credentials. Protect this endpoint and never log or publish its response.",
+        "description": "Configuration values keyed by configuration name. Despite the tagged Markdown claiming password/token redaction, the v2.4.2 handler does not call its secret-masking helper and live v2.4.2 responses can contain plaintext credentials. Protect this endpoint and never log or publish its response.",
         "parameters": [
           {
             "$ref": "#/components/parameters/Name"
@@ -6532,8 +6532,8 @@
         "summary": "Create or replace a source configuration key",
         "operationId": "putSourceConfigKey",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/configKey.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/configKey.md"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6596,8 +6596,8 @@
         "summary": "Delete a source configuration key",
         "operationId": "deleteSourceConfigKey",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/configKey.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/configKey.md"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6650,8 +6650,8 @@
         "summary": "List sink configuration keys",
         "operationId": "getSinkConfigKeys",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/configKey.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/configKey.md"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6663,7 +6663,7 @@
             "JwtToken": []
           }
         ],
-        "description": "Configuration values keyed by configuration name. Despite the tagged Markdown claiming password/token redaction, the v2.4.1 handler does not call its secret-masking helper and live v2.4.1 responses can contain plaintext credentials. Protect this endpoint and never log or publish its response.",
+        "description": "Configuration values keyed by configuration name. Despite the tagged Markdown claiming password/token redaction, the v2.4.2 handler does not call its secret-masking helper and live v2.4.2 responses can contain plaintext credentials. Protect this endpoint and never log or publish its response.",
         "parameters": [
           {
             "$ref": "#/components/parameters/Name"
@@ -6703,8 +6703,8 @@
         "summary": "Create or replace a sink configuration key",
         "operationId": "putSinkConfigKey",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/configKey.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/configKey.md"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6767,8 +6767,8 @@
         "summary": "Delete a sink configuration key",
         "operationId": "deleteSinkConfigKey",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/configKey.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/configKey.md"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6821,8 +6821,8 @@
         "summary": "List connection configuration keys",
         "operationId": "getConnectionConfigKeys",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/configKey.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/configKey.md"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6834,7 +6834,7 @@
             "JwtToken": []
           }
         ],
-        "description": "Configuration values keyed by configuration name. Despite the tagged Markdown claiming password/token redaction, the v2.4.1 handler does not call its secret-masking helper and live v2.4.1 responses can contain plaintext credentials. Protect this endpoint and never log or publish its response.",
+        "description": "Configuration values keyed by configuration name. Despite the tagged Markdown claiming password/token redaction, the v2.4.2 handler does not call its secret-masking helper and live v2.4.2 responses can contain plaintext credentials. Protect this endpoint and never log or publish its response.",
         "parameters": [
           {
             "$ref": "#/components/parameters/Name"
@@ -6874,8 +6874,8 @@
         "summary": "Create or replace a connection configuration key",
         "operationId": "putConnectionConfigKey",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/configKey.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/configKey.md"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6938,8 +6938,8 @@
         "summary": "Delete a connection configuration key",
         "operationId": "deleteConnectionConfigKey",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/configKey.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/configKey.md"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -6992,7 +6992,7 @@
         "summary": "Get source resource configurations",
         "operationId": "getSourceResourceConfigurations",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -7022,7 +7022,7 @@
               "text/plain": {
                 "schema": {
                   "type": "string",
-                  "description": "JSON encoded as text/plain by the v2.4.1 handler."
+                  "description": "JSON encoded as text/plain by the v2.4.2 handler."
                 },
                 "x-decoded-schema": {
                   "$ref": "#/components/schemas/SourceResourceConfig"
@@ -7048,7 +7048,7 @@
         "summary": "List updatable source and sink resources",
         "operationId": "listUpdatableResources",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -7072,7 +7072,7 @@
               "text/plain": {
                 "schema": {
                   "type": "string",
-                  "description": "JSON encoded as text/plain by the v2.4.1 handler."
+                  "description": "JSON encoded as text/plain by the v2.4.2 handler."
                 },
                 "x-decoded-schema": {
                   "$ref": "#/components/schemas/UpdatableResources"
@@ -7097,8 +7097,8 @@
         "summary": "Test source connectivity",
         "operationId": "testSourceConnection",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/connection.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/connection.md"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -7151,8 +7151,8 @@
         "summary": "Test sink connectivity",
         "operationId": "testSinkConnection",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/connection.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/connection.md"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -7205,8 +7205,8 @@
         "summary": "Test lookup source connectivity",
         "operationId": "testLookupSourceConnection",
         "x-ekuiper-source": [
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/internal/server/meta_init.go",
-          "https://github.com/lf-edge/ekuiper/blob/v2.4.1/docs/en_US/api/restapi/connection.md"
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/internal/server/meta_init.go",
+          "https://github.com/lf-edge/ekuiper/blob/v2.4.2/docs/en_US/api/restapi/connection.md"
         ],
         "x-ekuiper-build-tags": [
           "ui",
@@ -7389,7 +7389,7 @@
         "properties": {
           "version": {
             "type": "string",
-            "example": "2.4.1"
+            "example": "2.4.2"
           },
           "os": {
             "type": "string",
@@ -8067,7 +8067,7 @@
             "enum": [
               1
             ],
-            "description": "Only update-offset (1) is implemented in v2.4.1."
+            "description": "Only update-offset (1) is implemented in v2.4.2."
           },
           "params": {
             "type": "object",
@@ -8798,7 +8798,7 @@
           "type": "object",
           "additionalProperties": true
         },
-        "description": "Stored configuration values keyed by configuration name. In v2.4.1 these responses can contain plaintext credentials; do not expose, log, or publish them."
+        "description": "Stored configuration values keyed by configuration name. In v2.4.2 these responses can contain plaintext credentials; do not expose, log, or publish them."
       },
       "UploadJsonRequest": {
         "type": "object",
@@ -8885,11 +8885,11 @@
           },
           "partial": {
             "type": "boolean",
-            "description": "Decoded but not implemented in v2.4.1."
+            "description": "Decoded but not implemented in v2.4.2."
           },
           "reboot": {
             "type": "boolean",
-            "description": "Decoded but not implemented in v2.4.1."
+            "description": "Decoded but not implemented in v2.4.2."
           }
         },
         "oneOf": [

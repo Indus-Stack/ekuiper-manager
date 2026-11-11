@@ -3,7 +3,10 @@ import {
   BASELINE_CAPABILITY_SINKS,
   BASELINE_CAPABILITY_SOURCES,
 } from '@/lib/flows/capabilities/types';
-import { resolveTargetCapabilities } from '@/lib/flows/capabilities/resolve-capabilities';
+import {
+  resolveTargetCapabilities,
+  resolveTargetFeatures,
+} from '@/lib/flows/capabilities/resolve-capabilities';
 
 describe('flow target capabilities', () => {
   it('resolves the audited 2.4.1 baseline', () => {
@@ -113,5 +116,44 @@ describe('flow target capabilities', () => {
     // FS-0106: metadata narrowing never enables rule-test.
     expect(profile.ruleTest).toBe(false);
     expect(profile.ruleTestSse).toBe(false);
+  });
+});
+
+describe('resolveTargetFeatures', () => {
+  it('keeps all optional feature flags off when version is absent, unparsable, or <= 2.4.1', () => {
+    for (const version of [undefined, null, '', 'invalid', '2.3.0', '2.4.1']) {
+      expect(resolveTargetFeatures(version)).toEqual({
+        supportsSqlFunctions242: false,
+        supportsSafeSourceNameGraphs: false,
+        supportsScanTables: false,
+        supportsJsonl: false,
+        supportsStreamBufferPolicy: false,
+        supportsKafkaRecordMetadata: false,
+      });
+    }
+  });
+
+  it('unlocks 2.4.2 SQL functions while keeping 2.5 preview flags and safe sourceName off on 2.4.2', () => {
+    expect(resolveTargetFeatures('2.4.2')).toEqual({
+      supportsSqlFunctions242: true,
+      supportsSafeSourceNameGraphs: false,
+      supportsScanTables: false,
+      supportsJsonl: false,
+      supportsStreamBufferPolicy: false,
+      supportsKafkaRecordMetadata: false,
+    });
+  });
+
+  it('unlocks 2.5 preview flags and safe sourceName on 2.5.0-alpha.5 and 2.5.0', () => {
+    for (const version of ['2.5.0-alpha.5', '2.5.0', '2.6.0']) {
+      expect(resolveTargetFeatures(version)).toEqual({
+        supportsSqlFunctions242: true,
+        supportsSafeSourceNameGraphs: true,
+        supportsScanTables: true,
+        supportsJsonl: true,
+        supportsStreamBufferPolicy: true,
+        supportsKafkaRecordMetadata: true,
+      });
+    }
   });
 });

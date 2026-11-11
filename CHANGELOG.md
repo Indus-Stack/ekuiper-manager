@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - **Light and dark themes**: A complete light palette, a theme provider with `light`, `dark`, and `system` options (default `dark`), a theme menu in the header, a Theme card in Settings, no-flash theme initialisation, and theme-aware Monaco editors and React Flow canvas. Fixes the theme part of #178.
+- **Version-aware Rule Designer & 2.5 preview capabilities**: Added searchable SQL function suggestions in Rule Designer (including eKuiper `2.4.2` additions `array_avg`, `acc_max_by`, `acc_min_by`, `acc_map_agg`), gated `2.5.0-alpha.5` preview features (`GET /rules/{name}/scantables`, `jsonl` format, `BUFFER_FULL_POLICY`) behind `resolveTargetFeatures`, and added a non-blocking Flow Studio `FLOW_SOURCENAME_DECODE_WARNING` diagnostic for `< 2.5.0` targets.
+
+### Changed
+- **Bundled eKuiper 2.4.2 & OpenAPI contracts**: Updated the bundled Compose engine to digest-pinned `lfedge/ekuiper:2.4.2-slim` (retaining `2.4.1` support), retargeted the canonical OpenAPI spec (`98` paths / `140` operations) and Swagger API Docs to `v2.4.2`, and added a separate `v2.5.0-alpha.5` preview spec (`99` paths / `141` operations) with CI validation.
+
+### Fixed
+- **Plain-text eKuiper mutation responses**: Updated both eKuiper proxy routes with `sanitizeSensitiveEKuiperBody` so plain-text `"success"` responses on sensitive connection paths succeed cleanly instead of returning HTTP `502`.
 
 ## [1.4.0] - 2026-11-04
 

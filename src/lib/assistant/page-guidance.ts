@@ -100,7 +100,7 @@ const PAGE_GUIDANCE: Guidance[] = [
   {
     prefix: '/api-docs',
     guidance:
-      'Help navigate the bundled eKuiper 2.4.1 OpenAPI reference. Keep management-server routes distinct from optional or separate-port endpoints.',
+      'Help navigate the bundled eKuiper 2.4.2 OpenAPI reference and the separate 2.5.0-alpha.5 preview contract. Keep management-server routes distinct from optional or separate-port endpoints.',
   },
   {
     prefix: '/dashboard',

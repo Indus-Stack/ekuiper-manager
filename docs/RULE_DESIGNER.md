@@ -1,6 +1,6 @@
 # Rule designer: interaction and fidelity contract
 
-Status: implemented and running locally against eKuiper 2.4.1. This document is the product and engineering contract for the designer; it is intentionally more precise than a screenshot walkthrough.
+Status: implemented and running against bundled eKuiper 2.4.2-slim while retaining 2.4.1 compatibility and version-gated 2.5 preview support. See `docs/ENGINE_COMPATIBILITY.md` for the complete version matrix. This document is the product and engineering contract for the designer; it is intentionally more precise than a screenshot walkthrough.
 
 ## 1. Purpose and entry points
 
@@ -122,6 +122,17 @@ Structured options:
 
 **Advanced options JSON** preserves and edits options not yet represented by structured controls, including restart strategies and future official properties.
 
+### 3.1 Version compatibility gates
+
+![Version-Aware Rule Designer, Stream Editor, and Workspace Gates](./diagrams/rule-designer-version-gates.svg)
+
+Rule Designer and Rule Workspace read feature flags from `resolveTargetFeatures(active?.version)`:
+
+- **SQL function helper (`2.4.2+`)**: Exposes `array_avg`, `acc_max_by`, `acc_min_by`, and `acc_map_agg` on nodes running `2.4.2` or newer. Hides those functions on `2.4.1`.
+- **SQL function helper (`2.5.0+`)**: Exposes Kafka metadata helpers (`meta_topic`, `meta_partition`, `meta_offset`, `meta_key`, `meta_headers`).
+- **Sink output formats (`2.5.0+`)**: Enables `JSON Lines (jsonl)` in `SinkBaseForm` when `supportsJsonl` is true (or keeps a previously saved `jsonl` format selectable).
+- **Rule Scan tables (`2.5.0+`)**: Displays the **Scan tables** tab in Rule Workspace (`/rules/{id}`) and calls `GET /rules/{name}/scantables`.
+
 ### Generated definition pane
 
 - Pipeline chips show source → SQL → every output.
@@ -183,4 +194,4 @@ Browser coverage (`e2e/rule-designer.spec.ts`) proves against the bundled offici
 - Add an unsaved-changes navigation guard for structured and raw edits.
 - Add visual joins and graph-rule authoring only when they can round-trip without loss.
 - Add action connection testing where the installed metadata declares it, without reading secrets back into ordinary UI state.
-- Add live API compatibility gates so fields unavailable on an older selected node are hidden or labelled.
+- Add live API compatibility gates for remaining connector-specific options as metadata schemas expand (basic function helper, format, and scan-table gates are active).

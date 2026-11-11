@@ -21,8 +21,10 @@ jobs:
       - run: npm ci
       - name: Audit dependency advisories
         run: npm audit --audit-level=high --omit=dev
-      - name: Validate local eKuiper v2.4.1 contract
-        run: npm run validate:openapi -- --skip-official
+      - name: Validate local eKuiper v2.4.2 and 2.5 preview contracts
+        run: |
+          npm run validate:openapi -- --skip-official
+          npm run validate:openapi -- public/ekuiper-openapi-2.5-preview.json --skip-official
       - name: Validate i18n catalogs and call sites
         run: npm run check:i18n
       - run: npm run lint

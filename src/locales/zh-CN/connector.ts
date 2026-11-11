@@ -19,6 +19,7 @@ const connector: Record<keyof typeof en, string> = {
   omitIfEmptyHint: '设为 true 时，查询结果为空则不发送动作消息',
   sendSingleHint: '设为 true 时，每行结果单独发送，而不是打包成一个数组',
   jsonFormat: 'JSON',
+  jsonlFormat: 'JSON Lines（jsonl）',
   binaryFormat: '二进制',
   maxDiskCache: '磁盘缓存上限（字节）',
   memoryCacheThreshold: '内存缓存阈值',

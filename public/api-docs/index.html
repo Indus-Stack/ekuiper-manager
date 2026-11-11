@@ -21,8 +21,12 @@
   <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
   <script>
     window.onload = function() {
+      var params = new URLSearchParams(window.location.search);
+      var specUrl = params.get("spec") === "2.5-preview"
+        ? "/ekuiper-openapi-2.5-preview.json"
+        : "/ekuiper-openapi.json";
       SwaggerUIBundle({
-        url: "/ekuiper-openapi.json",
+        url: specUrl,
         dom_id: "#swagger-ui",
         deepLinking: true,
         presets: [

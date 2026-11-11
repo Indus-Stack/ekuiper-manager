@@ -3,6 +3,7 @@ import {
   BASELINE_CAPABILITY_SINKS,
   BASELINE_CAPABILITY_SOURCES,
   type TargetCapabilityProfile,
+  type TargetFeatureFlags,
 } from './types';
 
 /**
@@ -36,6 +37,40 @@ export interface ResolveCapabilitiesInput {
  * here so UI/compiler code consumes the normalized profile instead.
  */
 const MIN_BASELINE_VERSION: readonly [number, number, number] = [2, 4, 1];
+const MIN_242_VERSION: readonly [number, number, number] = [2, 4, 2];
+const MIN_250_VERSION: readonly [number, number, number] = [2, 5, 0];
+
+/**
+ * Resolve version-gated engine features for one target version string.
+ *
+ * Conservative by design: null, empty, unparsable, or below-floor versions
+ * evaluate every optional flag to `false`. Pre-release tags such as
+ * `2.5.0-alpha.5` share the `2.5.0` leading triple so preview targets unlock
+ * the 2.5 preview gates while keeping 2.4.1 and 2.4.2 safely isolated.
+ */
+export function resolveTargetFeatures(version?: string | null): TargetFeatureFlags {
+  const raw = typeof version === 'string' ? version.trim() : '';
+  if (raw.length === 0) {
+    return {
+      supportsSqlFunctions242: false,
+      supportsSafeSourceNameGraphs: false,
+      supportsScanTables: false,
+      supportsJsonl: false,
+      supportsStreamBufferPolicy: false,
+      supportsKafkaRecordMetadata: false,
+    };
+  }
+  const has242 = versionAtLeast(raw, MIN_242_VERSION);
+  const has250 = versionAtLeast(raw, MIN_250_VERSION);
+  return {
+    supportsSqlFunctions242: has242,
+    supportsSafeSourceNameGraphs: has250,
+    supportsScanTables: has250,
+    supportsJsonl: has250,
+    supportsStreamBufferPolicy: has250,
+    supportsKafkaRecordMetadata: has250,
+  };
+}
 
 /**
  * Parse the leading `major.minor.patch` of a raw version string.

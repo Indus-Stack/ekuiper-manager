@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 400" width="920" height="400" role="img" aria-labelledby="title desc">
+  <title id="title">Flow Studio Saved-Stream Graph Path and PR #4213 Behavior</title>
+  <desc id="desc">Diagram showing Flow Studio compilation of stream-source nodes to sourceName, non-blocking warning validation on eKuiper below 2.5, and empty object output from byte-decoded streams without PR #4213.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <rect width="920" height="400" fill="#ffffff" rx="12" />
+
+  <!-- Header -->
+  <rect x="24" y="18" width="872" height="50" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="40" y="40" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Flow Studio Saved-Stream Graph Compilation (sourceName)</text>
+  <text x="40" y="58" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#475569">Non-blocking warning on targets &lt; 2.5.0 because upstream PR #4213 is absent from 2.4.1 and 2.4.2</text>
+
+  <!-- Row 1: Editor -> Warning -> Deploy -->
+  <rect x="24" y="86" width="248" height="122" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
+  <text x="40" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#1e3a8a">1. Flow Graph Authoring</text>
+  <text x="40" y="134" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#0f172a">stream-source -&gt; memory-sink</text>
+  <text x="40" y="156" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#334155">Compiler sets source props:</text>
+  <text x="40" y="176" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#1d4ed8">sourceType: "stream"</text>
+  <text x="40" y="192" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#1d4ed8">sourceName: "&lt;name&gt;"</text>
+
+  <line x1="272" y1="147" x2="306" y2="147" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <rect x="310" y="86" width="298" height="122" rx="8" fill="#fffbeb" stroke="#d97706" stroke-width="1.5" />
+  <text x="326" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#92400e">2. Version Diagnostic (&lt; 2.5)</text>
+  <text x="326" y="134" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" font-weight="600" fill="#b45309">FLOW_SOURCENAME_DECODE_WARNING</text>
+  <text x="326" y="156" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#78350f">• Severity: warning (non-blocking)</text>
+  <text x="326" y="176" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#78350f">• Shown in client, inspector, server,</text>
+  <text x="336" y="192" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#78350f">and Deploy preflight dialog</text>
+
+  <line x1="608" y1="147" x2="642" y2="147" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <rect x="646" y="86" width="250" height="122" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="662" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#0f172a">3. Deployment Outcome</text>
+  <text x="662" y="134" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Validation returns valid: true</text>
+  <text x="662" y="156" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• User can inspect or deploy</text>
+  <text x="662" y="178" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#475569">• Guidance prefers SQL rules or</text>
+  <text x="672" y="194" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#475569">explicit memory/mqtt nodes</text>
+
+  <!-- Row 2: Runtime Verification Matrix -->
+  <rect x="24" y="232" width="424" height="148" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5" />
+  <text x="42" y="260" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#14532d">Memory Saved Streams (Typed &amp; Schemaless)</text>
+  <text x="42" y="284" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#0f172a">Input:  { "deviceId": "dev-1", "temperature": 25.0 }</text>
+  <text x="42" y="306" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#15803d">Output: { "deviceId": "dev-1", "temperature": 25.0 }</text>
+  <text x="42" y="334" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#334155">Passes decoded fields intact on eKuiper 2.4.1, 2.4.2,</text>
+  <text x="42" y="352" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#334155">and 2.5.0 because memory transports skip byte decoding.</text>
+
+  <rect x="472" y="232" width="424" height="148" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5" />
+  <text x="490" y="260" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#7f1d1d">Byte-Decoded File Streams (Typed &amp; Schemaless)</text>
+  <text x="490" y="284" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#0f172a">Input:  { "deviceId": "dev-1", "temperature": 25.0 }</text>
+  <text x="490" y="306" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#b91c1c">Output on 2.4.1 / 2.4.2: {}  (empty object)</text>
+  <text x="490" y="334" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#334155">Without upstream PR #4213, stream decoder props are lost.</text>
+  <text x="490" y="352" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#15803d">On eKuiper 2.5+ (with PR #4213): fields decode normally.</text>
+</svg>
+

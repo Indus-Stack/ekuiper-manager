@@ -59,6 +59,7 @@ import {
 } from '@/components/ui/tooltip';
 import { ekuiperClient } from '@/lib/ekuiper/client';
 import { duplicateRule as buildDuplicateRule } from '@/lib/ekuiper/rule-designer';
+import { resolveTargetFeatures } from '@/lib/flows/capabilities/resolve-capabilities';
 import { useServerStore } from '@/stores/server-store';
 import { RuleTopologyViewer } from '@/components/rules/rule-topology-viewer';
 import { ImportRuleModal } from '@/components/rules/import-rule-modal';
@@ -692,22 +693,28 @@ export function RuleList() {
   );
 }
 
-type RuleTab = 'definition' | 'status' | 'topology' | 'schema' | 'explain' | 'trace';
+type RuleTab = 'definition' | 'status' | 'topology' | 'schema' | 'explain' | 'scantables' | 'trace';
 // Labels are message keys: this array lives at module scope, where no hook
 // is available, so the translation happens at the render site.
 const tabs: Array<{ id: RuleTab; labelKey: MessageKey }> = [
   { id: 'definition', labelKey: 'rule.tabDefinition' }, { id: 'status', labelKey: 'rule.tabStatus' },
   { id: 'topology', labelKey: 'rule.tabTopology' }, { id: 'schema', labelKey: 'rule.tabOutputSchema' },
-  { id: 'explain', labelKey: 'rule.tabExplain' }, { id: 'trace', labelKey: 'rule.tabTrace' },
+  { id: 'explain', labelKey: 'rule.tabExplain' }, { id: 'scantables', labelKey: 'rule.tabScanTables' },
+  { id: 'trace', labelKey: 'rule.tabTrace' },
 ];
 
 export function RuleWorkspace({ id }: { id: string }) {
   const t = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const tab = (tabs.some((item) => item.id === searchParams.get('tab')) ? searchParams.get('tab') : 'definition') as RuleTab;
   const { servers, activeServerId } = useServerStore();
   const active = servers.find((node) => node.id === activeServerId);
+  const features = resolveTargetFeatures(active?.version);
+  const visibleTabs = React.useMemo(
+    () => tabs.filter((item) => item.id !== 'scantables' || features.supportsScanTables),
+    [features.supportsScanTables],
+  );
+  const tab = (visibleTabs.some((item) => item.id === searchParams.get('tab')) ? searchParams.get('tab') : 'definition') as RuleTab;
   const [rule, setRule] = React.useState<Record<string, unknown> | null>(null);
   const [status, setStatus] = React.useState<Record<string, unknown> | null>(null);
   const [tabData, setTabData] = React.useState<unknown>(null);
@@ -731,7 +738,18 @@ export function RuleWorkspace({ id }: { id: string }) {
       if (tab === 'topology') setTabData(await ekuiperClient.getRuleTopology(id));
       else if (tab === 'schema') setTabData(await ekuiperClient.getRuleSchema(id));
       else if (tab === 'explain') setTabData(await ekuiperClient.getRuleExplain(id));
-      else if (tab === 'trace') setTabData(await ekuiperClient.getRuleTraceIds(id));
+      else if (tab === 'scantables') {
+        try {
+          setTabData(await ekuiperClient.getRuleScanTables(id));
+        } catch (scanErr) {
+          const message = scanErr instanceof Error ? scanErr.message : String(scanErr);
+          if (/unable to find tuples|join node is not found/i.test(message)) {
+            setTabData([]);
+          } else {
+            throw scanErr;
+          }
+        }
+      } else if (tab === 'trace') setTabData(await ekuiperClient.getRuleTraceIds(id));
       else setTabData(null);
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'Failed to load rule'); }
     finally { setLoading(false); }
@@ -771,7 +789,7 @@ export function RuleWorkspace({ id }: { id: string }) {
     <AppLayout title={t('rule.rulesTitle')}>
       <div className="mx-auto max-w-7xl flex flex-col gap-6">
         <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-end"><div className="flex items-center gap-3"><Button variant="ghost" size="icon" asChild><Link href="/rules" aria-label={t('rule.backToRules')}><ArrowLeft className="size-5" /></Link></Button><div><div className="flex items-center gap-2"><h2 className="text-2xl font-semibold tracking-tight">{String(rule?.name ?? id)}</h2><Badge variant={running(statusValue) ? 'default' : 'secondary'} title={rawStatus || undefined}>{formatRuleStatus(rawStatus, t)}</Badge></div>{Boolean(rule?.name) && <p className="mt-1 text-sm text-muted-foreground">{id}</p>}</div></div><div className="flex flex-wrap gap-2">{running(statusValue) ? <Button variant="outline" onClick={() => void control('stop')}><Square className="mr-2 size-4" />{t('rule.stop')}</Button> : <Button variant="outline" onClick={() => void control('start')}><Play className="mr-2 size-4" />{t('rule.start')}</Button>}<Button variant="outline" onClick={() => void control('restart')}><RotateCw className="mr-2 size-4" />{t('rule.restart')}</Button><Button variant="outline" onClick={() => { setDuplicateId(`${id}_copy`); setDuplicateError(''); setDuplicateOpen(true); }}><Copy className="mr-2 size-4" />{t('rule.duplicate')}</Button><Button asChild><Link href={`/rules/${encodeURIComponent(id)}/edit`}><Pencil className="mr-2 size-4" />{t('rule.edit')}</Link></Button><Button variant="destructive" size="icon" onClick={() => setDeleteOpen(true)} aria-label={t('rule.deleteRuleConfirm')}><Trash2 className="size-4" /></Button></div></div>
-        <div className="flex gap-1 overflow-x-auto border-b" role="tablist">{tabs.map((item) => <button key={item.id} role="tab" aria-selected={tab === item.id} onClick={() => setTab(item.id)} className={`whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium ${tab === item.id ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>{t(item.labelKey)}</button>)}</div>
+        <div className="flex gap-1 overflow-x-auto border-b" role="tablist">{visibleTabs.map((item) => <button key={item.id} type="button" data-testid={`rule-tab-${item.id}`} role="tab" aria-selected={tab === item.id} onClick={() => setTab(item.id)} className={`whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium ${tab === item.id ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}>{t(item.labelKey)}</button>)}</div>
         {error && (
           <Alert variant="destructive">
             <AlertDescription>{error}</AlertDescription>
@@ -785,7 +803,7 @@ export function RuleWorkspace({ id }: { id: string }) {
             isRunning={running(statusValue)}
             onRefresh={() => void load()}
           />
-        ) : tab === 'status' ? <Card><CardHeader><CardTitle className="flex items-center gap-2"><Activity className="size-5" />{t('rule.sectionRuntime')}</CardTitle><CardDescription>{t('rule.statusNativeHint')}</CardDescription></CardHeader><CardContent><pre className="max-h-[36rem] overflow-auto rounded-md bg-muted p-4 text-xs">{JSON.stringify(status ?? {}, null, 2)}</pre></CardContent></Card> : tab === 'trace' ? <Card><CardHeader><CardTitle>{t('rule.sectionTrace')}</CardTitle><CardDescription>{t('rule.traceDescription')}</CardDescription></CardHeader><CardContent className="flex flex-col gap-4"><div className="flex gap-2"><Button onClick={() => void trace('start')}><Play className="mr-2 size-4" />{t('rule.startTrace')}</Button><Button variant="outline" onClick={() => void trace('stop')}><Square className="mr-2 size-4" />{t('rule.stopTrace')}</Button></div><pre className="max-h-96 overflow-auto rounded-md bg-muted p-4 text-xs">{JSON.stringify(tabData ?? [], null, 2)}</pre></CardContent></Card> : <Card><CardHeader><CardTitle className="flex items-center gap-2"><FileCode2 className="size-5" />{t(tabs.find((item) => item.id === tab)!.labelKey)}</CardTitle><CardDescription>{t('rule.authoritativeResponse')}</CardDescription></CardHeader><CardContent><pre className="max-h-[40rem] overflow-auto whitespace-pre-wrap rounded-md bg-muted p-4 text-xs">{typeof tabData === 'string' ? tabData : JSON.stringify(tabData ?? {}, null, 2)}</pre></CardContent></Card>}
+        ) : tab === 'status' ? <Card><CardHeader><CardTitle className="flex items-center gap-2"><Activity className="size-5" />{t('rule.sectionRuntime')}</CardTitle><CardDescription>{t('rule.statusNativeHint')}</CardDescription></CardHeader><CardContent><pre className="max-h-[36rem] overflow-auto rounded-md bg-muted p-4 text-xs">{JSON.stringify(status ?? {}, null, 2)}</pre></CardContent></Card> : tab === 'scantables' ? <Card><CardHeader><CardTitle className="flex items-center gap-2"><FileCode2 className="size-5" aria-hidden="true" />{t('rule.tabScanTables')}</CardTitle><CardDescription>{t('rule.scanTablesHint')}</CardDescription></CardHeader><CardContent>{Array.isArray(tabData) && tabData.length > 0 ? <pre className="max-h-[40rem] overflow-auto whitespace-pre-wrap rounded-md bg-muted p-4 text-xs">{JSON.stringify(tabData, null, 2)}</pre> : <p className="rounded-lg border border-dashed p-6 text-sm text-muted-foreground" data-testid="scan-tables-empty">{t('rule.scanTablesEmpty')}</p>}</CardContent></Card> : tab === 'trace' ? <Card><CardHeader><CardTitle>{t('rule.sectionTrace')}</CardTitle><CardDescription>{t('rule.traceDescription')}</CardDescription></CardHeader><CardContent className="flex flex-col gap-4"><div className="flex gap-2"><Button onClick={() => void trace('start')}><Play className="mr-2 size-4" />{t('rule.startTrace')}</Button><Button variant="outline" onClick={() => void trace('stop')}><Square className="mr-2 size-4" />{t('rule.stopTrace')}</Button></div><pre className="max-h-96 overflow-auto rounded-md bg-muted p-4 text-xs">{JSON.stringify(tabData ?? [], null, 2)}</pre></CardContent></Card> : <Card><CardHeader><CardTitle className="flex items-center gap-2"><FileCode2 className="size-5" />{t(tabs.find((item) => item.id === tab)?.labelKey ?? 'rule.tabDefinition')}</CardTitle><CardDescription>{t('rule.authoritativeResponse')}</CardDescription></CardHeader><CardContent><pre className="max-h-[40rem] overflow-auto whitespace-pre-wrap rounded-md bg-muted p-4 text-xs">{typeof tabData === 'string' ? tabData : JSON.stringify(tabData ?? {}, null, 2)}</pre></CardContent></Card>}
       </div>
       <Dialog open={duplicateOpen} onOpenChange={setDuplicateOpen}>
         <DialogContent>

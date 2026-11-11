@@ -21,6 +21,7 @@ import {
   RuleTopology,
   RuleValidationResult,
   RuleExplainResult,
+  ScanTableEntry,
   RuleBulkStatus,
   RuleCPUUsage,
   RuleSchema,
@@ -403,6 +404,13 @@ export class EKuiperClient {
    */
   async getRuleExplain(id: string): Promise<RuleExplainResult> {
     return this.request<RuleExplainResult>(`/rules/${encodeURIComponent(id)}/explain`);
+  }
+
+  /**
+   * Capture scan-table tuple snapshots for a rule (eKuiper 2.5+)
+   */
+  async getRuleScanTables(id: string): Promise<ScanTableEntry[]> {
+    return this.request<ScanTableEntry[]>(`/rules/${encodeURIComponent(id)}/scantables`);
   }
 
   /**

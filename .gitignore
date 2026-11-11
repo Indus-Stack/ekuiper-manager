@@ -25,6 +25,9 @@ docs/*
 !docs/FLOW_STUDIO_RULE_TEST_NOTES.md
 !docs/FLOW_STUDIO.md
 !docs/FLOW_STUDIO_BETA_ACCEPTANCE.md
+!docs/ENGINE_COMPATIBILITY.md
+!docs/diagrams/
+!docs/diagrams/*.svg
 
 # Testing
 coverage/

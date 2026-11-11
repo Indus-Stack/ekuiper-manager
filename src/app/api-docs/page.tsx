@@ -7,10 +7,24 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 import { useT } from '@/lib/i18n';
+
+type ApiContractSpec = '2.4.2' | '2.5-preview';
+
 export default function ApiDocsPage() {
   const t = useT();
+  const [specMode, setSpecMode] = React.useState<ApiContractSpec>('2.4.2');
   const [iframeKey, setIframeKey] = React.useState(0);
   const [isLoaded, setIsLoaded] = React.useState(false);
+
+  const iframeSrc =
+    specMode === '2.5-preview' ? '/api-docs/index.html?spec=2.5-preview' : '/api-docs/index.html';
+
+  const handleSpecChange = (nextSpec: ApiContractSpec) => {
+    if (nextSpec === specMode) return;
+    setIsLoaded(false);
+    setSpecMode(nextSpec);
+    setIframeKey((k) => k + 1);
+  };
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-background text-foreground">
@@ -34,13 +48,46 @@ export default function ApiDocsPage() {
             <span className="text-xs font-semibold tracking-tight text-foreground">
               eKuiper & Gateway REST API Reference
             </span>
-            <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-mono font-medium text-muted-foreground">
-              OpenAPI 3.0
+            <Badge
+              variant="outline"
+              className="h-5 px-1.5 text-[10px] font-mono font-medium text-muted-foreground"
+              data-testid="api-docs-version-badge"
+            >
+              {specMode === '2.5-preview' ? '2.5.0-alpha.5 Preview · OpenAPI 3.0' : '2.4.2 · OpenAPI 3.0'}
             </Badge>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
+          <div
+            className="inline-flex items-center rounded-md border border-border bg-muted/40 p-0.5"
+            role="group"
+            aria-label={t('admin.apiContractSwitcher')}
+          >
+            <Button
+              type="button"
+              variant={specMode === '2.4.2' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => handleSpecChange('2.4.2')}
+              className="h-7 px-2.5 text-xs font-medium"
+              aria-pressed={specMode === '2.4.2'}
+              data-testid="api-docs-spec-ga"
+            >
+              {t('admin.apiContractGa')}
+            </Button>
+            <Button
+              type="button"
+              variant={specMode === '2.5-preview' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => handleSpecChange('2.5-preview')}
+              className="h-7 px-2.5 text-xs font-medium"
+              aria-pressed={specMode === '2.5-preview'}
+              data-testid="api-docs-spec-preview"
+            >
+              {t('admin.apiContractPreview')}
+            </Button>
+          </div>
+
           <Button
             variant="outline"
             size="sm"
@@ -59,7 +106,7 @@ export default function ApiDocsPage() {
             size="sm"
             className="h-8 gap-1.5 text-xs transition-transform duration-150 active:scale-[0.97]"
           >
-            <a href="/api-docs/index.html" target="_blank" rel="noopener noreferrer">{t('admin.openFullscreen')}<ExternalLink className="h-3.5 w-3.5" />
+            <a href={iframeSrc} target="_blank" rel="noopener noreferrer">{t('admin.openFullscreen')}<ExternalLink className="h-3.5 w-3.5" />
             </a>
           </Button>
         </div>
@@ -75,8 +122,8 @@ export default function ApiDocsPage() {
         )}
 
         <iframe
-          key={iframeKey}
-          src="/api-docs/index.html"
+          key={`${specMode}-${iframeKey}`}
+          src={iframeSrc}
           onLoad={() => setIsLoaded(true)}
           title={t('admin.interactiveApiDocs')}
           className="h-full w-full border-0 bg-white"

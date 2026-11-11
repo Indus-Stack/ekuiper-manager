@@ -290,3 +290,76 @@ describe('validateFlowForEditor (defect R4 regression)', () => {
     expect(diagnostics[0]?.edgeId).toBeUndefined();
   });
 });
+
+describe('validateFlowForEditor saved-stream sourceName compatibility warning', () => {
+  function buildSavedSourceDocument(sourceType: 'stream-source' | 'table-source' | 'memory-source') {
+    const config: Record<string, unknown> =
+      sourceType === 'memory-source'
+        ? { topic: 'events' }
+        : sourceType === 'table-source'
+          ? { table: 'ref_table', connector: 'memory' }
+          : { stream: 'telemetry_saved', connector: 'memory' };
+    return createMinimalFlowDocument({
+      nodes: [
+        createFlowNode({
+          id: 'node-source-1',
+          type: sourceType,
+          typeVersion: 1,
+          name: 'Source',
+          config,
+        }),
+        createFlowNode({
+          id: 'node-sink-1',
+          type: 'memory-sink',
+          typeVersion: 1,
+          name: 'Sink',
+          config: { topic: 'sink_out' },
+        }),
+      ],
+      edges: [
+        createFlowEdge({
+          id: 'edge-1',
+          sourceNodeId: 'node-source-1',
+          sourcePortId: 'out',
+          targetNodeId: 'node-sink-1',
+          targetPortId: 'in',
+        }),
+      ],
+    });
+  }
+
+  it('emits FLOW_SOURCENAME_DECODE_WARNING for stream-source and table-source on 2.4.1 and 2.4.2', () => {
+    const registry = createBuiltinNodeRegistry();
+    for (const version of ['2.4.1', '2.4.2']) {
+      const profile = resolveTargetCapabilities({ version, reachable: true });
+      for (const sourceType of ['stream-source', 'table-source'] as const) {
+        const diagnostics = validateFlowForEditor(buildSavedSourceDocument(sourceType), registry, profile);
+        expect(diagnostics).toContainEqual(
+          expect.objectContaining({
+            code: 'FLOW_SOURCENAME_DECODE_WARNING',
+            severity: 'warning',
+            nodeId: 'node-source-1',
+            propertyPath: sourceType === 'table-source' ? 'table' : 'stream',
+          }),
+        );
+      }
+    }
+  });
+
+  it('omits FLOW_SOURCENAME_DECODE_WARNING on 2.5.0-alpha.5+ and for inline memory-source on 2.4.2', () => {
+    const registry = createBuiltinNodeRegistry();
+    const previewProfile = resolveTargetCapabilities({ version: '2.5.0-alpha.5', reachable: true });
+    expect(
+      validateFlowForEditor(buildSavedSourceDocument('stream-source'), registry, previewProfile).filter(
+        (item) => item.code === 'FLOW_SOURCENAME_DECODE_WARNING',
+      ),
+    ).toEqual([]);
+
+    const stableProfile = resolveTargetCapabilities({ version: '2.4.2', reachable: true });
+    expect(
+      validateFlowForEditor(buildSavedSourceDocument('memory-source'), registry, stableProfile).filter(
+        (item) => item.code === 'FLOW_SOURCENAME_DECODE_WARNING',
+      ),
+    ).toEqual([]);
+  });
+});

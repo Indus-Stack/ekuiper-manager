@@ -323,4 +323,60 @@ describe('POST /api/flows/:id/validate', () => {
       }),
     );
   });
+
+  it('returns valid=true with FLOW_SOURCENAME_DECODE_WARNING on 2.4.2 saved-stream graphs and omits it on 2.5.0-alpha.5', async () => {
+    const savedSourceSpec: FlowSpec = {
+      nodes: [
+        {
+          id: 'node-source-1',
+          type: 'stream-source',
+          typeVersion: 1,
+          name: 'Saved Stream',
+          config: { stream: 'telemetry_stream', connector: 'memory' },
+        },
+        {
+          id: 'node-sink-1',
+          type: 'memory-sink',
+          typeVersion: 1,
+          name: 'Sink',
+          config: { topic: 'processed-events' },
+        },
+      ],
+      edges: [
+        {
+          id: 'edge-1',
+          sourceNodeId: 'node-source-1',
+          sourcePortId: 'out',
+          targetNodeId: 'node-sink-1',
+          targetPortId: 'in',
+        },
+      ],
+    };
+
+    mockedGetUser.mockResolvedValueOnce(actor);
+    mockedQuery.mockResolvedValueOnce(queryResult([buildFlowRow()]));
+    mockedQuery.mockResolvedValueOnce(queryResult([buildDraftRow(savedSourceSpec)]));
+    mockedQuery.mockResolvedValueOnce(queryResult([buildNodeRow({ version: '2.4.2' })]));
+
+    const warnResponse = await POST(postRequest(), routeParams());
+    expect(warnResponse.status).toBe(200);
+    const warnPayload = await warnResponse.json();
+    expect(warnPayload.valid).toBe(true);
+    expect(warnPayload.diagnostics).toContainEqual(
+      expect.objectContaining({
+        code: 'FLOW_SOURCENAME_DECODE_WARNING',
+        severity: 'warning',
+        nodeId: 'node-source-1',
+      }),
+    );
+
+    mockedGetUser.mockResolvedValueOnce(actor);
+    mockedQuery.mockResolvedValueOnce(queryResult([buildFlowRow()]));
+    mockedQuery.mockResolvedValueOnce(queryResult([buildDraftRow(savedSourceSpec)]));
+    mockedQuery.mockResolvedValueOnce(queryResult([buildNodeRow({ version: '2.5.0-alpha.5' })]));
+
+    const previewResponse = await POST(postRequest(), routeParams());
+    expect(previewResponse.status).toBe(200);
+    await expect(previewResponse.json()).resolves.toEqual({ valid: true, diagnostics: [] });
+  });
 });
