@@ -58,6 +58,7 @@ import {
   decodeActions,
   displayFieldValue,
   encodeActions,
+  insertFunctionIntoSql,
   parseSimpleSql,
   redactSensitive,
   sinkFields,
@@ -783,9 +784,11 @@ export function RuleDesigner({ id }: { id?: string }) {
         setGraph(rule.graph);
         setQueryMode('sql');
         setSql('');
+        sqlSelectionRef.current = null;
       } else {
         const parsed = parseSimpleSql(rule.sql ?? '');
         setSql(rule.sql ?? '');
+        sqlSelectionRef.current = null;
         if (parsed) { setQuery(parsed); setQueryMode('visual'); }
         else setQueryMode('sql');
       }
@@ -822,17 +825,7 @@ export function RuleDesigner({ id }: { id?: string }) {
     }
     const sel = sqlSelectionRef.current;
     setGraph(undefined);
-    setSql((current) => {
-      if (sel) {
-        return `${current.slice(0, sel.start)}${signature}${current.slice(sel.end)}`;
-      }
-      const trimmed = current.trimEnd();
-      if (!trimmed) return `SELECT ${signature} FROM `;
-      if (/^\s*SELECT\s+\*\s+FROM\b/i.test(trimmed)) {
-        return trimmed.replace(/^(\s*SELECT\s+)\*(\s+FROM\b)/i, `$1${signature}$2`);
-      }
-      return `${trimmed} ${signature}`;
-    });
+    setSql((current) => insertFunctionIntoSql(current, signature, sel));
     sqlSelectionRef.current = null;
     setValidation(null);
   };
@@ -925,10 +918,12 @@ export function RuleDesigner({ id }: { id?: string }) {
       if (isObject(parsed.graph)) {
         setGraph(parsed.graph);
         setSql('');
+        sqlSelectionRef.current = null;
         setQueryMode('sql');
       } else if (typeof parsed.sql === 'string') {
         setGraph(undefined);
         setSql(parsed.sql);
+        sqlSelectionRef.current = null;
         const simple = parseSimpleSql(parsed.sql);
         if (simple) setQuery(simple);
         setQueryMode(simple ? 'visual' : 'sql');

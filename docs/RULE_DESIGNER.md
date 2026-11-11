@@ -174,6 +174,7 @@ Unit coverage (`src/lib/__tests__/rule-designer.test.ts`) proves:
 - typed and unknown sink values round-trip without loss;
 - number, boolean, list, SQL `fields`, and `sendSingle` coercion;
 - supported visual SQL generation/decomposition;
+- safe SQL function insertion into text selection or target `SELECT` list (`insertFunctionIntoSql`);
 - recursive secret masking;
 - duplicate sanitization and stopped-by-default behavior.
 

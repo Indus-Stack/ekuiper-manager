@@ -4,6 +4,7 @@ import {
   BASELINE_CAPABILITY_SOURCES,
 } from '@/lib/flows/capabilities/types';
 import {
+  resolveAuthoringCapabilities,
   resolveTargetCapabilities,
   resolveTargetFeatures,
 } from '@/lib/flows/capabilities/resolve-capabilities';
@@ -155,5 +156,72 @@ describe('resolveTargetFeatures', () => {
         supportsKafkaRecordMetadata: true,
       });
     }
+  });
+
+  it('opens each 2.5 capability at the first upstream release that ships it', () => {
+    // Verified against the tagged sources: scantables route in alpha.1,
+    // buffer policy (#4133) in alpha.2, sourceName fix (#4213), JSON Lines
+    // (#4218), and Kafka metadata (#4214) in alpha.5.
+    expect(resolveTargetFeatures('2.5.0-alpha.1')).toEqual({
+      supportsSqlFunctions242: true,
+      supportsSafeSourceNameGraphs: false,
+      supportsScanTables: true,
+      supportsJsonl: false,
+      supportsStreamBufferPolicy: false,
+      supportsKafkaRecordMetadata: false,
+    });
+    for (const version of ['2.5.0-alpha.2', '2.5.0-alpha.3', '2.5.0-alpha.4']) {
+      expect(resolveTargetFeatures(version)).toEqual({
+        supportsSqlFunctions242: true,
+        supportsSafeSourceNameGraphs: false,
+        supportsScanTables: true,
+        supportsJsonl: false,
+        supportsStreamBufferPolicy: true,
+        supportsKafkaRecordMetadata: false,
+      });
+    }
+  });
+
+  it('keeps the sourceName warning active on every 2.5 alpha before alpha.5', () => {
+    for (const version of ['2.5.0-alpha.1', '2.5.0-alpha.4']) {
+      expect(resolveTargetFeatures(version).supportsSafeSourceNameGraphs).toBe(false);
+    }
+    expect(resolveTargetFeatures('2.5.0-alpha.5').supportsSafeSourceNameGraphs).toBe(true);
+  });
+
+  it('orders prereleases below the stable release and tolerates build suffixes', () => {
+    // A 2.5.0 prerelease is below stable 2.5.0, and beta/rc sort after alpha.
+    expect(resolveTargetFeatures('2.5.0-beta.1').supportsJsonl).toBe(true);
+    expect(resolveTargetFeatures('2.5.0-rc.1').supportsJsonl).toBe(true);
+    // Image-style and git-describe suffixes do not change the release.
+    expect(resolveTargetFeatures('2.4.2-slim').supportsSqlFunctions242).toBe(true);
+    expect(resolveTargetFeatures('2.5.0-alpha.4-12-gabcdef0').supportsJsonl).toBe(false);
+    expect(resolveTargetFeatures('2.5.0-alpha.5-3-gabcdef0').supportsJsonl).toBe(true);
+    // A 2.4.2 prerelease is not the 2.4.2 release.
+    expect(resolveTargetFeatures('2.4.2-rc.1').supportsSqlFunctions242).toBe(false);
+  });
+});
+
+describe('resolveAuthoringCapabilities', () => {
+  it('keeps the palette available for a stored OFFLINE target using its last known version', () => {
+    const profile = resolveAuthoringCapabilities({ version: '2.4.2', status: 'OFFLINE' });
+    expect(profile.graphRules).toBe(true);
+    expect(profile.ekuiperVersion).toBe('2.4.2');
+    expect(profile.sources).toEqual([...BASELINE_CAPABILITY_SOURCES]);
+    expect(profile.sinks).toEqual([...BASELINE_CAPABILITY_SINKS]);
+  });
+
+  it('falls back to the audited baseline when no version is known yet', () => {
+    for (const status of [undefined, 'UNKNOWN', 'OFFLINE', 'ONLINE']) {
+      const profile = resolveAuthoringCapabilities({ version: null, status });
+      expect(profile.graphRules).toBe(true);
+      expect(profile.ekuiperVersion).toBe('2.4.1');
+    }
+    expect(resolveAuthoringCapabilities({}).graphRules).toBe(true);
+  });
+
+  it('stays unavailable for an INCOMPATIBLE target', () => {
+    expect(resolveAuthoringCapabilities({ version: '2.3.0', status: 'INCOMPATIBLE' }).graphRules).toBe(false);
+    expect(resolveAuthoringCapabilities({ version: null, status: 'INCOMPATIBLE' }).graphRules).toBe(false);
   });
 });

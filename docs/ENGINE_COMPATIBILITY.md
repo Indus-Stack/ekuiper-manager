@@ -71,8 +71,8 @@ Live behavior on `2.4.1` and `2.4.2` (where upstream PR `#4213` is absent):
 
 - **Memory saved streams** (typed and schemaless) pass decoded event fields to downstream operators.
 - **Byte-decoded saved streams** (for example `file` saved streams) omit stream decoder configuration and emit empty `{}` objects.
-- **Warning diagnostic**: Client validation, Node Inspector, server validation, and the Deploy preflight dialog show a non-blocking `FLOW_SOURCENAME_DECODE_WARNING` on targets below `2.5.0`.
-- **Target `2.5.0+`**: The warning clears because PR `#4213` preserves decoder properties on `sourceName` graph nodes.
+- **Warning diagnostic**: Client validation, Node Inspector, server validation, and the Deploy preflight dialog show a non-blocking `FLOW_SOURCENAME_DECODE_WARNING` on targets below `2.5.0-alpha.5`.
+- **Target `2.5.0-alpha.5+`**: The warning clears because PR `#4213` preserves decoder properties on `sourceName` graph nodes.
 
 Operator recommendation for `2.4.1` and `2.4.2` nodes:
 
@@ -80,9 +80,19 @@ Operator recommendation for `2.4.1` and `2.4.2` nodes:
 
 ---
 
-## 5. Rule Designer and Workspace Feature Gates
+## 5. Flow Studio Offline Target Authoring and Live Deployment
 
-### 5.1 Version `2.4.2+` SQL Functions (`supportsSqlFunctions242`)
+Flow Studio separates draft authoring from target deployment:
+
+1. **Authoring with stored target state**: Flow Studio calls `resolveAuthoringCapabilities({ version, status })`. When a target was previously probed and has a recorded version, the palette and node inspectors use that last known version to enable supported nodes and fields. Even when the target state is `OFFLINE`, drafting and canvas editing remain unblocked.
+2. **Server-side validation and compilation**: Flow validation (`POST /api/flows/{id}/validate`) and compilation (`POST /api/flows/{id}/compile`) evaluate the graph against the target's recorded version instead of failing on stored `OFFLINE` status.
+3. **Live reachability on deployment**: When the operator clicks **Deploy** (`deployFlow`), Manager checks if the target status is `ONLINE`. If the stored status is not `ONLINE`, Manager executes an immediate live probe (`probeNode`). If the node responds, its capabilities update and deployment proceeds. If the node is unreachable, deployment halts with a clear `NODE_UNREACHABLE` error before creating attempts.
+
+---
+
+## 6. Rule Designer and Workspace Feature Gates
+
+### 6.1 Version `2.4.2+` SQL Functions (`supportsSqlFunctions242`)
 
 Rule Designer (`/rules/new` and `/rules/{id}/edit`) filters the SQL function helper catalog with `getFunctionsForVersion(active?.version, query)`:
 
@@ -94,7 +104,11 @@ Rule Designer (`/rules/new` and `/rules/{id}/edit`) filters the SQL function hel
 These four functions stay hidden when the active node runs `2.4.1`.
 Rule Designer deduplicates `changed_cols` across categories in its UI function list.
 
-### 5.2 Post-`2.4.2` Named Sink Actions (`PR #4235`)
+When an operator clicks a function in SQL mode, Manager inserts the signature using `insertFunctionIntoSql`:
+- If a text selection or caret exists, the function inserts at the cursor position.
+- If no selection exists, Manager safely inserts the function into the `SELECT` list (replacing a lone `*` or appending before `FROM`), preventing broken queries.
+
+### 6.2 Post-`2.4.2` Named Sink Actions (`PR #4235`)
 
 Upstream PR `#4235` on `master-2.4` introduces optional names on sink actions so rules can distinguish two actions of the same connector type.
 
@@ -103,18 +117,21 @@ Caution when named actions are enabled on future `2.4.x` / `2.5+` engines:
 - Renaming a sink action changes the engine metric keys and persistent-state identifiers for that sink.
 - Always inspect topology and metrics after changing a sink name.
 
-### 5.3 Preview `2.5.0+` Features
+### 6.3 Preview `2.5.0` Feature Floors
 
-Manager exposes these controls only when the selected node reports version `2.5.0` or higher:
+Manager gates each preview feature to the exact first release that introduced it:
 
-- **Scan tables tab** (`supportsScanTables`): Rule detail page (`/rules/{id}`) displays the **Scan tables** tab calling `GET /rules/{name}/scantables`. Non-join tuple errors normalize to an empty state.
-- **JSON Lines (`jsonl`) format** (`supportsJsonl`): Shown in Stream Visual Editor (`/streams/new`) and `SinkBaseForm`. Existing saved `jsonl` configurations stay visible even on unknown node versions.
-- **Stream `BUFFER_FULL_POLICY`** (`supportsStreamBufferPolicy`): Shown in Stream Visual Editor (`block` or `dropOldest`).
-- **Kafka record metadata** (`supportsKafkaRecordMetadata`): Enables `meta_topic`, `meta_partition`, `meta_offset`, `meta_key`, and `meta_headers` in Rule Designer.
+| Feature Gate | Upstream PR / Release | First Supported Tag | Surface in Manager |
+| --- | --- | --- | --- |
+| `supportsScanTables` | Upstream route registration | `v2.5.0-alpha.1` | **Scan tables** tab on `/rules/{id}` calling `GET /rules/{name}/scantables` |
+| `supportsStreamBufferPolicy` | PR `#4133` | `v2.5.0-alpha.2` | `BUFFER_FULL_POLICY` (`block` or `dropOldest`) in Stream Visual Editor |
+| `safeSourceNameGraphs` | PR `#4213` | `v2.5.0-alpha.5` | Clears `FLOW_SOURCENAME_DECODE_WARNING` in Flow Studio |
+| `supportsJsonl` | PR `#4218` | `v2.5.0-alpha.5` | `jsonl` stream format option in Stream Visual Editor and `SinkBaseForm` |
+| `supportsKafkaRecordMetadata` | PR `#4214` | `v2.5.0-alpha.5` | Kafka `meta_topic` .. `meta_headers` suggestions in Rule Designer |
 
 ---
 
-## 6. Pre-Upgrade Verification Checklist for Defaulting `2.5`
+## 7. Pre-Upgrade Verification Checklist for Defaulting `2.5`
 
 Do not change `compose.yaml` to bundle an eKuiper `2.5` image until all three checks pass in live Compose testing:
 

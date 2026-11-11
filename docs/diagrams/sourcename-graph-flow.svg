@@ -12,7 +12,7 @@
   <!-- Header -->
   <rect x="24" y="18" width="872" height="50" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
   <text x="40" y="40" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Flow Studio Saved-Stream Graph Compilation (sourceName)</text>
-  <text x="40" y="58" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#475569">Non-blocking warning on targets &lt; 2.5.0 because upstream PR #4213 is absent from 2.4.1 and 2.4.2</text>
+  <text x="40" y="58" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#475569">Non-blocking warning on targets &lt; 2.5.0-alpha.5 because upstream PR #4213 is absent from 2.4.1 and 2.4.2</text>
 
   <!-- Row 1: Editor -> Warning -> Deploy -->
   <rect x="24" y="86" width="248" height="122" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
@@ -25,7 +25,7 @@
   <line x1="272" y1="147" x2="306" y2="147" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
 
   <rect x="310" y="86" width="298" height="122" rx="8" fill="#fffbeb" stroke="#d97706" stroke-width="1.5" />
-  <text x="326" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#92400e">2. Version Diagnostic (&lt; 2.5)</text>
+  <text x="326" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#92400e">2. Version Diagnostic (&lt; 2.5.0-alpha.5)</text>
   <text x="326" y="134" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" font-weight="600" fill="#b45309">FLOW_SOURCENAME_DECODE_WARNING</text>
   <text x="326" y="156" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#78350f">• Severity: warning (non-blocking)</text>
   <text x="326" y="176" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#78350f">• Shown in client, inspector, server,</text>
@@ -53,6 +53,6 @@
   <text x="490" y="284" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#0f172a">Input:  { "deviceId": "dev-1", "temperature": 25.0 }</text>
   <text x="490" y="306" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#b91c1c">Output on 2.4.1 / 2.4.2: {}  (empty object)</text>
   <text x="490" y="334" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#334155">Without upstream PR #4213, stream decoder props are lost.</text>
-  <text x="490" y="352" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#15803d">On eKuiper 2.5+ (with PR #4213): fields decode normally.</text>
+  <text x="490" y="352" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#15803d">On eKuiper 2.5.0-alpha.5+ (with PR #4213): fields decode normally.</text>
 </svg>
 

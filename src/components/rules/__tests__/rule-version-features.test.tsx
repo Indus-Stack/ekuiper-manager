@@ -189,6 +189,29 @@ describe('eKuiper 2.4.2 & 2.5 preview version-aware UI gates', () => {
     await v250.unmount();
   });
 
+  it('inserts a clicked SQL function into the SELECT list when the SQL editor has no caret', async () => {
+    // Not representable in the visual builder (multiple sources), so the
+    // designer opens in SQL mode with a valid query and no selection.
+    jest.spyOn(ekuiperClient, 'getRule').mockResolvedValue({
+      id: 'rule_sql_mode',
+      sql: 'SELECT temperature FROM demo, other',
+      actions: [{ log: {} }],
+    });
+    const view = await renderEl(<RuleDesigner id="rule_sql_mode" />);
+    const sqlInput = view.container.querySelector('#rule-sql') as HTMLTextAreaElement | null;
+    expect(sqlInput?.value).toBe('SELECT temperature FROM demo, other');
+
+    const arrayAvgBtn = view.container.querySelector('[data-testid="sql-fn-array_avg"]') as HTMLButtonElement | null;
+    expect(arrayAvgBtn).not.toBeNull();
+    await act(async () => {
+      arrayAvgBtn?.click();
+    });
+    expect(
+      (view.container.querySelector('#rule-sql') as HTMLTextAreaElement | null)?.value,
+    ).toBe('SELECT temperature, array_avg(arr) FROM demo, other');
+    await view.unmount();
+  });
+
   it('gates Scan tables tab on 2.5 preview and handles empty join/tuple errors gracefully', async () => {
     jest.spyOn(ekuiperClient, 'getRule').mockResolvedValue({
       id: 'rule_join',

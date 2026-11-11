@@ -1,7 +1,7 @@
 import { ApiError } from '@/lib/api';
 import { parseEKuiperJson, redactEKuiperSecrets } from '@/lib/ekuiper/wire';
 import { assertSafeNodeDestination } from '@/lib/network';
-import { getNode, getNodeWithAuthorization, type ManagedNode } from '@/lib/nodes';
+import { getNode, getNodeWithAuthorization, probeNode, type ManagedNode } from '@/lib/nodes';
 import type { TargetCapabilityProfile } from '../capabilities/types';
 import { resolveTargetCapabilities } from '../capabilities/resolve-capabilities';
 import { compileFlowToEkuiperGraph, toSafeRuleId } from '../compiler/ekuiper/compile-graph';
@@ -201,6 +201,11 @@ export interface DeployFlowDependencies {
   loadFlow?: (flowId: string) => Promise<FlowRecord | null>;
   loadDraft?: (flowId: string) => Promise<FlowDraftRecord | null>;
   loadTarget?: (targetNodeId: string) => Promise<ManagedNode | null>;
+  /**
+   * Live re-probe used by `deployFlow` when the stored target status is not
+   * ONLINE. Defaults to `probeNode`.
+   */
+  probeTarget?: (targetNodeId: string) => Promise<ManagedNode>;
   resolveProfile?: (target: ManagedNode) => TargetCapabilityProfile;
   buildRegistry?: () => NodeRegistry;
   runServerValidation?: (input: ValidateFlowServerSideInput) => FlowValidationResult;
@@ -608,9 +613,21 @@ export async function deployFlow(
     throw new ApiError(409, 'Add an eKuiper node first', 'NODE_REQUIRED');
   }
   const loadTarget = dependencies.loadTarget ?? getNode;
-  const target = await loadTarget(targetNodeId);
+  let target = await loadTarget(targetNodeId);
   if (!target) {
     throw new ApiError(404, 'eKuiper node not found', 'NODE_NOT_FOUND');
+  }
+
+  // Deployment checks LIVE reachability. The stored status can be stale in
+  // both directions (draft editing deliberately ignores it), so a target that
+  // is not ONLINE is probed again before capability validation: a recovered
+  // engine deploys without a manual probe, and an engine that is still down
+  // fails here, before any deployment attempt is recorded.
+  if (target.status !== 'ONLINE') {
+    target = await (dependencies.probeTarget ?? probeNode)(target.id);
+    if (target.status === 'OFFLINE') {
+      throw new ApiError(502, 'eKuiper could not be reached', 'NODE_UNREACHABLE');
+    }
   }
 
   const capabilityProfile = (dependencies.resolveProfile ?? defaultResolveProfile)(target);

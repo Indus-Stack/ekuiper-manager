@@ -35,8 +35,7 @@ import { createFlowEdgeForConnection, generateFlowEdgeId } from '@/lib/flows/mod
 import { buildFlowDirtyBaseline, computeFlowDirtyState, type FlowDirtyBaseline } from '@/lib/flows/model/flow-dirty-state';
 import { createBuiltinNodeRegistry } from '@/lib/flows/registry/builtin-registry';
 import { validateExtensionNodeDescriptor } from '@/lib/flows/extensions/validate-extension';
-import { resolveTargetCapabilities } from '@/lib/flows/capabilities/resolve-capabilities';
-import { BASELINE_EKUIPER_VERSION } from '@/lib/flows/capabilities/types';
+import { resolveAuthoringCapabilities } from '@/lib/flows/capabilities/resolve-capabilities';
 import { canConnect } from '@/lib/flows/validation/port-compatibility';
 import { validateFlowForEditor } from '@/lib/flows/validation/editor-validation';
 import { isDefinitionSupportedByCapabilities } from '@/lib/flows/validation/capability-validation';
@@ -539,41 +538,19 @@ export function FlowStudioPage({ flowId, initialDocument }: { flowId: string; in
   const paletteDefinitions = React.useMemo(() => flowRegistry.list(), [flowRegistry]);
 
   // FS-0080: normalized target capability profile for palette gating,
-  // capability validation, and version-gated warnings. Reads live target
-  // version/status from `nodesQuery` when known, falling back to the
-  // audited 2.4.1 baseline while unprobed/untargeted so editing stays
-  // unblocked and no version comparison leaks into palette or page code.
+  // capability validation, and version-gated warnings. Derived from the
+  // target's last known version (see `resolveAuthoringCapabilities`): a stored
+  // OFFLINE probe status never disables authoring, and deploy checks live
+  // reachability server-side. Untargeted or unprobed flows use the audited
+  // 2.4.1 baseline so editing stays unblocked.
   const capabilityProfile = React.useMemo(() => {
     const targetNodeId = flowQuery.data?.targetNodeId ?? null;
-    if (!targetNodeId) {
-      return resolveTargetCapabilities({
-        version: BASELINE_EKUIPER_VERSION,
-        reachable: true,
-      });
-    }
-    const match = (nodesQuery.data ?? []).find(
-      (entry) => entry.id === targetNodeId,
-    );
-    if (!match) {
-      return resolveTargetCapabilities({
-        version: BASELINE_EKUIPER_VERSION,
-        reachable: true,
-      });
-    }
-    const status = typeof match.status === 'string' ? match.status : undefined;
-    const version =
-      typeof match.version === 'string' && match.version.trim().length > 0
-        ? match.version.trim()
-        : null;
-    if (status === 'OFFLINE' || status === 'INCOMPATIBLE') {
-      return resolveTargetCapabilities({ version, reachable: false });
-    }
-    if (version) {
-      return resolveTargetCapabilities({ version, reachable: true });
-    }
-    return resolveTargetCapabilities({
-      version: BASELINE_EKUIPER_VERSION,
-      reachable: true,
+    const match = targetNodeId
+      ? (nodesQuery.data ?? []).find((entry) => entry.id === targetNodeId)
+      : undefined;
+    return resolveAuthoringCapabilities({
+      version: match?.version,
+      status: match?.status,
     });
   }, [flowQuery.data, nodesQuery.data]);
 

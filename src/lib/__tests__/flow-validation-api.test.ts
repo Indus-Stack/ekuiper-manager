@@ -268,6 +268,23 @@ describe('POST /api/flows/:id/validate', () => {
     );
   });
 
+  it('validates a draft against the last known capabilities when the stored target status is OFFLINE', async () => {
+    const fetchSpy = jest.spyOn(globalThis, 'fetch');
+    mockedGetUser.mockResolvedValueOnce(actor);
+    mockedQuery.mockResolvedValueOnce(queryResult([buildFlowRow()]));
+    mockedQuery.mockResolvedValueOnce(queryResult([buildDraftRow()]));
+    mockedQuery.mockResolvedValueOnce(
+      queryResult([buildNodeRow({ status: 'OFFLINE', version: '2.4.2' })]),
+    );
+
+    const response = await POST(postRequest(), routeParams());
+
+    expect(response.status).toBe(200);
+    // A stale OFFLINE probe result must not mark every node unsupported.
+    await expect(response.json()).resolves.toEqual({ valid: true, diagnostics: [] });
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
   it('validates the stored draft and ignores a client-supplied document', async () => {
     const invalidSpec: FlowSpec = {
       nodes: [
@@ -378,5 +395,19 @@ describe('POST /api/flows/:id/validate', () => {
     const previewResponse = await POST(postRequest(), routeParams());
     expect(previewResponse.status).toBe(200);
     await expect(previewResponse.json()).resolves.toEqual({ valid: true, diagnostics: [] });
+
+    // 2.5.0-alpha.4 predates the sourceName fix (first shipped in alpha.5), so
+    // the warning must still be reported.
+    mockedGetUser.mockResolvedValueOnce(actor);
+    mockedQuery.mockResolvedValueOnce(queryResult([buildFlowRow()]));
+    mockedQuery.mockResolvedValueOnce(queryResult([buildDraftRow(savedSourceSpec)]));
+    mockedQuery.mockResolvedValueOnce(queryResult([buildNodeRow({ version: '2.5.0-alpha.4' })]));
+
+    const alpha4Response = await POST(postRequest(), routeParams());
+    const alpha4Payload = await alpha4Response.json();
+    expect(alpha4Payload.valid).toBe(true);
+    expect(alpha4Payload.diagnostics).toContainEqual(
+      expect.objectContaining({ code: 'FLOW_SOURCENAME_DECODE_WARNING', nodeId: 'node-source-1' }),
+    );
   });
 });

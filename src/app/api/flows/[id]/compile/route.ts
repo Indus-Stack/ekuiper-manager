@@ -6,11 +6,11 @@ import {
   requireUser,
 } from '@/lib/api';
 import { getNode } from '@/lib/nodes';
+import type { TargetCapabilityProfile } from '@/lib/flows/capabilities/types';
 import {
-  BASELINE_EKUIPER_VERSION,
-  type TargetCapabilityProfile,
-} from '@/lib/flows/capabilities/types';
-import { resolveTargetCapabilities } from '@/lib/flows/capabilities/resolve-capabilities';
+  resolveAuthoringCapabilities,
+  resolveTargetCapabilities,
+} from '@/lib/flows/capabilities/resolve-capabilities';
 import { compileFlowToEkuiperGraph } from '@/lib/flows/compiler/ekuiper/compile-graph';
 import {
   FLOW_DOCUMENT_VERSION,
@@ -28,7 +28,9 @@ export const dynamic = 'force-dynamic';
  *
  * Same normalization as the FS-0081 validation endpoint:
  * - Flow with a registered target: profile derives from the stored managed
- *   node row (`version`, `status`); no live eKuiper call is made here.
+ *   node row's last known `version` via `resolveAuthoringCapabilities`; no
+ *   live eKuiper call is made here, and a stored OFFLINE status does not
+ *   block compilation (deploy re-probes the target).
  * - Flow with no target: audited baseline profile (`BASELINE_EKUIPER_VERSION`,
  *   reachable), so compilation is not blocked before a target is chosen.
  * - Flow whose target row no longer exists: conservative unavailable
@@ -38,18 +40,15 @@ async function resolveProfileForFlow(
   targetNodeId: string | null,
 ): Promise<TargetCapabilityProfile> {
   if (targetNodeId === null) {
-    return resolveTargetCapabilities({
-      version: BASELINE_EKUIPER_VERSION,
-      reachable: true,
-    });
+    return resolveAuthoringCapabilities({});
   }
   const target = await getNode(targetNodeId);
   if (target === null) {
     return resolveTargetCapabilities({ version: null, reachable: false });
   }
-  return resolveTargetCapabilities({
+  return resolveAuthoringCapabilities({
     version: target.version,
-    reachable: target.status === 'ONLINE',
+    status: target.status,
   });
 }
 

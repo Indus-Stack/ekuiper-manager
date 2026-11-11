@@ -29,8 +29,8 @@ export default function ApiDocsPage() {
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-background text-foreground">
       {/* Control Plane Header */}
-      <header className="flex h-12 shrink-0 items-center justify-between border-b border-border/80 bg-card px-4">
-        <div className="flex items-center gap-3">
+      <header className="flex min-h-12 shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-border/80 bg-card px-4 py-1.5">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
           <Button
             asChild
             variant="ghost"
@@ -41,9 +41,9 @@ export default function ApiDocsPage() {
               <ArrowLeft className="h-3.5 w-3.5" />{t('admin.documentation')}</Link>
           </Button>
 
-          <div className="h-4 w-px bg-border" />
+          <div className="hidden h-4 w-px bg-border sm:block" />
 
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
             <BookOpen className="h-4 w-4 text-primary" />
             <span className="text-xs font-semibold tracking-tight text-foreground">
               eKuiper & Gateway REST API Reference
@@ -58,7 +58,7 @@ export default function ApiDocsPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <div
             className="inline-flex items-center rounded-md border border-border bg-muted/40 p-0.5"
             role="group"

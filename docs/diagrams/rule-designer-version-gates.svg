@@ -46,17 +46,17 @@
   <text x="40" y="264" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#1d4ed8">2.4.2+ (supportsSqlFunctions242):</text>
   <text x="48" y="284" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#1d4ed8">array_avg, acc_max_by,</text>
   <text x="48" y="300" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#1d4ed8">acc_min_by, acc_map_agg</text>
-  <text x="40" y="326" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#15803d">2.5.0+ (Kafka metadata):</text>
+  <text x="40" y="326" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#15803d">2.5.0-alpha.5+ (Kafka meta):</text>
   <text x="48" y="344" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#15803d">meta_topic .. meta_headers</text>
 
   <!-- Panel 2: Serialization & Buffers -->
   <rect x="322" y="164" width="276" height="196" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
   <text x="338" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Streams &amp; Sink Outputs</text>
   <text x="338" y="210" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#475569">/streams/new · SinkBaseForm</text>
-  <text x="338" y="238" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#15803d">2.5.0+ (supportsJsonl):</text>
+  <text x="338" y="238" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#15803d">2.5.0-alpha.5+ (supportsJsonl):</text>
   <text x="346" y="256" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Shows jsonl format option</text>
   <text x="346" y="274" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Preserves saved jsonl values</text>
-  <text x="338" y="302" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#15803d">2.5.0+ (supportsStreamBufferPolicy):</text>
+  <text x="338" y="302" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#15803d">2.5.0-alpha.2+ (bufferPolicy):</text>
   <text x="346" y="320" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#0f172a">BUFFER_FULL_POLICY =</text>
   <text x="346" y="338" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#0f172a">block | dropOldest</text>
 
@@ -64,7 +64,7 @@
   <rect x="620" y="164" width="276" height="196" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
   <text x="636" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Diagnostics &amp; Sinks</text>
   <text x="636" y="210" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#475569">/rules/:id · ConfKey &amp; Actions</text>
-  <text x="636" y="238" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#15803d">2.5.0+ (supportsScanTables):</text>
+  <text x="636" y="238" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#15803d">2.5.0-alpha.1+ (scantables):</text>
   <text x="644" y="256" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Exposes Scan tables tab</text>
   <text x="644" y="274" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#475569">GET /rules/{name}/scantables</text>
   <text x="636" y="302" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#0f172a">ConfKey Sync &amp; Action Names:</text>

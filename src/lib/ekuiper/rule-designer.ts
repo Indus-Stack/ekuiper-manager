@@ -279,6 +279,69 @@ export function buildSql(query: QueryDraft): string {
   ].filter(Boolean).join(' ');
 }
 
+export interface SqlSelection {
+  start: number;
+  end: number;
+}
+
+/** Index of the first top-level `FROM` keyword at or after `from`, or -1. Skips quotes and parentheses. */
+function findTopLevelFrom(sql: string, from: number): number {
+  let depth = 0;
+  let quote: string | null = null;
+  for (let index = from; index < sql.length; index += 1) {
+    const char = sql[index] as string;
+    if (quote !== null) {
+      if (char === quote) quote = null;
+      continue;
+    }
+    if (char === "'" || char === '"' || char === '`') {
+      quote = char;
+    } else if (char === '(') {
+      depth += 1;
+    } else if (char === ')') {
+      depth = Math.max(0, depth - 1);
+    } else if (depth === 0 && /^from\b/i.test(sql.slice(index, index + 5)) && !/\w/.test(sql[index - 1] ?? ' ')) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+/**
+ * Insert a function signature into SQL text for the Rule Designer helper.
+ *
+ * - With an editor selection (caret or range): the signature replaces the
+ *   selection, so the user decides where it goes.
+ * - Without one: it is added to the SELECT list (replacing a lone `*`), never
+ *   appended after the query, which would corrupt valid SQL.
+ * - Empty SQL starts a new `SELECT ... FROM ` statement. SQL with no leading
+ *   SELECT is returned unchanged because no safe insertion point exists.
+ */
+export function insertFunctionIntoSql(
+  sql: string,
+  signature: string,
+  selection: SqlSelection | null,
+): string {
+  if (selection) {
+    const start = Math.min(selection.start, sql.length);
+    const end = Math.min(Math.max(selection.end, start), sql.length);
+    return `${sql.slice(0, start)}${signature}${sql.slice(end)}`;
+  }
+  if (!sql.trim()) return `SELECT ${signature} FROM `;
+  const select = /^\s*SELECT\b/i.exec(sql);
+  if (!select) return sql;
+
+  const listStart = select[0].length;
+  const fromIndex = findTopLevelFrom(sql, listStart);
+  const listEnd = fromIndex === -1 ? sql.trimEnd().length : fromIndex;
+  const list = sql.slice(listStart, listEnd);
+  const current = list.trim();
+  const nextList = current === '' || current === '*' ? signature : `${current}, ${signature}`;
+  const leading = /^\s*/.exec(list)?.[0] || ' ';
+  const trailing = fromIndex === -1 ? '' : (/\s*$/.exec(list)?.[0] || ' ');
+  return `${sql.slice(0, listStart)}${leading}${nextList}${trailing}${fromIndex === -1 ? '' : sql.slice(fromIndex)}`;
+}
+
 export function parseSimpleSql(sql: string): QueryDraft | null {
   const normalized = sql.trim().replace(/;$/, '');
   const match = normalized.match(/^SELECT\s+([\s\S]+?)\s+FROM\s+([A-Za-z0-9_-]+)(?:\s+WHERE\s+([\s\S]*?))?(?:\s+GROUP\s+BY\s+([\s\S]*?))?(?:\s+HAVING\s+([\s\S]*?))?(?:\s+ORDER\s+BY\s+([\s\S]*?))?(?:\s+LIMIT\s+([^\s]+))?$/i);
