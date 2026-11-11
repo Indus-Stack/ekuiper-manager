@@ -284,14 +284,44 @@ export interface SqlSelection {
   end: number;
 }
 
-/** Index of the first top-level `FROM` keyword at or after `from`, or -1. Skips quotes and parentheses. */
+/** Match the first top-level `SELECT` keyword, skipping leading whitespace and comments. */
+function findTopLevelSelect(sql: string): { start: number; end: number } | null {
+  for (let index = 0; index < sql.length; index += 1) {
+    const char = sql[index] as string;
+    if (/\s/.test(char)) continue;
+    if (char === '-' && sql[index + 1] === '-') {
+      index += 2;
+      while (index < sql.length && sql[index] !== '\n') {
+        index += 1;
+      }
+      continue;
+    }
+    if (char === '/' && sql[index + 1] === '*') {
+      index += 2;
+      while (index < sql.length && !(sql[index] === '*' && sql[index + 1] === '/')) {
+        index += 1;
+      }
+      if (index < sql.length) index += 1;
+      continue;
+    }
+    if (/^select\b/i.test(sql.slice(index, index + 7))) {
+      return { start: index, end: index + 6 };
+    }
+    return null;
+  }
+  return null;
+}
+
+/** Index of the first top-level `FROM` keyword at or after `from`, or -1. Skips quotes, comments, and parentheses. */
 function findTopLevelFrom(sql: string, from: number): number {
   let depth = 0;
   let quote: string | null = null;
   for (let index = from; index < sql.length; index += 1) {
     const char = sql[index] as string;
     if (quote !== null) {
-      if (char === '\\' && index + 1 < sql.length) {
+      // In eKuiper, only string literals ('...', "...") support backslash escapes.
+      // Backtick identifiers (`...`) do not escape backticks with backslashes.
+      if (quote !== '`' && char === '\\' && index + 1 < sql.length) {
         index += 1;
         continue;
       }
@@ -304,6 +334,28 @@ function findTopLevelFrom(sql: string, from: number): number {
       }
       continue;
     }
+
+    // Skip single-line comments (-- ...)
+    if (char === '-' && sql[index + 1] === '-') {
+      index += 2;
+      while (index < sql.length && sql[index] !== '\n') {
+        index += 1;
+      }
+      continue;
+    }
+
+    // Skip multi-line comments (/* ... */)
+    if (char === '/' && sql[index + 1] === '*') {
+      index += 2;
+      while (index < sql.length && !(sql[index] === '*' && sql[index + 1] === '/')) {
+        index += 1;
+      }
+      if (index < sql.length) {
+        index += 1;
+      }
+      continue;
+    }
+
     if (char === "'" || char === '"' || char === '`') {
       quote = char;
     } else if (char === '(') {
@@ -338,15 +390,20 @@ export function insertFunctionIntoSql(
     return `${sql.slice(0, start)}${signature}${sql.slice(end)}`;
   }
   if (!sql.trim()) return `SELECT ${signature} FROM `;
-  const select = /^\s*SELECT\b/i.exec(sql);
+  const select = findTopLevelSelect(sql);
   if (!select) return sql;
 
-  const listStart = select[0].length;
+  const listStart = select.end;
   const fromIndex = findTopLevelFrom(sql, listStart);
   const listEnd = fromIndex === -1 ? sql.trimEnd().length : fromIndex;
   const list = sql.slice(listStart, listEnd);
   const current = list.trim();
-  const nextList = current === '' || current === '*' ? signature : `${current}, ${signature}`;
+  const nextList =
+    current === '' || current === '*'
+      ? signature
+      : /--[^\r\n]*$/.test(current)
+        ? `${current}\n, ${signature}`
+        : `${current}, ${signature}`;
   const leading = /^\s*/.exec(list)?.[0] || ' ';
   const trailing = fromIndex === -1 ? '' : (/\s*$/.exec(list)?.[0] || ' ');
   return `${sql.slice(0, listStart)}${leading}${nextList}${trailing}${fromIndex === -1 ? '' : sql.slice(fromIndex)}`;

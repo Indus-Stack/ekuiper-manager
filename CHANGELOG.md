@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 - **Responsive Swagger API Docs controls**: Wrapped documentation headers and preview selectors to avoid overflow clipping on 375px mobile viewports.
 
 ### Fixed
-- **SQL function insertion query safety**: In SQL mode, clicking a function without an active cursor selection now safely inserts the expression into the query `SELECT` list instead of appending it after `FROM demo`. The scanner skips escaped quotes (`\'`, `\"`, `''`) inside string literals to prevent splitting strings containing `from`.
+- **SQL function insertion query safety**: In SQL mode, clicking a function without an active cursor selection now safely inserts the expression into the query `SELECT` list instead of appending it after `FROM demo`. The scanner limits escape handling to string literals (`\'`, `\"`, `''`), preserves backtick identifiers (`...`), and skips single-line (`--`) and multi-line (`/* */`) comments to avoid misidentifying the `SELECT` or `FROM` clauses.
 - **Plain-text eKuiper mutation responses**: Updated both eKuiper proxy routes with `sanitizeSensitiveEKuiperBody` so plain-text `"success"` responses on sensitive connection paths succeed cleanly instead of returning HTTP `502`.
 
 ## [1.4.0] - 2026-11-04

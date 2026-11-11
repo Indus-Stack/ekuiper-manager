@@ -206,12 +206,30 @@ describe('insertFunctionIntoSql', () => {
     expect(insertFunctionIntoSql('SELECT "sensor\\"s from line" AS label FROM demo', fn, null)).toBe(
       'SELECT "sensor\\"s from line" AS label, array_avg(arr) FROM demo',
     );
+    expect(insertFunctionIntoSql('SELECT `sensor\\` FROM demo', fn, null)).toBe(
+      'SELECT `sensor\\`, array_avg(arr) FROM demo',
+    );
     expect(insertFunctionIntoSql('SELECT cast(x FROM y) FROM demo', fn, null)).toBe(
       'SELECT cast(x FROM y), array_avg(arr) FROM demo',
     );
     expect(insertFunctionIntoSql('SELECT fromage FROM demo', fn, null)).toBe(
       'SELECT fromage, array_avg(arr) FROM demo',
     );
+  });
+
+  it('skips comments with apostrophes and preserved keywords', () => {
+    expect(
+      insertFunctionIntoSql("SELECT temperature -- don't change this comment before FROM\nFROM demo", fn, null),
+    ).toBe("SELECT temperature -- don't change this comment before FROM\n, array_avg(arr)\nFROM demo");
+    expect(
+      insertFunctionIntoSql("SELECT -- don't change this comment before FROM\ntemperature FROM demo", fn, null),
+    ).toBe("SELECT -- don't change this comment before FROM\ntemperature, array_avg(arr) FROM demo");
+    expect(
+      insertFunctionIntoSql("-- don't change this comment before FROM\nSELECT temperature FROM demo", fn, null),
+    ).toBe("-- don't change this comment before FROM\nSELECT temperature, array_avg(arr) FROM demo");
+    expect(
+      insertFunctionIntoSql("SELECT temperature /* don't change this comment before FROM */ FROM demo", fn, null),
+    ).toBe("SELECT temperature /* don't change this comment before FROM */, array_avg(arr) FROM demo");
   });
 
   it('appends to the list of a query that has no FROM yet', () => {
