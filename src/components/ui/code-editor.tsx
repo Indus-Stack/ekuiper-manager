@@ -7,7 +7,7 @@ export const CodeEditor = dynamic(
     {
         ssr: false,
         loading: () => (
-            <div className="h-full min-h-[400px] w-full border rounded-md overflow-hidden bg-[#1e1e1e] flex items-center justify-center text-muted-foreground">
+            <div className="h-full min-h-[400px] w-full border rounded-md overflow-hidden bg-background flex items-center justify-center text-muted-foreground">
                 Loading Editor...
             </div>
         ),

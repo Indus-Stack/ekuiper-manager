@@ -45,6 +45,7 @@ import { ConfKeyModal } from '@/components/connectors/conf-key-modal';
 import { i18nLabel } from '@/components/connectors/property-form';
 import { ekuiperClient } from '@/lib/ekuiper/client';
 import type { MetadataItem, MetadataDetail, MetadataDataSource } from '@/lib/ekuiper/types';
+import { resolveTargetFeatures } from '@/lib/flows/capabilities/resolve-capabilities';
 import { useServerStore } from '@/stores/server-store';
 import { useT, useI18n, toShortLang } from '@/lib/i18n';
 import { byKind } from '@/lib/i18n/translate';
@@ -69,6 +70,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
   const router = useRouter();
   const { servers, activeServerId } = useServerStore();
   const active = servers.find((node) => node.id === activeServerId);
+  const features = resolveTargetFeatures(active?.version);
 
   // Editor mode: Visual Builder vs SQL Statement
   const [mode, setMode] = React.useState<'visual' | 'sql'>('visual');
@@ -87,6 +89,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
   const [timestamp, setTimestamp] = React.useState('');
   const [timestampFormat, setTimestampFormat] = React.useState('');
   const [isShared, setIsShared] = React.useState(false);
+  const [bufferFullPolicy, setBufferFullPolicy] = React.useState<'block' | 'dropOldest' | ''>('');
   const [tableKind, setTableKind] = React.useState<'stream' | 'lookup'>('stream');
 
   // Raw SQL
@@ -136,6 +139,12 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
         if (opts.TIMESTAMP_FORMAT || opts.timestampFormat) setTimestampFormat(String(opts.TIMESTAMP_FORMAT || opts.timestampFormat));
         if (opts.SHARED !== undefined || opts.shared !== undefined) {
           setIsShared(Boolean(opts.SHARED ?? opts.shared));
+        }
+        const rawPolicy = opts.BUFFER_FULL_POLICY ?? opts.bufferFullPolicy ?? opts.buffer_full_policy;
+        if (rawPolicy === 'block' || rawPolicy === 'dropOldest') {
+          setBufferFullPolicy(rawPolicy);
+        } else {
+          setBufferFullPolicy('');
         }
         if (opts.KIND || opts.kind) {
           setTableKind(String(opts.KIND || opts.kind).toLowerCase() === 'lookup' ? 'lookup' : 'stream');
@@ -232,6 +241,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
     if (timestamp.trim()) withOptions.push(`TIMESTAMP="${timestamp.trim()}"`);
     if (timestampFormat.trim()) withOptions.push(`TIMESTAMP_FORMAT="${timestampFormat.trim()}"`);
     if (isShared) withOptions.push(`SHARED="true"`);
+    if (kind === 'stream' && bufferFullPolicy) withOptions.push(`BUFFER_FULL_POLICY="${bufferFullPolicy}"`);
     if (kind === 'table' && tableKind === 'lookup') withOptions.push(`KIND="lookup"`);
 
     const withSql = withOptions.length > 0 ? ` WITH (\n  ${withOptions.join(',\n  ')}\n)` : '';
@@ -252,6 +262,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
     timestamp,
     timestampFormat,
     isShared,
+    bufferFullPolicy,
     tableKind,
   ]);
 
@@ -500,7 +511,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                               setIsEditConfKey(false);
                               setConfModalOpen(true);
                             }}
-                            className="h-6 text-[11px] text-emerald-600 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
+                            className="h-6 text-[11px] text-emerald-700 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
                           >
                             <Plus className="size-3" />
                             {t('stream.addConfigurationKey')}
@@ -514,7 +525,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                                 setIsEditConfKey(true);
                                 setConfModalOpen(true);
                               }}
-                              className="h-6 text-[11px] text-emerald-600 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
+                              className="h-6 text-[11px] text-emerald-700 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
                             >
                               <Edit3 className="size-3" />
                               {t('stream.editConfigurationKey')}
@@ -568,6 +579,9 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                           <SelectContent>
                             <SelectGroup>
                               <SelectItem value="json" className="text-xs">JSON</SelectItem>
+                              {(features.supportsJsonl || format === 'jsonl') && (
+                                <SelectItem value="jsonl" className="text-xs">{t('stream.formatJsonl')}</SelectItem>
+                              )}
                               <SelectItem value="binary" className="text-xs">{t('stream.formatBinary')}</SelectItem>
                               <SelectItem value="delimited" className="text-xs">{t('stream.delimitedFormat')}</SelectItem>
                               <SelectItem value="protobuf" className="text-xs">Protobuf</SelectItem>
@@ -687,6 +701,48 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                           checked={isShared}
                           onCheckedChange={setIsShared}
                         />
+                      </div>
+                    )}
+
+                    {/* Stream Buffer Policy (eKuiper 2.5+) */}
+                    {kind === 'stream' && (features.supportsStreamBufferPolicy || Boolean(bufferFullPolicy)) && (
+                      <div className="flex flex-col gap-1.5 rounded-md border p-3 bg-muted/10">
+                        <div className="flex items-center gap-1.5">
+                          <Label htmlFor="res-buffer-full-policy" className="text-xs font-medium">
+                            {t('stream.bufferFullPolicy')}
+                          </Label>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="size-3.5 cursor-help text-muted-foreground" />
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-xs text-xs">
+                              {t('stream.bufferFullPolicyHint')}
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                        <Select
+                          value={bufferFullPolicy || '__DEFAULT__'}
+                          onValueChange={(val) =>
+                            setBufferFullPolicy(val === '__DEFAULT__' ? '' : (val as 'block' | 'dropOldest'))
+                          }
+                        >
+                          <SelectTrigger id="res-buffer-full-policy" className="h-9 text-xs font-mono">
+                            <SelectValue placeholder={t('stream.bufferPolicyDefault')} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="__DEFAULT__" className="text-xs italic text-muted-foreground">
+                                {t('stream.bufferPolicyDefault')}
+                              </SelectItem>
+                              <SelectItem value="block" className="text-xs font-mono">
+                                {t('stream.bufferPolicyBlock')}
+                              </SelectItem>
+                              <SelectItem value="dropOldest" className="text-xs font-mono">
+                                {t('stream.bufferPolicyDropOldest')}
+                              </SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
                       </div>
                     )}
                   </CardContent>

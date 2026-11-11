@@ -28,6 +28,8 @@ import { SinkBaseForm, type SinkBaseOptions } from '@/components/connectors/sink
 import { ConnectorIcon } from '@/components/connectors/connector-icon';
 import { ekuiperClient } from '@/lib/ekuiper/client';
 import type { MetadataItem, MetadataProperty, MetadataDetail } from '@/lib/ekuiper/types';
+import { resolveTargetFeatures } from '@/lib/flows/capabilities/resolve-capabilities';
+import { useServerStore } from '@/stores/server-store';
 import { useI18n, toShortLang, useT } from '@/lib/i18n';
 
 export interface ConfKeyModalProps {
@@ -52,6 +54,9 @@ export function ConfKeyModal({
   const { locale } = useI18n();
   const lang = toShortLang(locale);
   const t = useT();
+  const { servers, activeServerId } = useServerStore();
+  const active = servers.find((node) => node.id === activeServerId);
+  const features = resolveTargetFeatures(active?.version);
   const [name, setName] = React.useState(initialName);
   const [type, setType] = React.useState(initialType);
   const [availableTypes, setAvailableTypes] = React.useState<MetadataItem[]>([]);
@@ -474,6 +479,7 @@ export function ConfKeyModal({
               disabled={saving}
               availableConnections={availableConnections}
               availableSchemas={availableSchemas}
+              supportsJsonl={features.supportsJsonl}
             />
           )}
         </div>

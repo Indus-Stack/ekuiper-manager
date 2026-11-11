@@ -15,6 +15,7 @@ import { RevisionDiff } from '../history/revision-diff';
 import { FlowSettingsPanel } from '../inspector/flow-settings-panel';
 import { FlowBottomPanel } from '../panels/flow-bottom-panel';
 import { RuntimePanel } from '../panels/runtime-panel';
+import { ValidationPanel } from '../panels/validation-panel';
 import { FlowStudioHeader } from '../shell/flow-studio-header';
 
 if (typeof globalThis.structuredClone === 'undefined') {
@@ -365,5 +366,94 @@ describe('Flow Studio localized visible labels and controls', () => {
     expect(container.textContent).toContain('未加载流程。');
     expect(container.textContent).toContain('流程规则选项已变更');
     expect(container.textContent).toContain('显示完整值');
+  });
+
+  it('renders FLOW_SOURCENAME_DECODE_WARNING as non-blocking amber warning across NodeInspector, ValidationPanel, and FlowDeployDialog', async () => {
+    const warning = {
+      code: 'FLOW_SOURCENAME_DECODE_WARNING',
+      severity: 'warning' as const,
+      nodeId: 'node-source-1',
+      propertyPath: 'stream',
+      message: 'eKuiper 2.4.2 graph rules referencing saved streams via sourceName may emit empty objects `{}`.',
+    };
+
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = jest.fn(async (input: RequestInfo | URL) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      if (url.includes('/api/flows/options/')) {
+        return {
+          ok: true,
+          json: async () => ({ options: [] }),
+        } as Response;
+      }
+      return {
+        ok: true,
+        json: async () => ({ valid: true, diagnostics: [warning] }),
+      } as Response;
+    }) as unknown as typeof fetch;
+
+    try {
+      useFlowEditorStore.getState().loadDocument({
+        apiVersion: 'flow.ekuiper-manager.io/v1alpha1',
+        metadata: { id: 'flow-warn', name: 'Warn Flow' },
+        spec: {
+          nodes: [
+            {
+              id: 'node-source-1',
+              type: 'stream-source',
+              typeVersion: 1,
+              name: 'Saved Stream',
+              config: { stream: 'telemetry_stream', connector: 'memory' },
+            },
+          ],
+          edges: [],
+        },
+        layout: { nodes: { 'node-source-1': { x: 0, y: 0 } } },
+      });
+      useFlowEditorStore.getState().setSelection({ nodeIds: ['node-source-1'], edgeIds: [] });
+
+      const inspectorContainer = await renderWithLocale(<NodeInspector diagnostics={[warning]} />, 'en-US');
+      const inspectorDiag = inspectorContainer.querySelector('[data-testid="node-inspector-diagnostic"]');
+      expect(inspectorDiag?.getAttribute('data-severity')).toBe('warning');
+      expect(inspectorDiag?.className).toContain('amber');
+      expect(inspectorDiag?.textContent).toContain('FLOW_SOURCENAME_DECODE_WARNING');
+
+      const panelContainer = await renderWithLocale(
+        <ValidationPanel flowId="flow-warn" clientDiagnostics={[warning]} />,
+        'en-US',
+      );
+      const panelDiag = panelContainer.querySelector('[data-testid="flow-validation-client-diagnostic"]');
+      expect(panelDiag?.getAttribute('data-severity')).toBe('warning');
+      expect(panelDiag?.className).toContain('amber');
+      expect(panelContainer.querySelector('[data-testid="flow-validation-client-summary"]')?.textContent).toContain(
+        '0 error(s)',
+      );
+
+      await renderWithLocale(
+        <FlowDeployDialog
+          open={true}
+          flowId="flow-warn"
+          flowName="Warn Flow"
+          targetName="Edge-242"
+          targetNodeId="node-1"
+          semanticHash="abcdef1234567890"
+          semanticDirty={false}
+          layoutDirty={false}
+          onClose={() => {}}
+        />,
+        'en-US',
+      );
+      await act(async () => {
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+      const deployDiag = document.body.querySelector('[data-testid="flow-deploy-validation-diagnostic"]');
+      expect(deployDiag?.getAttribute('data-severity')).toBe('warning');
+      expect(deployDiag?.className).toContain('amber');
+      const confirmBtn = document.body.querySelector('[data-testid="flow-deploy-confirm"]') as HTMLButtonElement | null;
+      expect(confirmBtn?.disabled).toBe(false);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 });

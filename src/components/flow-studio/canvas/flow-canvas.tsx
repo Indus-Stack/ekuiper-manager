@@ -29,6 +29,7 @@ import { FLOW_CANVAS_NODE_TYPE } from "./to-react-flow";
 import { FLOW_PALETTE_DRAG_MIME } from "../palette/node-palette";
 
 import { useT } from '@/lib/i18n';
+import { useTheme } from '@/lib/theme';
 /**
  * FS-0124: module-stable node type map.
  *
@@ -124,6 +125,7 @@ export function FlowCanvas({
   className,
 }: FlowCanvasProps) {
   const t = useT();
+  const { resolvedTheme } = useTheme();
   // High-frequency drag/position updates stay in local XYFlow view state.
   // The editor store is only notified once per drag stop (FS-0042), so no
   // semantic hash, autosave, or history work runs per pointer event.
@@ -439,6 +441,7 @@ export function FlowCanvas({
         nodes={displayNodes}
         edges={displayEdges}
         nodeTypes={nodeTypes}
+        colorMode={resolvedTheme}
         onlyRenderVisibleElements={false}
         onInit={handleInit}
         onNodesChange={handleNodesChange}

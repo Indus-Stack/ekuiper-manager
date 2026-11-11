@@ -2,6 +2,7 @@ import {
   isSensitiveEKuiperPath,
   parseEKuiperJsonObject,
   redactEKuiperSecrets,
+  sanitizeSensitiveEKuiperBody,
 } from '@/lib/ekuiper/wire';
 
 describe('eKuiper wire responses', () => {
@@ -35,5 +36,28 @@ describe('eKuiper wire responses', () => {
       id: 'mqtt-main',
       props: { username: 'operator', password: '[redacted]', nested: [{ privateKey: '[redacted]' }] },
     });
+  });
+
+  it('redacts sensitive JSON payloads across methods while allowing plain-text mutation acks', () => {
+    const getJson = sanitizeSensitiveEKuiperBody(
+      'GET',
+      '[{"id":"c1","typ":"mqtt","props":{"password":"secret"}}]',
+    );
+    expect(getJson.isJson).toBe(true);
+    expect(JSON.parse(getJson.body)).toEqual([
+      { id: 'c1', typ: 'mqtt', props: { password: '[redacted]' } },
+    ]);
+
+    expect(sanitizeSensitiveEKuiperBody('POST', 'success')).toEqual({
+      body: 'success',
+      isJson: false,
+    });
+    expect(sanitizeSensitiveEKuiperBody('DELETE', '  ')).toEqual({
+      body: '  ',
+      isJson: false,
+    });
+
+    expect(() => sanitizeSensitiveEKuiperBody('GET', 'success')).toThrow(/invalid JSON/i);
+    expect(() => sanitizeSensitiveEKuiperBody('POST', 'password=secret')).toThrow(/invalid JSON/i);
   });
 });

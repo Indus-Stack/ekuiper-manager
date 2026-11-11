@@ -433,7 +433,7 @@ export function FlowDeployDialog({
             ) : null}
             {validation.phase === "valid" ? (
               <p
-                className="text-xs font-medium text-emerald-600 dark:text-emerald-400"
+                className="text-xs font-medium text-emerald-700 dark:text-emerald-400"
                 data-testid="flow-deploy-validation-summary"
               >
                 Server: valid — the saved draft can be deployed.
@@ -469,7 +469,9 @@ export function FlowDeployDialog({
                         "rounded-md border px-2.5 py-1.5 text-xs",
                         diagnostic.severity === "error"
                           ? "border-destructive/30 bg-destructive/10 text-destructive"
-                          : "border-muted bg-muted/40 text-muted-foreground",
+                          : diagnostic.severity === "warning"
+                            ? "border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-200"
+                            : "border-muted bg-muted/40 text-muted-foreground",
                       )}
                       data-testid="flow-deploy-validation-diagnostic"
                       data-severity={diagnostic.severity}

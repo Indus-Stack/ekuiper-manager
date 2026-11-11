@@ -4,7 +4,7 @@
 [![Latest Release](https://img.shields.io/github/v/release/ankur-paan/ekuiper-manager)](https://github.com/ankur-paan/ekuiper-manager/releases/latest)
 [![Docker Pulls](https://img.shields.io/docker/pulls/indusstack/ekuipermanager?color=blue&logo=docker)](https://hub.docker.com/r/indusstack/ekuipermanager)
 [![License: IOSL](https://img.shields.io/badge/License-IDACS%20Open%20Source-green.svg)](LICENSE)
-[![eKuiper](https://img.shields.io/badge/eKuiper-2.4.1-orange)](https://ekuiper.org/)
+[![eKuiper](https://img.shields.io/badge/eKuiper-2.4.2-orange)](https://ekuiper.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
@@ -28,7 +28,7 @@ This project fills that gap with a manager that is:
 
 - **Open and extensible** — the UI, API contract, deployment stack, and roadmap are public.
 - **Self-hosted** — Manager, eKuiper, and a private PostgreSQL sidecar start together.
-- **Faithful to eKuiper** — the bundled OpenAPI reference is audited against official eKuiper v2.4.1 routes, source, and tests.
+- **Faithful to eKuiper** — the bundled OpenAPI reference is audited against official eKuiper v2.4.2 routes, source, and tests (while keeping 2.4.1 supported, plus a separate `v2.5.0-alpha.5` preview contract).
 - **Safe by default** — credentials stay server-side, stored secrets are encrypted, and the browser cannot choose arbitrary proxy destinations.
 - **Useful without a cloud account** — AI assistance is optional and disabled by default.
 
@@ -48,7 +48,7 @@ Full support will arrive by the end of this year when reKuiper reaches a stable 
 
 | Feature | Description |
 | --- | --- |
-| **One-command self-hosted stack** | Docker Compose starts eKuiper Manager, official eKuiper 2.4.1, and a private PostgreSQL 17 sidecar. Only the Manager port is published. |
+| **One-command self-hosted stack** | Docker Compose starts eKuiper Manager, official eKuiper 2.4.2, and a private PostgreSQL 17 sidecar. Only the Manager port is published. |
 | **Local account lifecycle** | First-owner setup, sign in/out, user creation, forced first-password change, password reset, session revocation, and user deletion. |
 | **Server-side node registry** | Add, probe, select, and delete eKuiper nodes without exposing stored authorization values to the browser. |
 | **Streams and tables** | Create, inspect, edit, and delete SQL-defined stream and table resources. |
@@ -56,11 +56,12 @@ Full support will arrive by the end of this year when reKuiper reaches a stable 
 | **Visual rule designer** | Assemble rule inputs, SQL, and ordered actions visually; inspect generated eKuiper SQL/JSON; validate before creating. |
 | **Flow Studio (Beta)** | Visual DAG flow editor with 17 built-in nodes, declarative extensions, Flow-to-eKuiper compilation, preflight deploy/undeploy, revision history/diff/rollback, and 1 Hz runtime operator metrics. |
 | **Bilingual UI (`en-US` & `zh-CN`)** | Complete English and Simplified Chinese localization across all workspaces, Flow Studio, Rule Designer, and connector metadata with live locale switching. |
+| **Light & Dark Themes** | Light, dark, and system themes with a persistent choice in Settings and the header. |
 | **Rule diagnostics** | Status, topology, output schema, explain plan, trace controls, and trace results live together in the rule workspace. |
 | **Resources** | Shared connections, installed connector metadata, protobuf/custom schemas, schema upload, and managed uploads. |
 | **Extensions** | Native and portable plugins, portable status, UDF symbols, JavaScript UDFs, and external services. |
 | **Import and export** | Direct eKuiper configuration export and import through the node-scoped proxy. |
-| **Swagger API playground** | Interactive OpenAPI reference covering the 98 paths and 140 management operations registered by eKuiper v2.4.1. |
+| **Swagger API playground** | Interactive OpenAPI reference covering the 98 paths and 140 management operations registered by eKuiper v2.4.2 (plus a separate `v2.5.0-alpha.5` preview selector). |
 | **Read-only operations agent** | Optional permission-aware assistant that correlates sanitized Manager/PostgreSQL records with allowlisted live reads from the selected eKuiper node. |
 | **Production safety baseline** | Encrypted node credentials, hashed sessions, same-origin mutation checks, SSRF controls, recursive secret redaction, audit events, non-root container, and read-only filesystem. |
 
@@ -99,7 +100,7 @@ See the living [development plan](DEVELOPMENT_PLAN.md) for tracked outcomes, gap
 - ✅ Durable checked SQL migrations and named volumes.
 - ✅ Local owner/user lifecycle and encrypted server-side node registry.
 - ✅ Core streams, tables, rules, resources, extensions, and transfer flows.
-- ✅ Official eKuiper v2.4.1 OpenAPI baseline: 98 paths and 140 operations.
+- ✅ Official eKuiper v2.4.1–v2.4.2 OpenAPI baseline: 98 paths and 140 operations (plus separate `v2.5.0-alpha.5` preview contract).
 - ✅ Global read-only, tool-calling operations agent with strict data boundaries.
 - ✅ Flow Studio visual DAG editor, revision history/diff/rollback, and runtime metrics (`v1.4.0`).
 - ✅ Bilingual English (`en-US`) and Simplified Chinese (`zh-CN`) UI localization (`v1.4.0`).
@@ -246,9 +247,11 @@ The Manager obtains a migration lock and applies committed migrations before acc
 
 ## 📚 Documentation
 
-- [Interactive eKuiper v2.4.1 API reference](https://ankur-paan.github.io/ekuiper-manager/)
+- [Interactive eKuiper v2.4.2 API reference](https://ankur-paan.github.io/ekuiper-manager/)
+- [Engine compatibility matrix (`2.4.1`, `2.4.2`, `2.5` preview)](docs/ENGINE_COMPATIBILITY.md)
 - [Development plan and backlog](DEVELOPMENT_PLAN.md)
 - [AI Assistant and Operations Agent](docs/AI_ASSISTANT.md)
+- [Theming guide](docs/THEMING.md)
 - [Security policy](SECURITY.md)
 - [Contributing guide](CONTRIBUTING.md)
 
@@ -293,7 +296,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUC
 | **TanStack Query and Table** | Server-state coordination and resource tables. |
 | **Zustand** | Focused client-side workspace state. |
 | **PostgreSQL 17** | Durable Manager users, sessions, nodes, audit events, and migrations. |
-| **LF Edge eKuiper 2.4.1** | Bundled stream-processing engine and audited API baseline. |
+| **LF Edge eKuiper 2.4.2** | Bundled stream-processing engine (`2.4.1` also supported) and audited API baseline. |
 | **Docker Compose** | One-command installation, private networking, health checks, and volumes. |
 | **Jest + Playwright** | Unit, coverage, browser lifecycle, responsive navigation, and persistence tests. |
 | **OpenAI-compatible API** | Optional read-only operations agent with iterative tool calling. |
@@ -314,7 +317,8 @@ src/
 database/
 └── migrations/             # Ordered, checksummed SQL migrations
 public/
-└── ekuiper-openapi.json    # Canonical eKuiper v2.4.1 OpenAPI contract
+├── ekuiper-openapi.json             # Canonical eKuiper v2.4.2 OpenAPI contract
+└── ekuiper-openapi-2.5-preview.json # Separate eKuiper v2.5.0-alpha.5 preview contract
 e2e/                        # Official-stack Playwright journeys and fixtures
 scripts/                    # Migrations, OpenAPI validation, and AI provider checks
 compose.yaml                # Manager + eKuiper + private PostgreSQL stack

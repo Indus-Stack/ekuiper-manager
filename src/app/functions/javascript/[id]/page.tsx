@@ -213,7 +213,7 @@ export default function JSUDFEditorPage() {
 
                     {/* Editor Area */}
                     <div className="md:col-span-3 h-full flex flex-col min-h-0">
-                        <div className="flex-1 border rounded-lg overflow-hidden bg-[#1e1e1e]">
+                        <div className="flex-1 border rounded-lg overflow-hidden bg-background">
                             <CodeEditor
                                 value={script}
                                 onChange={setScript}

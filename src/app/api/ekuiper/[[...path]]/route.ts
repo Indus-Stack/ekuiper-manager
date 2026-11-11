@@ -5,8 +5,7 @@ import { assertSafeNodeDestination } from '@/lib/network';
 import { getNodeWithAuthorization, NODE_COOKIE } from '@/lib/nodes';
 import {
   isSensitiveEKuiperPath,
-  parseEKuiperJson,
-  redactEKuiperSecrets,
+  sanitizeSensitiveEKuiperBody,
 } from '@/lib/ekuiper/wire';
 
 export const dynamic = 'force-dynamic';
@@ -129,11 +128,14 @@ async function proxy(
     }
 
     if (isSensitiveEKuiperPath(path)) {
-      const payload = redactEKuiperSecrets(parseEKuiperJson(await upstream.text()));
+      const sanitized = sanitizeSensitiveEKuiperBody(method, await upstream.text());
       outgoingHeaders.delete('content-length');
-      outgoingHeaders.set('content-type', 'application/json');
-      return new Response(JSON.stringify(payload), {
+      if (sanitized.isJson) {
+        outgoingHeaders.set('content-type', 'application/json');
+      }
+      return new Response(upstream.status === 204 ? null : sanitized.body, {
         status: upstream.status,
+        statusText: upstream.statusText,
         headers: outgoingHeaders,
       });
     }

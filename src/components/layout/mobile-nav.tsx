@@ -23,7 +23,7 @@ export function MobileNav() {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden size-9" aria-expanded={open} aria-label={t('nav.toggleMenu')}>
+                <Button variant="ghost" size="icon" className="md:hidden size-9 shrink-0" aria-expanded={open} aria-label={t('nav.toggleMenu')}>
                     <Menu className="size-5" aria-hidden="true" />
                     <span className="sr-only">{t('nav.toggleMenu')}</span>
                 </Button>

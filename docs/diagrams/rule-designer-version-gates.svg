@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 380" width="920" height="380" role="img" aria-labelledby="title desc">
+  <title id="title">Version-Aware Rule Designer, Stream Editor, and Workspace Gates</title>
+  <desc id="desc">Diagram showing how active node version drives SQL function availability in Rule Designer, format and buffer policy fields in Stream Editor and Sink forms, and Scan tables in Rule Workspace.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <rect width="920" height="380" fill="#ffffff" rx="12" />
+
+  <!-- Header -->
+  <rect x="24" y="18" width="872" height="50" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="40" y="40" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Version-Aware Rule Designer, Stream Editor &amp; Workspace Gates</text>
+  <text x="40" y="58" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#475569">UI surfaces read TargetFeatureFlags from resolveTargetFeatures(active?.version)</text>
+
+  <!-- Store to Flags row -->
+  <rect x="24" y="84" width="236" height="52" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="40" y="105" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#0f172a">useServerStore</text>
+  <text x="40" y="123" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#475569">active?.version ("2.4.2")</text>
+
+  <line x1="260" y1="110" x2="296" y2="110" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <rect x="300" y="84" width="320" height="52" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
+  <text x="316" y="105" font-family="ui-monospace, SFMono-Regular, monospace" font-size="12" font-weight="700" fill="#1e3a8a">resolveTargetFeatures(version)</text>
+  <text x="316" y="123" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#1d4ed8">Computes boolean feature gates cleanly</text>
+
+  <line x1="620" y1="110" x2="656" y2="110" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <rect x="660" y="84" width="236" height="52" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="676" y="105" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#0f172a">Version-Specific UI</text>
+  <text x="676" y="123" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#475569">Hides unsupported fields</text>
+
+  <!-- Connector branches -->
+  <line x1="460" y1="136" x2="460" y2="148" stroke="#94a3b8" stroke-width="1.5" />
+  <line x1="162" y1="148" x2="758" y2="148" stroke="#94a3b8" stroke-width="1.5" />
+  <line x1="162" y1="148" x2="162" y2="160" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" />
+  <line x1="460" y1="148" x2="460" y2="160" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" />
+  <line x1="758" y1="148" x2="758" y2="160" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <!-- Panel 1: SQL Function Helper -->
+  <rect x="24" y="164" width="276" height="196" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="40" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#0f172a">SQL Function Helper</text>
+  <text x="40" y="210" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#475569">/rules/new · /rules/:id/edit</text>
+  <text x="40" y="238" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#0f172a">2.4.1+: Base catalog (deduped)</text>
+  <text x="40" y="264" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#1d4ed8">2.4.2+ (supportsSqlFunctions242):</text>
+  <text x="48" y="284" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#1d4ed8">array_avg, acc_max_by,</text>
+  <text x="48" y="300" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#1d4ed8">acc_min_by, acc_map_agg</text>
+  <text x="40" y="326" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#15803d">2.5.0-alpha.5+ (Kafka meta):</text>
+  <text x="48" y="344" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#15803d">meta_topic .. meta_headers</text>
+
+  <!-- Panel 2: Serialization & Buffers -->
+  <rect x="322" y="164" width="276" height="196" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="338" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Streams &amp; Sink Outputs</text>
+  <text x="338" y="210" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#475569">/streams/new · SinkBaseForm</text>
+  <text x="338" y="238" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#15803d">2.5.0-alpha.5+ (supportsJsonl):</text>
+  <text x="346" y="256" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Shows jsonl format option</text>
+  <text x="346" y="274" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Preserves saved jsonl values</text>
+  <text x="338" y="302" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#15803d">2.5.0-alpha.2+ (bufferPolicy):</text>
+  <text x="346" y="320" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#0f172a">BUFFER_FULL_POLICY =</text>
+  <text x="346" y="338" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#0f172a">block | dropOldest</text>
+
+  <!-- Panel 3: Workspace & Action Naming -->
+  <rect x="620" y="164" width="276" height="196" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="636" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Diagnostics &amp; Sinks</text>
+  <text x="636" y="210" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#475569">/rules/:id · ConfKey &amp; Actions</text>
+  <text x="636" y="238" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#15803d">2.5.0-alpha.1+ (scantables):</text>
+  <text x="644" y="256" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Exposes Scan tables tab</text>
+  <text x="644" y="274" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#475569">GET /rules/{name}/scantables</text>
+  <text x="636" y="302" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#0f172a">ConfKey Sync &amp; Action Names:</text>
+  <text x="644" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Sends category-prefixed payload</text>
+  <text x="644" y="338" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#b45309">• Renaming sink alters state ID</text>
+</svg>
+

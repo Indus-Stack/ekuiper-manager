@@ -155,6 +155,8 @@ interface HarnessOverrides {
   flow?: FlowRecord | null;
   draft?: FlowDraftRecord | null;
   target?: ManagedNode | null;
+  /** Node returned by the live re-probe of a non-ONLINE target. */
+  probe?: ManagedNode;
   validation?: FlowValidationResult;
   compile?: CompileFlowResult;
   ekuiperValidation?: EkuiperValidationResult;
@@ -198,6 +200,10 @@ function buildHarness(overrides: HarnessOverrides = {}): Harness {
     loadTarget: async () => {
       order.push('loadTarget');
       return 'target' in overrides ? (overrides.target ?? null) : buildTargetNode();
+    },
+    probeTarget: async () => {
+      order.push('probe');
+      return overrides.probe ?? buildTargetNode();
     },
     resolveProfile: () => {
       order.push('resolveProfile');
@@ -462,6 +468,47 @@ describe('deployFlow service (FS-0087)', () => {
       deployFlow({ flowId: 'flow-1' }, missingTarget.deps),
     ).rejects.toMatchObject({ status: 404, code: 'NODE_NOT_FOUND' });
     expect(missingTarget.order).toEqual(['loadFlow', 'loadDraft', 'loadTarget']);
+  });
+
+  it('never probes a target whose stored status is ONLINE', async () => {
+    const harness = buildHarness();
+
+    await deployFlow({ flowId: 'flow-1' }, harness.deps);
+
+    expect(harness.order).not.toContain('probe');
+  });
+
+  it('re-probes a stale OFFLINE target and deploys once the engine has recovered', async () => {
+    const harness = buildHarness({
+      target: { ...buildTargetNode(), status: 'OFFLINE' },
+      probe: { ...buildTargetNode(), status: 'ONLINE' },
+    });
+
+    const result = await deployFlow({ flowId: 'flow-1' }, harness.deps);
+
+    expect(result.ok).toBe(true);
+    expect(harness.order.slice(0, 5)).toEqual([
+      'loadFlow',
+      'loadDraft',
+      'loadTarget',
+      'probe',
+      'resolveProfile',
+    ]);
+    expect(harness.upsertCalls).toHaveLength(1);
+  });
+
+  it('fails with NODE_UNREACHABLE before any attempt when the live probe still reports OFFLINE', async () => {
+    const offline: ManagedNode = { ...buildTargetNode(), status: 'OFFLINE' };
+    const harness = buildHarness({ target: offline, probe: offline });
+
+    await expect(deployFlow({ flowId: 'flow-1' }, harness.deps)).rejects.toMatchObject({
+      status: 502,
+      code: 'NODE_UNREACHABLE',
+    });
+
+    expect(harness.order).toEqual(['loadFlow', 'loadDraft', 'loadTarget', 'probe']);
+    expect(harness.persistedRedacted).toHaveLength(0);
+    expect(harness.upsertCalls).toHaveLength(0);
   });
 });
 

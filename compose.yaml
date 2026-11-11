@@ -18,7 +18,7 @@ services:
     networks: [manager_internal]
 
   ekuiper:
-    image: lfedge/ekuiper:2.4.1-slim@sha256:f1a2294dc005deb5a6ad5055d33019750111dc1c56f5280adb96d77c1cd096ff
+    image: lfedge/ekuiper:2.4.2-slim@sha256:0e43ef0bfa59d112d0df56b94df817adba44f0906129a5a1a7458eaece975d8a
     volumes:
       - ekuiper_config:/kuiper/etc
       - ekuiper_data:/kuiper/data

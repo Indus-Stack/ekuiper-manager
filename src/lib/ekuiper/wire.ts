@@ -34,6 +34,38 @@ export function isSensitiveEKuiperPath(path: string): boolean {
   );
 }
 
+export function sanitizeSensitiveEKuiperBody(
+  method: string,
+  text: string,
+): { body: string; isJson: boolean } {
+  const trimmed = text.trim();
+  if (trimmed) {
+    try {
+      const payload = redactEKuiperSecrets(JSON.parse(text));
+      return { body: JSON.stringify(payload), isJson: true };
+    } catch {
+      if (method !== 'GET' && /^(?:success|ok)$/i.test(trimmed)) {
+        return { body: text, isJson: false };
+      }
+      throw new ApiError(
+        502,
+        'eKuiper returned an invalid JSON response',
+        'INVALID_UPSTREAM_RESPONSE',
+      );
+    }
+  }
+
+  if (method !== 'GET') {
+    return { body: text, isJson: false };
+  }
+
+  throw new ApiError(
+    502,
+    'eKuiper returned an invalid JSON response',
+    'INVALID_UPSTREAM_RESPONSE',
+  );
+}
+
 export function redactEKuiperSecrets(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(redactEKuiperSecrets);
   if (value && typeof value === 'object') {

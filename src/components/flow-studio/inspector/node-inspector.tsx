@@ -154,7 +154,14 @@ export function NodeInspector({
               {nodeDiagnostics.map((diagnostic) => (
                 <li
                   key={`${diagnostic.code}|${diagnostic.nodeId ?? ""}|${diagnostic.edgeId ?? ""}|${diagnostic.propertyPath ?? ""}|${diagnostic.message}`}
-                  className="rounded-md border border-destructive/30 bg-destructive/10 px-2.5 py-1.5 text-xs text-destructive"
+                  className={cn(
+                    "rounded-md border px-2.5 py-1.5 text-xs",
+                    diagnostic.severity === "error"
+                      ? "border-destructive/30 bg-destructive/10 text-destructive"
+                      : diagnostic.severity === "warning"
+                        ? "border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-200"
+                        : "border-muted bg-muted/40 text-muted-foreground",
+                  )}
                   data-testid="node-inspector-diagnostic"
                   data-severity={diagnostic.severity}
                   role={diagnostic.severity === "error" ? "alert" : "status"}
@@ -221,7 +228,14 @@ export function NodeInspector({
               {(documentDiagnostics ?? []).map((diagnostic) => (
                 <li
                   key={`${diagnostic.code}|${diagnostic.message}`}
-                  className="rounded-md border border-destructive/30 bg-destructive/10 px-2.5 py-1.5 text-xs text-destructive"
+                  className={cn(
+                    "rounded-md border px-2.5 py-1.5 text-xs",
+                    diagnostic.severity === "error"
+                      ? "border-destructive/30 bg-destructive/10 text-destructive"
+                      : diagnostic.severity === "warning"
+                        ? "border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-200"
+                        : "border-muted bg-muted/40 text-muted-foreground",
+                  )}
                   data-testid="node-inspector-flow-diagnostic"
                   data-severity={diagnostic.severity}
                   role={diagnostic.severity === "error" ? "alert" : "status"}

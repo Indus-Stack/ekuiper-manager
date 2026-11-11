@@ -14,6 +14,21 @@ const OFFICIAL_ROUTE_FILES = [
   "internal/server/script_init.go",
 ];
 
+const CONTRACTS = {
+  "2.4.2": {
+    tag: "v2.4.2",
+    commit: "7866cc05bbf4df5ec24e73614981de765f34fefb",
+    operationCount: 140,
+    isPreview: false,
+  },
+  "2.5.0-alpha.5": {
+    tag: "v2.5.0-alpha.5",
+    commit: "fd6bf37959ca00a88d8a874cc10ff4ba868b2900",
+    operationCount: 141,
+    isPreview: true,
+  },
+};
+
 function fail(messages) {
   for (const message of messages) console.error(`ERROR: ${message}`);
   process.exit(1);
@@ -44,22 +59,31 @@ function visit(value, visitor, location = "#") {
   }
 }
 
-function validateDocument(spec) {
+function validateDocument(spec, specPath) {
   const errors = [];
   const operationIds = new Map();
-  const expectedSourcePrefix = "https://github.com/lf-edge/ekuiper/blob/v2.4.1/";
+  const version = spec["x-ekuiper-version"];
+  const contract = CONTRACTS[version];
+
+  if (!contract) {
+    errors.push(`x-ekuiper-version must be one of ${Object.keys(CONTRACTS).join(", ")}, found ${JSON.stringify(version)}`);
+    return errors;
+  }
+
+  if (path.basename(specPath) === "ekuiper-openapi.json" && contract.isPreview) {
+    errors.push(`canonical ekuiper-openapi.json must target GA release 2.4.2, found ${JSON.stringify(version)}`);
+  }
+
+  const expectedSourcePrefix = `https://github.com/lf-edge/ekuiper/blob/${contract.tag}/`;
 
   if (!/^3\.0\./.test(spec.openapi ?? "")) {
     errors.push(`openapi must be a 3.0.x version, found ${JSON.stringify(spec.openapi)}`);
   }
-  if (spec.info?.version !== "2.4.1") {
-    errors.push(`info.version must be 2.4.1, found ${JSON.stringify(spec.info?.version)}`);
+  if (spec.info?.version !== version) {
+    errors.push(`info.version must match ${version}, found ${JSON.stringify(spec.info?.version)}`);
   }
-  if (spec["x-ekuiper-version"] !== "2.4.1") {
-    errors.push(`x-ekuiper-version must be 2.4.1, found ${JSON.stringify(spec["x-ekuiper-version"])}`);
-  }
-  if (spec["x-source-commit"] !== "bf8c1258b2a80e41e575d674346636c9bb687d33") {
-    errors.push(`x-source-commit must pin the official v2.4.1 commit, found ${JSON.stringify(spec["x-source-commit"])}`);
+  if (spec["x-source-commit"] !== contract.commit) {
+    errors.push(`x-source-commit must pin the official ${contract.tag} commit (${contract.commit}), found ${JSON.stringify(spec["x-source-commit"])}`);
   }
 
   for (const [routePath, pathItem] of Object.entries(spec.paths ?? {})) {
@@ -86,7 +110,7 @@ function validateDocument(spec) {
       if (!Array.isArray(sources) || sources.length === 0) {
         errors.push(`${label} has no x-ekuiper-source provenance`);
       } else if (sources.some((source) => typeof source !== "string" || !source.startsWith(expectedSourcePrefix))) {
-        errors.push(`${label} has a source outside the official tagged eKuiper tree`);
+        errors.push(`${label} has a source outside the official tagged eKuiper ${contract.tag} tree`);
       }
 
       const parameters = [...(pathItem.parameters ?? []), ...(operation.parameters ?? [])].map((parameter) =>
@@ -120,7 +144,9 @@ function validateDocument(spec) {
   }
 
   const operationCount = collectSpecOperations(spec).size;
-  if (operationCount !== 140) errors.push(`the v2.4.1 contract must contain 140 operations, found ${operationCount}`);
+  if (operationCount !== contract.operationCount) {
+    errors.push(`the ${contract.tag} contract must contain ${contract.operationCount} operations, found ${operationCount}`);
+  }
   if (spec.paths?.["/plugins/{type}"]) errors.push("generic /plugins/{type} paths are not registered by eKuiper");
 
   const auth = spec.components?.securitySchemes?.JwtToken;
@@ -161,10 +187,24 @@ function validateDocument(spec) {
     errors.push("PATCH /configs must document its empty 204 success response");
   }
   if (!spec.paths?.["/ruletest"]?.post?.responses?.["200"]?.content?.["text/plain"]) {
-    errors.push("POST /ruletest must document the v2.4.1 text/plain wire media type");
+    errors.push(`POST /ruletest must document the ${contract.tag} text/plain wire media type`);
   }
   if (!spec.paths?.["/connections"]?.get?.responses?.["200"]?.content?.["text/plain"]) {
-    errors.push("GET /connections must document the v2.4.1 text/plain wire media type");
+    errors.push(`GET /connections must document the ${contract.tag} text/plain wire media type`);
+  }
+
+  if (contract.isPreview) {
+    const scanTables = spec.paths?.["/rules/{name}/scantables"]?.get;
+    const scanTablesSchema = scanTables?.responses?.["200"]?.content?.["application/json"]?.schema;
+    if (!scanTables || scanTablesSchema?.type !== "array") {
+      errors.push("GET /rules/{name}/scantables must be modeled as an application/json array in the 2.5 preview contract");
+    }
+    const entrySchema = spec.components?.schemas?.ShowScanTablesResponse;
+    if (entrySchema?.properties?.emitter?.type !== "string" || entrySchema?.properties?.content?.type !== "object") {
+      errors.push("ShowScanTablesResponse must define {emitter: string, content: object}");
+    }
+  } else if (spec.paths?.["/rules/{name}/scantables"]) {
+    errors.push("GET /rules/{name}/scantables is a 2.5 preview route and must not appear in the 2.4.2 contract");
   }
 
   return errors;
@@ -222,7 +262,7 @@ try {
   fail([`cannot parse ${specPath}: ${error.message}`]);
 }
 
-const documentErrors = validateDocument(spec);
+const documentErrors = validateDocument(spec, specPath);
 if (documentErrors.length) fail(documentErrors);
 
 if (!skipOfficial) {

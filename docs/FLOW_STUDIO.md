@@ -6,6 +6,7 @@ It describes behavior as implemented in this checkout, not a roadmap vision.
 Related references:
 
 - `docs/FLOW_STUDIO_ARCHITECTURE.md` — locked architecture boundaries.
+- `docs/ENGINE_COMPATIBILITY.md` — supported engine versions (`2.4.1`, `2.4.2-slim`, `2.5` preview) and saved-stream behavior.
 - `docs/FLOW_EXTENSIONS.md` — declarative extension author guide.
 - `docs/FLOW_STUDIO_PERFORMANCE.md` — canvas performance decision and smoke-test budgets.
 - `docs/FLOW_STUDIO_RULE_TEST_NOTES.md` — why rule-test trial runs are unavailable.
@@ -50,12 +51,20 @@ registry; it maintains no separate catalog.
 
 ### Sources (`category: source`)
 
+![Flow Studio Saved-Stream Graph Path and PR #4213 Behavior](./diagrams/sourcename-graph-flow.svg)
+
 | Type | Display name | Compiled eKuiper `nodeType` |
 | --- | --- | --- |
 | `memory-source` | Memory Source | `memory` |
 | `mqtt-source` | MQTT Source | `mqtt` |
 | `stream-source` | Stream Source | stream/table reference source |
 | `table-source` | Table Source | stream/table reference source |
+
+Saved-stream and saved-table source notes (`2.4.1` and `2.4.2`):
+
+- `stream-source` and `table-source` compile to `{ sourceType, sourceName }`.
+- Upstream fix PR `#4213` is absent on `2.4.1` and `2.4.2` engines. Byte-decoded saved streams (such as `file` streams) emit empty `{}` objects on those targets, while `memory` saved streams pass fields normally.
+- Validation shows a non-blocking `FLOW_SOURCENAME_DECODE_WARNING` diagnostic in the editor, inspector, and Deploy preflight dialog for nodes below `2.5.0`. Use SQL rules or explicit `memory-source` / `mqtt-source` nodes when decoding byte payloads on `2.4.x`.
 
 Only confirmed non-secret editor properties are exposed. MQTT secret values
 live in the Manager connection configuration, never in flow node config.
@@ -268,14 +277,16 @@ Known limits:
 - Playwright specs: `e2e/flow-studio.spec.ts` (happy path: authenticate,
   create flow, add/configure/connect source/filter/sink, autosave,
   validate, deploy against the bundled official eKuiper stack, then clean
-  up), `e2e/flow-studio-performance.spec.ts` (500-node smoke),
+  up), `e2e/version-compatibility.spec.ts` (version gates and `sourceName`
+  verification), `e2e/flow-studio-performance.spec.ts` (500-node smoke),
   `e2e/flow-studio-accessibility.spec.ts` (keyboard, roles/labels, Escape
   and Delete guards). These specs are authored for CI with a running
   stack; they are not executed as part of routine type-check/lint.
 - Unit/contract coverage includes the deterministic fixture generator,
   render-selector guards, compiler conformance against the audited
-  `public/ekuiper-openapi.json` (eKuiper 2.4.1) `RuleGraph` envelope, and
-  extension loader/compiler fixtures.
+  `public/ekuiper-openapi.json` (eKuiper 2.4.2, with 2.4.1 baseline
+  compatibility retained) `RuleGraph` envelope, and extension
+  loader/compiler fixtures.
 - Keyboard support: palette items are keyboard-reachable, inspector inputs
   are labeled, status is never color-only, and typing in an input never
   triggers canvas Delete.

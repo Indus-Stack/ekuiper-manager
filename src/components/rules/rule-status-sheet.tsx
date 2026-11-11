@@ -158,7 +158,7 @@ export function RuleStatusSheet({
             </div>
             <div className="p-3 rounded-lg border border-border/60 bg-muted/20">
               <span className="text-[11px] text-muted-foreground font-medium block">{t('rule.sourceRecords')}</span>
-              <span className="text-xl font-mono tabular-nums font-semibold text-emerald-600 dark:text-emerald-400">
+              <span className="text-xl font-mono tabular-nums font-semibold text-emerald-700 dark:text-emerald-400">
                 {String(
                   statusEntries.find(([k]) => k.includes('source_') && k.endsWith('_records_in_total'))?.[1] ??
                     statusEntries.find(([k]) => k.endsWith('records_in_total'))?.[1] ??
@@ -190,7 +190,7 @@ export function RuleStatusSheet({
                             {String(exceptions)} err
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-[10px] h-5 text-emerald-600">
+                          <Badge variant="outline" className="text-[10px] h-5 text-emerald-700 dark:text-emerald-400">
                             OK
                           </Badge>
                         )}

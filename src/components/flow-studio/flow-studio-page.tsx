@@ -35,7 +35,7 @@ import { createFlowEdgeForConnection, generateFlowEdgeId } from '@/lib/flows/mod
 import { buildFlowDirtyBaseline, computeFlowDirtyState, type FlowDirtyBaseline } from '@/lib/flows/model/flow-dirty-state';
 import { createBuiltinNodeRegistry } from '@/lib/flows/registry/builtin-registry';
 import { validateExtensionNodeDescriptor } from '@/lib/flows/extensions/validate-extension';
-import { resolveTargetCapabilities } from '@/lib/flows/capabilities/resolve-capabilities';
+import { resolveAuthoringCapabilities } from '@/lib/flows/capabilities/resolve-capabilities';
 import { canConnect } from '@/lib/flows/validation/port-compatibility';
 import { validateFlowForEditor } from '@/lib/flows/validation/editor-validation';
 import { isDefinitionSupportedByCapabilities } from '@/lib/flows/validation/capability-validation';
@@ -63,6 +63,8 @@ interface FlowDraftPayload {
 interface ManagedNodeSummary {
   id: string;
   name: string;
+  status?: string;
+  version?: string | null;
 }
 
 interface FlowDeploymentSummary {
@@ -535,16 +537,22 @@ export function FlowStudioPage({ flowId, initialDocument }: { flowId: string; in
   // NodePalette, so an extension node appears without palette source edits.
   const paletteDefinitions = React.useMemo(() => flowRegistry.list(), [flowRegistry]);
 
-  // FS-0080: normalized target capability profile for palette gating and
-  // capability validation. Temporary audited 2.4.1 reachable baseline until
-  // live target probe wiring lands in a later ticket: every current
-  // built-in stays available, so existing flows remain viewable/editable
-  // and no version comparison leaks into palette or page code (the
-  // resolver owns the only semver check).
-  const capabilityProfile = React.useMemo(
-    () => resolveTargetCapabilities({ version: '2.4.1', reachable: true }),
-    [],
-  );
+  // FS-0080: normalized target capability profile for palette gating,
+  // capability validation, and version-gated warnings. Derived from the
+  // target's last known version (see `resolveAuthoringCapabilities`): a stored
+  // OFFLINE probe status never disables authoring, and deploy checks live
+  // reachability server-side. Untargeted or unprobed flows use the audited
+  // 2.4.1 baseline so editing stays unblocked.
+  const capabilityProfile = React.useMemo(() => {
+    const targetNodeId = flowQuery.data?.targetNodeId ?? null;
+    const match = targetNodeId
+      ? (nodesQuery.data ?? []).find((entry) => entry.id === targetNodeId)
+      : undefined;
+    return resolveAuthoringCapabilities({
+      version: match?.version,
+      status: match?.status,
+    });
+  }, [flowQuery.data, nodesQuery.data]);
 
   // FS-0068: editor validation derived from committed store state via the
   // single named pipeline in src/lib/flows/validation/editor-validation.ts

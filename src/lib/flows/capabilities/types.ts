@@ -89,3 +89,23 @@ export interface TargetCapabilityProfile {
   ruleTest?: boolean;
   ruleTestSse?: boolean;
 }
+
+/**
+ * Version-gated engine capabilities resolved centrally in
+ * `resolve-capabilities.ts` so components and catalogs never compare
+ * semver strings directly.
+ */
+export interface TargetFeatureFlags {
+  /** eKuiper 2.4.2+ SQL additions: `array_avg`, `acc_max_by`, `acc_min_by`, `acc_map_agg`. */
+  supportsSqlFunctions242: boolean;
+  /** Upstream PR #4213 (`master` / 2.5+): graph `sourceName` decoding preserves fields instead of `{}`. */
+  supportsSafeSourceNameGraphs: boolean;
+  /** eKuiper 2.5+ `GET /rules/{name}/scantables`. */
+  supportsScanTables: boolean;
+  /** eKuiper 2.5+ JSON Lines (`jsonl`) stream & sink serialization format. */
+  supportsJsonl: boolean;
+  /** eKuiper 2.5+ `BUFFER_FULL_POLICY` stream option (`block` | `dropOldest`). */
+  supportsStreamBufferPolicy: boolean;
+  /** eKuiper 2.5+ Kafka record metadata expressions (`meta(topic)`, ``meta(`partition`)``, `meta(offset)`, `meta(key)`, `meta(headers)`). */
+  supportsKafkaRecordMetadata: boolean;
+}

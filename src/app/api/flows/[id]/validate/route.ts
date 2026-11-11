@@ -6,11 +6,11 @@ import {
   requireUser,
 } from '@/lib/api';
 import { getNode } from '@/lib/nodes';
+import type { TargetCapabilityProfile } from '@/lib/flows/capabilities/types';
 import {
-  BASELINE_EKUIPER_VERSION,
-  type TargetCapabilityProfile,
-} from '@/lib/flows/capabilities/types';
-import { resolveTargetCapabilities } from '@/lib/flows/capabilities/resolve-capabilities';
+  resolveAuthoringCapabilities,
+  resolveTargetCapabilities,
+} from '@/lib/flows/capabilities/resolve-capabilities';
 import { FLOW_DOCUMENT_VERSION } from '@/lib/flows/model/flow-document';
 import { getFlowDraft } from '@/lib/flows/persistence/flow-draft-repository';
 import { getFlow } from '@/lib/flows/persistence/flow-repository';
@@ -23,8 +23,10 @@ export const dynamic = 'force-dynamic';
  * Resolve the normalized capability profile for one flow's target (FS-0081).
  *
  * - Flow with a registered target: profile derives from the stored managed
- *   node row (`version`, `status`), the same normalization the client
- *   consumes; no live eKuiper call is made here.
+ *   node row's last known `version` via `resolveAuthoringCapabilities`, the
+ *   same normalization the client consumes; no live eKuiper call is made
+ *   here, and a stored OFFLINE status does not invalidate the draft (deploy
+ *   re-probes the target).
  * - Flow with no target: audited baseline profile (`BASELINE_EKUIPER_VERSION`,
  *   reachable), matching the current client fallback, so semantic
  *   validation is not blocked before a target is chosen.
@@ -35,18 +37,15 @@ async function resolveProfileForFlow(
   targetNodeId: string | null,
 ): Promise<TargetCapabilityProfile> {
   if (targetNodeId === null) {
-    return resolveTargetCapabilities({
-      version: BASELINE_EKUIPER_VERSION,
-      reachable: true,
-    });
+    return resolveAuthoringCapabilities({});
   }
   const target = await getNode(targetNodeId);
   if (target === null) {
     return resolveTargetCapabilities({ version: null, reachable: false });
   }
-  return resolveTargetCapabilities({
+  return resolveAuthoringCapabilities({
     version: target.version,
-    reachable: target.status === 'ONLINE',
+    status: target.status,
   });
 }
 

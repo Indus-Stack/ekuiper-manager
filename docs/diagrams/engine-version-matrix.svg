@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 430" width="920" height="430" role="img" aria-labelledby="title desc">
+  <title id="title">Manager Engine Version Matrix and Capability Gates</title>
+  <desc id="desc">Diagram showing how eKuiper Manager probes a target node version and applies OpenAPI contracts and UI feature flags across 2.4.1, 2.4.2-slim, and 2.5.0-alpha.5 preview.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <rect width="920" height="430" fill="#ffffff" rx="12" />
+
+  <!-- Header -->
+  <rect x="24" y="18" width="872" height="50" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="40" y="40" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#0f172a">Engine Compatibility &amp; Capability Resolution Flow</text>
+  <text x="40" y="58" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#475569">Single semver comparison module: src/lib/flows/capabilities/resolve-capabilities.ts</text>
+
+  <!-- Pipeline Row -->
+  <rect x="24" y="84" width="190" height="56" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="38" y="106" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#0f172a">1. Probe Engine Node</text>
+  <text x="38" y="124" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#475569">POST /api/nodes/:id/probe</text>
+
+  <line x1="214" y1="112" x2="244" y2="112" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <rect x="248" y="84" width="210" height="56" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="262" y="106" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#0f172a">2. Parse Semver Tuple</text>
+  <text x="262" y="124" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#475569">Floor baseline: &gt;= 2.4.1</text>
+
+  <line x1="458" y1="112" x2="488" y2="112" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <rect x="492" y="84" width="205" height="56" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5" />
+  <text x="506" y="106" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#1e3a8a">3. Resolve Capabilities</text>
+  <text x="506" y="124" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#1d4ed8">resolveTargetFeatures()</text>
+
+  <line x1="697" y1="112" x2="727" y2="112" stroke="#475569" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <rect x="731" y="84" width="165" height="56" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="745" y="106" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#0f172a">4. UI &amp; API Gates</text>
+  <text x="745" y="124" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#475569">Swagger + Studio + Rules</text>
+
+  <!-- Connectors down to 3 cards -->
+  <line x1="594" y1="140" x2="594" y2="152" stroke="#94a3b8" stroke-width="1.5" />
+  <line x1="162" y1="152" x2="756" y2="152" stroke="#94a3b8" stroke-width="1.5" />
+  <line x1="162" y1="152" x2="162" y2="164" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" />
+  <line x1="460" y1="152" x2="460" y2="164" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" />
+  <line x1="756" y1="152" x2="756" y2="164" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)" />
+
+  <!-- Column 1: 2.4.1 -->
+  <rect x="24" y="168" width="276" height="240" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="40" y="196" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="700" fill="#0f172a">eKuiper 2.4.1</text>
+  <rect x="40" y="206" width="128" height="22" rx="4" fill="#e2e8f0" />
+  <text x="50" y="221" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#334155">Supported Target</text>
+  <text x="40" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• OpenAPI: 98 paths / 140 ops</text>
+  <text x="40" y="274" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Baseline SQL functions only</text>
+  <text x="40" y="298" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Hides 2.4.2+ helper items</text>
+  <text x="40" y="322" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#b45309">• Shows sourceName warning</text>
+  <text x="40" y="346" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#475569">• Named SQL connections fail over</text>
+  <text x="48" y="364" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#475569">without auto startup recovery</text>
+  <text x="40" y="392" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#475569">Hides all 2.5 preview controls</text>
+
+  <!-- Column 2: 2.4.2-slim -->
+  <rect x="322" y="168" width="276" height="240" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="2" />
+  <text x="338" y="196" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="700" fill="#1e3a8a">eKuiper 2.4.2-slim</text>
+  <rect x="338" y="206" width="154" height="22" rx="4" fill="#dbeafe" />
+  <text x="348" y="221" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#1d4ed8">Bundled Compose Default</text>
+  <text x="338" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• OpenAPI: 98 paths / 140 ops</text>
+  <text x="338" y="274" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Enables 4 new 2.4.2 SQL functions:</text>
+  <text x="348" y="294" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#1d4ed8">array_avg, acc_max_by,</text>
+  <text x="348" y="310" font-family="ui-monospace, SFMono-Regular, monospace" font-size="11" fill="#1d4ed8">acc_min_by, acc_map_agg</text>
+  <text x="338" y="334" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• SQL connection recovery (#4128)</text>
+  <text x="338" y="358" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#b45309">• Shows sourceName warning</text>
+  <text x="338" y="392" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#1d4ed8">Pinned by sha256 digest in compose.yaml</text>
+
+  <!-- Column 3: 2.5 preview -->
+  <rect x="620" y="168" width="276" height="240" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5" />
+  <text x="636" y="196" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="700" fill="#14532d">eKuiper 2.5.0-alpha.5</text>
+  <rect x="636" y="206" width="150" height="22" rx="4" fill="#dcfce7" />
+  <text x="646" y="221" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600" fill="#15803d">Separate Preview Contract</text>
+  <text x="636" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• OpenAPI: 99 paths / 141 ops</text>
+  <text x="636" y="274" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Exposes Rule Scan tables tab</text>
+  <text x="636" y="298" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Enables jsonl &amp; BUFFER_FULL_POLICY</text>
+  <text x="636" y="322" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#0f172a">• Enables Kafka meta_* SQL keys</text>
+  <text x="636" y="346" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#15803d">• Safe sourceName graphs (#4213)</text>
+  <text x="636" y="376" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#b45309">Pre-upgrade audit required for sandbox,</text>
+  <text x="636" y="392" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="#b45309">listener bind, and checkpoints</text>
+</svg>
+

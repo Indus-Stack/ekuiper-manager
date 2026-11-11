@@ -4,6 +4,7 @@ import {
   decodeActions,
   duplicateRule,
   encodeActions,
+  insertFunctionIntoSql,
   parseSimpleSql,
   redactSensitive,
   sinkFields,
@@ -169,5 +170,84 @@ describe('rule designer codecs', () => {
         },
       },
     ]);
+  });
+});
+
+describe('insertFunctionIntoSql', () => {
+  const fn = 'array_avg(arr)';
+
+  it('adds the function to the SELECT list when no caret is set (review regression)', () => {
+    expect(insertFunctionIntoSql('SELECT temperature FROM demo', fn, null)).toBe(
+      'SELECT temperature, array_avg(arr) FROM demo',
+    );
+  });
+
+  it('keeps the rest of the query intact and parses back as a simple query', () => {
+    const next = insertFunctionIntoSql('SELECT temperature FROM demo WHERE temperature > 10', fn, null);
+    expect(next).toBe('SELECT temperature, array_avg(arr) FROM demo WHERE temperature > 10');
+    expect(parseSimpleSql(next)).not.toBeNull();
+  });
+
+  it('replaces a lone * and fills an empty SELECT list', () => {
+    expect(insertFunctionIntoSql('SELECT * FROM demo', fn, null)).toBe('SELECT array_avg(arr) FROM demo');
+    expect(insertFunctionIntoSql('SELECT FROM demo', fn, null)).toBe('SELECT array_avg(arr) FROM demo');
+  });
+
+  it('is not fooled by FROM inside quotes, parentheses, or longer words', () => {
+    expect(insertFunctionIntoSql("SELECT 'a FROM b' AS x FROM demo", fn, null)).toBe(
+      "SELECT 'a FROM b' AS x, array_avg(arr) FROM demo",
+    );
+    expect(insertFunctionIntoSql("SELECT 'sensor\\'s from line' AS label FROM demo", fn, null)).toBe(
+      "SELECT 'sensor\\'s from line' AS label, array_avg(arr) FROM demo",
+    );
+    expect(insertFunctionIntoSql("SELECT 'sensor''s from line' AS label FROM demo", fn, null)).toBe(
+      "SELECT 'sensor''s from line' AS label, array_avg(arr) FROM demo",
+    );
+    expect(insertFunctionIntoSql('SELECT "sensor\\"s from line" AS label FROM demo', fn, null)).toBe(
+      'SELECT "sensor\\"s from line" AS label, array_avg(arr) FROM demo',
+    );
+    expect(insertFunctionIntoSql('SELECT `sensor\\` FROM demo', fn, null)).toBe(
+      'SELECT `sensor\\`, array_avg(arr) FROM demo',
+    );
+    expect(insertFunctionIntoSql('SELECT cast(x FROM y) FROM demo', fn, null)).toBe(
+      'SELECT cast(x FROM y), array_avg(arr) FROM demo',
+    );
+    expect(insertFunctionIntoSql('SELECT fromage FROM demo', fn, null)).toBe(
+      'SELECT fromage, array_avg(arr) FROM demo',
+    );
+  });
+
+  it('skips comments with apostrophes and preserved keywords', () => {
+    expect(
+      insertFunctionIntoSql("SELECT temperature -- don't change this comment before FROM\nFROM demo", fn, null),
+    ).toBe("SELECT temperature -- don't change this comment before FROM\n, array_avg(arr)\nFROM demo");
+    expect(
+      insertFunctionIntoSql("SELECT -- don't change this comment before FROM\ntemperature FROM demo", fn, null),
+    ).toBe("SELECT -- don't change this comment before FROM\ntemperature, array_avg(arr) FROM demo");
+    expect(
+      insertFunctionIntoSql("-- don't change this comment before FROM\nSELECT temperature FROM demo", fn, null),
+    ).toBe("-- don't change this comment before FROM\nSELECT temperature, array_avg(arr) FROM demo");
+    expect(
+      insertFunctionIntoSql("SELECT temperature /* don't change this comment before FROM */ FROM demo", fn, null),
+    ).toBe("SELECT temperature /* don't change this comment before FROM */, array_avg(arr) FROM demo");
+  });
+
+  it('appends to the list of a query that has no FROM yet', () => {
+    expect(insertFunctionIntoSql('SELECT temperature  ', fn, null)).toBe('SELECT temperature, array_avg(arr)');
+  });
+
+  it('starts a new statement for empty SQL and leaves non-SELECT text unchanged', () => {
+    expect(insertFunctionIntoSql('  ', fn, null)).toBe('SELECT array_avg(arr) FROM ');
+    expect(insertFunctionIntoSql('not sql', fn, null)).toBe('not sql');
+  });
+
+  it('honours an explicit caret or selection', () => {
+    expect(insertFunctionIntoSql('SELECT  FROM demo', fn, { start: 7, end: 7 })).toBe(
+      'SELECT array_avg(arr) FROM demo',
+    );
+    expect(insertFunctionIntoSql('SELECT x FROM demo', fn, { start: 7, end: 8 })).toBe(
+      'SELECT array_avg(arr) FROM demo',
+    );
+    expect(insertFunctionIntoSql('SELECT x', fn, { start: 99, end: 120 })).toBe('SELECT xarray_avg(arr)');
   });
 });

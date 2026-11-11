@@ -49,6 +49,8 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { ekuiperClient } from '@/lib/ekuiper/client';
+import { getFunctionsForVersion } from '@/lib/ekuiper/functions';
+import { resolveTargetFeatures } from '@/lib/flows/capabilities/resolve-capabilities';
 import {
   BUILTIN_SINKS,
   buildSql,
@@ -56,6 +58,7 @@ import {
   decodeActions,
   displayFieldValue,
   encodeActions,
+  insertFunctionIntoSql,
   parseSimpleSql,
   redactSensitive,
   sinkFields,
@@ -253,6 +256,7 @@ function ActionCard({
   metadata,
   availableConnections = [],
   availableSchemas = [],
+  supportsJsonl = false,
   revealSensitive,
   onChange,
   onRemove,
@@ -264,6 +268,7 @@ function ActionCard({
   metadata?: MetadataDetail;
   availableConnections?: string[];
   availableSchemas?: string[];
+  supportsJsonl?: boolean;
   revealSensitive: boolean;
   onChange: (action: ActionDraft) => void;
   onRemove: () => void;
@@ -558,7 +563,7 @@ function ActionCard({
                   variant="outline"
                   size="sm"
                   onClick={() => setSinkConfModalOpen(true)}
-                  className="h-6 text-[11px] text-emerald-600 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
+                  className="h-6 text-[11px] text-emerald-700 dark:text-emerald-400 border-emerald-600/30 hover:bg-emerald-500/10 gap-1 px-2"
                 >
                   <Plus className="size-3" />
                   {t('rule.addSinkTemplate')}
@@ -623,6 +628,7 @@ function ActionCard({
               onChange={handleBaseOptionsChange}
               availableConnections={availableConnections}
               availableSchemas={availableSchemas}
+              supportsJsonl={supportsJsonl}
             />
           </div>
         )}
@@ -634,6 +640,7 @@ function ActionCard({
             onChange={handleBaseOptionsChange}
             availableConnections={availableConnections}
             availableSchemas={availableSchemas}
+            supportsJsonl={supportsJsonl}
           />
         )}
 
@@ -673,8 +680,11 @@ export function RuleDesigner({ id }: { id?: string }) {
   const router = useRouter();
   const { servers, activeServerId } = useServerStore();
   const active = servers.find((node) => node.id === activeServerId);
+  const features = resolveTargetFeatures(active?.version);
   const [step, setStep] = React.useState<DesignerStep>('query');
   const [queryMode, setQueryMode] = React.useState<QueryMode>('visual');
+  const [fnSearch, setFnSearch] = React.useState('');
+  const sqlSelectionRef = React.useRef<{ start: number; end: number } | null>(null);
   const [ruleId, setRuleId] = React.useState(id ?? '');
   const [ruleName, setRuleName] = React.useState('');
   const [query, setQuery] = React.useState<QueryDraft>(EMPTY_QUERY);
@@ -774,9 +784,11 @@ export function RuleDesigner({ id }: { id?: string }) {
         setGraph(rule.graph);
         setQueryMode('sql');
         setSql('');
+        sqlSelectionRef.current = null;
       } else {
         const parsed = parseSimpleSql(rule.sql ?? '');
         setSql(rule.sql ?? '');
+        sqlSelectionRef.current = null;
         if (parsed) { setQuery(parsed); setQueryMode('visual'); }
         else setQueryMode('sql');
       }
@@ -792,6 +804,31 @@ export function RuleDesigner({ id }: { id?: string }) {
 
   const filteredResources = resources.filter((resource) => resource.name.toLowerCase().includes(resourceFilter.toLowerCase()));
   const filteredSinks = sinkTypes.filter((type) => `${type} ${actionLabel(type, t)}`.toLowerCase().includes(sinkFilter.toLowerCase()));
+  const availableFunctions = React.useMemo(() => {
+    const matches = getFunctionsForVersion(active?.version, fnSearch);
+    const seen = new Set<string>();
+    return matches.filter((fn) => {
+      if (seen.has(fn.name)) return false;
+      seen.add(fn.name);
+      return true;
+    });
+  }, [active?.version, fnSearch]);
+
+  const insertFunctionSignature = (signature: string) => {
+    if (queryMode === 'visual') {
+      const currentFields = query.fields.trim();
+      const nextFields = !currentFields || currentFields === '*'
+        ? signature
+        : `${query.fields.trimEnd()}, ${signature}`;
+      changeQuery('fields', nextFields);
+      return;
+    }
+    const sel = sqlSelectionRef.current;
+    setGraph(undefined);
+    setSql((current) => insertFunctionIntoSql(current, signature, sel));
+    sqlSelectionRef.current = null;
+    setValidation(null);
+  };
 
   const changeQuery = (key: keyof QueryDraft, value: string) => {
     setGraph(undefined);
@@ -881,10 +918,12 @@ export function RuleDesigner({ id }: { id?: string }) {
       if (isObject(parsed.graph)) {
         setGraph(parsed.graph);
         setSql('');
+        sqlSelectionRef.current = null;
         setQueryMode('sql');
       } else if (typeof parsed.sql === 'string') {
         setGraph(undefined);
         setSql(parsed.sql);
+        sqlSelectionRef.current = null;
         const simple = parseSimpleSql(parsed.sql);
         if (simple) setQuery(simple);
         setQueryMode(simple ? 'visual' : 'sql');
@@ -991,7 +1030,7 @@ export function RuleDesigner({ id }: { id?: string }) {
                 </Card>
                 <Card>
                   <CardHeader className="pb-3"><div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><CardTitle className="text-lg">{t('rule.query')}</CardTitle><CardDescription>{t('rule.builderHint')}</CardDescription></div><Tabs value={queryMode} onValueChange={(value) => { setQueryMode(value as QueryMode); if (value === 'sql' && !sql) setSql(buildSql(query)); }}><TabsList><TabsTrigger value="visual">{t('rule.visual')}</TabsTrigger><TabsTrigger value="sql">{t('rule.sql')}</TabsTrigger></TabsList></Tabs></div></CardHeader>
-                  <CardContent>
+                  <CardContent className="flex flex-col gap-5">
                     {queryMode === 'visual' ? (
                       <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-3">
@@ -1018,8 +1057,51 @@ export function RuleDesigner({ id }: { id?: string }) {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex flex-col gap-2"><Label htmlFor="rule-sql">eKuiper SQL</Label><Textarea id="rule-sql" value={sql} onChange={(event) => { setGraph(undefined); setSql(event.target.value); setValidation(null); }} className="min-h-72 font-mono text-sm" spellCheck={false} placeholder={t('rule.selectExample')} /><p className="text-xs text-muted-foreground">Switching to Visual is safe only when the query can be represented by the fields above.</p></div>
+                      <div className="flex flex-col gap-2"><Label htmlFor="rule-sql">eKuiper SQL</Label><Textarea id="rule-sql" value={sql} onChange={(event) => { setGraph(undefined); setSql(event.target.value); setValidation(null); }} onSelect={(event) => { sqlSelectionRef.current = { start: event.currentTarget.selectionStart ?? sql.length, end: event.currentTarget.selectionEnd ?? sql.length }; }} className="min-h-72 font-mono text-sm" spellCheck={false} placeholder={t('rule.selectExample')} /><p className="text-xs text-muted-foreground">Switching to Visual is safe only when the query can be represented by the fields above.</p></div>
                     )}
+                    <div className="rounded-lg border bg-muted/20 p-3 flex flex-col gap-3" data-testid="rule-function-helper">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <p className="text-sm font-medium">{t('rule.functionHelperTitle')}</p>
+                          <p className="text-xs text-muted-foreground">{t('rule.functionHelperHint')}</p>
+                        </div>
+                        <div className="relative sm:w-64">
+                          <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" aria-hidden="true" />
+                          <Input
+                            data-testid="rule-function-search"
+                            value={fnSearch}
+                            onChange={(event) => setFnSearch(event.target.value)}
+                            placeholder={t('rule.functionSearchPlaceholder')}
+                            aria-label={t('rule.functionSearchPlaceholder')}
+                            className="h-8 pl-8 text-xs"
+                          />
+                        </div>
+                      </div>
+                      {availableFunctions.length > 0 ? (
+                        <div className="flex max-h-40 flex-wrap gap-1.5 overflow-y-auto pr-1">
+                          {availableFunctions.map((fn) => (
+                            <button
+                              key={fn.name}
+                              type="button"
+                              data-testid={`sql-fn-${fn.name}`}
+                              aria-label={t('rule.insertFunction', { signature: fn.signature })}
+                              title={fn.description}
+                              onClick={() => insertFunctionSignature(fn.signature)}
+                              className="inline-flex items-center gap-1.5 rounded-md border bg-background px-2 py-1 font-mono text-xs hover:border-primary hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                              <span>{fn.signature}</span>
+                              {fn.minVersion && (
+                                <Badge variant="secondary" className="px-1 py-0 text-[10px]">
+                                  {fn.minVersion}
+                                </Badge>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground">{t('rule.noFunctionsMatch')}</p>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
                 <div className="flex justify-end"><Button onClick={() => setStep('actions')}>{t('rule.continueToOutputs')}<ArrowRight className="ml-2 size-4" aria-hidden="true" /></Button></div>
@@ -1051,6 +1133,7 @@ export function RuleDesigner({ id }: { id?: string }) {
                       metadata={sinkMetadata[action.type]}
                       availableConnections={availableConnections}
                       availableSchemas={availableSchemas}
+                      supportsJsonl={features.supportsJsonl}
                       revealSensitive={revealSensitive}
                       onChange={(next) => changeAction(index, next)}
                       onRemove={() => setActions((current) => current.filter((_, itemIndex) => itemIndex !== index))}

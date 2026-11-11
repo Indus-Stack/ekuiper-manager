@@ -4,6 +4,7 @@ import { query, withTransaction } from '@/lib/db';
 import { assertSafeNodeDestination, normalizeNodeUrl } from '@/lib/network';
 import { decryptSecret, encryptSecret } from '@/lib/secrets';
 import { parseEKuiperJsonObject } from '@/lib/ekuiper/wire';
+import { resolveTargetFeatures } from '@/lib/flows/capabilities/resolve-capabilities';
 
 export const NODE_COOKIE = 'ekuiper_manager_node';
 
@@ -292,10 +293,13 @@ export async function probeNode(id: string): Promise<ManagedNode> {
     const payload = parseEKuiperJsonObject(await response.text());
     const version = typeof payload.version === 'string' ? payload.version : null;
     const compatible = Boolean(version && versionAtLeast(version, [2, 4, 1]));
+    const features = resolveTargetFeatures(version);
     const capabilities = {
       core: true,
       bulkRuleControl: Boolean(version && versionAtLeast(version, [2, 4, 0])),
       schemaUpload: Boolean(version && versionAtLeast(version, [2, 4, 1])),
+      sqlFunctions242: features.supportsSqlFunctions242,
+      preview25: features.supportsScanTables,
     };
     await query(
       `UPDATE managed_nodes

@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0] - 2026-11-11
+
+### Added
+- **Light and dark themes**: A complete light palette, a theme provider with `light`, `dark`, and `system` options (default `dark`), a theme menu in the header, a Theme card in Settings, no-flash theme initialisation, and theme-aware Monaco editors and React Flow canvas. Fixes the theme part of #178.
+- **Version-aware Rule Designer & 2.5 preview capabilities**: Added searchable SQL function suggestions in Rule Designer (including eKuiper `2.4.2` additions `array_avg`, `acc_max_by`, `acc_min_by`, `acc_map_agg`), gated preview capabilities to their specific upstream alpha floors (`GET /rules/{name}/scantables` at `2.5.0-alpha.1`, stream `BUFFER_FULL_POLICY` at `2.5.0-alpha.2`, `sourceName` graph decoder safety, `jsonl`, and Kafka record metadata at `2.5.0-alpha.5`), and added a non-blocking Flow Studio `FLOW_SOURCENAME_DECODE_WARNING` diagnostic for `< 2.5.0-alpha.5` targets.
+- **Offline Flow Studio authoring & safe deployment**: Kept Flow Studio palette authoring and draft validation enabled using the target's last known capabilities (`resolveAuthoringCapabilities`), while executing an immediate live probe during deployment (`deployFlow`) to reject unreachable engines before attempting creation.
+
+### Changed
+- **Bundled eKuiper 2.4.2 & OpenAPI contracts**: Updated the bundled Compose engine to digest-pinned `lfedge/ekuiper:2.4.2-slim` (retaining `2.4.1` support), retargeted the canonical OpenAPI spec (`98` paths / `140` operations) and Swagger API Docs to `v2.4.2`, and added a separate `v2.5.0-alpha.5` preview spec (`99` paths / `141` operations) with CI validation.
+- **Responsive Swagger API Docs controls**: Wrapped documentation headers and preview selectors to avoid overflow clipping on 375px mobile viewports.
+
+### Fixed
+- **SQL function insertion query safety**: In SQL mode, clicking a function without an active cursor selection now safely inserts the expression into the query `SELECT` list instead of appending it after `FROM demo`. The scanner limits escape handling to string literals (`\'`, `\"`, `''`), preserves backtick identifiers (`...`), and skips single-line (`--`) and multi-line (`/* */`) comments to avoid misidentifying the `SELECT` or `FROM` clauses.
+- **Plain-text eKuiper mutation responses**: Updated both eKuiper proxy routes with `sanitizeSensitiveEKuiperBody` so plain-text `"success"` responses on sensitive connection paths succeed cleanly instead of returning HTTP `502`.
+
 ## [1.4.0] - 2026-11-04
 
 ### Added

@@ -26,7 +26,7 @@ import { useT } from '@/lib/i18n';
 export interface SinkBaseOptions {
   omitIfEmpty?: boolean;
   sendSingle?: boolean;
-  format?: 'json' | 'binary' | 'delimited' | 'protobuf' | 'custom' | string;
+  format?: 'json' | 'jsonl' | 'binary' | 'delimited' | 'protobuf' | 'custom' | string;
   schemaName?: string;
   schemaMessage?: string;
   delimited?: string;
@@ -49,6 +49,7 @@ export interface SinkBaseFormProps {
   disabled?: boolean;
   availableConnections?: string[];
   availableSchemas?: string[];
+  supportsJsonl?: boolean;
 }
 
 export function SinkBaseForm({
@@ -58,6 +59,7 @@ export function SinkBaseForm({
   disabled = false,
   availableConnections = [],
   availableSchemas = [],
+  supportsJsonl = false,
 }: SinkBaseFormProps) {
   const t = useT();
   const [showAdvanced, setShowAdvanced] = React.useState(false);
@@ -154,6 +156,9 @@ export function SinkBaseForm({
               <SelectContent>
                 <SelectGroup>
                   <SelectItem value="json" className="text-xs">{t('connector.jsonFormat')}</SelectItem>
+                  {(supportsJsonl || format === 'jsonl') && (
+                    <SelectItem value="jsonl" className="text-xs">{t('connector.jsonlFormat')}</SelectItem>
+                  )}
                   <SelectItem value="binary" className="text-xs">{t('connector.binaryFormat')}</SelectItem>
                   <SelectItem value="delimited" className="text-xs">{t('connector.delimited')}</SelectItem>
                   <SelectItem value="protobuf" className="text-xs">{t('connector.protobufFormat')}</SelectItem>

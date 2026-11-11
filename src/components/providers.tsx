@@ -5,8 +5,14 @@ import { ReactNode, useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider } from "@/lib/i18n";
+import { ThemeProvider, useTheme } from "@/lib/theme";
 import { Toaster } from "sonner";
 import { useServerStore } from "@/stores/server-store";
+
+function ThemedToaster() {
+  const { resolvedTheme } = useTheme();
+  return <Toaster theme={resolvedTheme} richColors closeButton position="bottom-left" />;
+}
 
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
@@ -33,12 +39,14 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <I18nProvider>
-        <TooltipProvider>
-          {children}
-          <Toaster richColors closeButton position="bottom-left" />
-        </TooltipProvider>
-      </I18nProvider>
+      <ThemeProvider>
+        <I18nProvider>
+          <TooltipProvider>
+            {children}
+            <ThemedToaster />
+          </TooltipProvider>
+        </I18nProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

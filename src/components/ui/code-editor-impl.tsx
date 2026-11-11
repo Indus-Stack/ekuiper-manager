@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Editor, { OnMount } from "@monaco-editor/react";
+import { useTheme } from "@/lib/theme";
 
 interface CodeEditorProps {
     value: string;
@@ -11,6 +12,7 @@ interface CodeEditorProps {
 }
 
 export function CodeEditorImpl({ value, onChange, language = "javascript", readOnly = false }: CodeEditorProps) {
+    const { resolvedTheme } = useTheme();
     const handleEditorChange = (value: string | undefined) => {
         onChange?.(value || "");
     };
@@ -23,7 +25,7 @@ export function CodeEditorImpl({ value, onChange, language = "javascript", readO
     };
 
     return (
-        <div className="h-full min-h-[400px] w-full border rounded-md overflow-hidden bg-[#1e1e1e]">
+        <div className="h-full min-h-[400px] w-full border rounded-md overflow-hidden bg-background">
             <Editor
                 height="100%"
                 defaultLanguage={language}
@@ -31,7 +33,7 @@ export function CodeEditorImpl({ value, onChange, language = "javascript", readO
                 value={value}
                 onChange={handleEditorChange}
                 onMount={handleEditorDidMount}
-                theme="vs-dark"
+                theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
                 options={{
                     readOnly,
                     minimap: { enabled: false },
