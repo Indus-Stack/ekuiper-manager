@@ -268,7 +268,12 @@ function toTransportApiError(error: unknown, fallbackCode: string): ApiError {
 }
 
 function defaultResolveProfile(target: ManagedNode): TargetCapabilityProfile {
+  const engineFamily =
+    target.enginePreference && target.enginePreference !== 'auto'
+      ? target.enginePreference
+      : target.detectedFamily ?? null;
   return resolveTargetCapabilities({
+    engineFamily,
     version: target.version,
     reachable: target.status === 'ONLINE',
   });

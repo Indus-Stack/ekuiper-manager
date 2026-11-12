@@ -1,4 +1,11 @@
 import { create } from 'zustand';
+import type {
+  AuthorizationState,
+  ConnectionState,
+  EngineFamily,
+  EnginePreference,
+  OperationMode,
+} from '@/lib/engines/types';
 
 export type ServerStatus = 'connected' | 'disconnected' | 'error' | 'unknown';
 export type StorageMode = 'database';
@@ -10,6 +17,14 @@ export interface ServerConnection {
   description?: string;
   status: ServerStatus;
   version?: string;
+  engineFamily?: EngineFamily | null;
+  enginePreference?: EnginePreference;
+  profileId?: string | null;
+  profileRevision?: number;
+  operationMode?: OperationMode;
+  connectionState?: ConnectionState;
+  authorizationState?: AuthorizationState;
+  capabilities?: Record<string, boolean>;
   isDefault?: boolean;
   createdAt: Date;
   updatedAt?: Date;
@@ -22,6 +37,14 @@ interface NodePayload {
   description: string | null;
   status: 'UNKNOWN' | 'ONLINE' | 'OFFLINE' | 'INCOMPATIBLE';
   version: string | null;
+  capabilities?: Record<string, boolean>;
+  enginePreference?: EnginePreference;
+  detectedFamily?: EngineFamily | null;
+  profileId?: string | null;
+  profileRevision?: number;
+  operationMode?: OperationMode;
+  connectionState?: ConnectionState;
+  authorizationState?: AuthorizationState;
   isDefault: boolean;
   createdAt: string;
   updatedAt: string;
@@ -32,11 +55,21 @@ interface NodeListPayload {
   selectedNodeId: string | null;
 }
 
+export function buildTargetCacheKey(
+  nodeId: string | null,
+  profileRevision: number | null | undefined,
+  ...parts: readonly unknown[]
+): readonly unknown[] {
+  return ['target', nodeId ?? 'none', profileRevision ?? 0, ...parts];
+}
+
 interface ServerState {
   storageMode: StorageMode;
   servers: ServerConnection[];
   savedBrowserServers: ServerConnection[];
   activeServerId: string | null;
+  switchEpoch: number;
+  draftsByTarget: Record<string, Record<string, unknown>>;
   isLoading: boolean;
   error: string | null;
   _hasHydrated: boolean;
@@ -47,11 +80,15 @@ interface ServerState {
     url: string;
     description?: string;
     authorization?: string;
+    enginePreference?: EnginePreference;
   }) => Promise<void>;
   updateServer: (id: string, updates: Partial<ServerConnection>) => Promise<void>;
   removeServer: (id: string) => Promise<void>;
   setActiveServer: (id: string | null) => void;
   getActiveServer: () => ServerConnection | null;
+  saveTargetDraft: (targetId: string, draftKey: string, value: unknown) => void;
+  getTargetDraft: <T = unknown>(targetId: string, draftKey: string) => T | undefined;
+  clearTargetDraft: (targetId: string, draftKey: string) => void;
   setHasHydrated: (state: boolean) => void;
 }
 
@@ -64,6 +101,10 @@ function mapNode(node: NodePayload): ServerConnection {
         : node.status === 'INCOMPATIBLE'
           ? 'error'
           : 'unknown';
+  const engineFamily: EngineFamily | null =
+    node.enginePreference && node.enginePreference !== 'auto'
+      ? node.enginePreference
+      : node.detectedFamily ?? null;
   return {
     id: node.id,
     name: node.name,
@@ -71,6 +112,14 @@ function mapNode(node: NodePayload): ServerConnection {
     description: node.description ?? undefined,
     status,
     version: node.version ?? undefined,
+    engineFamily,
+    enginePreference: node.enginePreference ?? 'auto',
+    profileId: node.profileId ?? null,
+    profileRevision: node.profileRevision ?? 0,
+    operationMode: node.operationMode ?? 'unknown',
+    connectionState: node.connectionState ?? 'unknown',
+    authorizationState: node.authorizationState ?? 'unknown',
+    capabilities: node.capabilities ?? {},
     isDefault: node.isDefault,
     createdAt: new Date(node.createdAt),
     updatedAt: new Date(node.updatedAt),
@@ -87,6 +136,8 @@ export const useServerStore = create<ServerState>((set, get) => ({
   servers: [],
   savedBrowserServers: [],
   activeServerId: null,
+  switchEpoch: 0,
+  draftsByTarget: {},
   isLoading: false,
   error: null,
   _hasHydrated: true,
@@ -125,6 +176,7 @@ export const useServerStore = create<ServerState>((set, get) => ({
           baseUrl: server.url,
           description: server.description,
           authorization: server.authorization,
+          enginePreference: server.enginePreference,
         }),
       });
       if (!response.ok) throw new Error(await responseError(response));
@@ -159,23 +211,51 @@ export const useServerStore = create<ServerState>((set, get) => ({
   },
 
   setActiveServer: (id) => {
-    if (!id) {
-      set({ activeServerId: null });
-      return;
-    }
-    set({ error: null });
+    set((state) => ({
+      activeServerId: id,
+      switchEpoch: state.switchEpoch + 1,
+      error: null,
+    }));
+    if (!id || typeof window === 'undefined') return;
     void fetch(`/api/nodes/${encodeURIComponent(id)}/select`, {
       method: 'POST',
       headers: { Origin: window.location.origin },
     })
       .then(async (response) => {
         if (!response.ok) throw new Error(await responseError(response));
-        set({ activeServerId: id });
-        window.location.reload();
       })
       .catch((error) => {
-        set({ error: error instanceof Error ? error.message : 'Failed to select eKuiper node' });
+        set({ error: error instanceof Error ? error.message : 'Failed to select node' });
       });
+  },
+
+  saveTargetDraft: (targetId, draftKey, value) => {
+    set((state) => ({
+      draftsByTarget: {
+        ...state.draftsByTarget,
+        [targetId]: {
+          ...(state.draftsByTarget[targetId] ?? {}),
+          [draftKey]: value,
+        },
+      },
+    }));
+  },
+
+  getTargetDraft: <T = unknown>(targetId: string, draftKey: string): T | undefined => {
+    return get().draftsByTarget[targetId]?.[draftKey] as T | undefined;
+  },
+
+  clearTargetDraft: (targetId, draftKey) => {
+    set((state) => {
+      const targetDrafts = { ...(state.draftsByTarget[targetId] ?? {}) };
+      delete targetDrafts[draftKey];
+      return {
+        draftsByTarget: {
+          ...state.draftsByTarget,
+          [targetId]: targetDrafts,
+        },
+      };
+    });
   },
 
   getActiveServer: () => {

@@ -55,24 +55,42 @@ export function ExpressionEditor({
   const t = useT();
   const { resolvedTheme } = useTheme();
   const [enhanced, setEnhanced] = React.useState(false);
+  const [preferPlain, setPreferPlain] = React.useState(false);
 
   if (!enhanced) {
     return (
-      <Textarea
-        id={fieldId}
-        aria-describedby={descriptionId}
-        value={value}
-        rows={3}
-        spellCheck={false}
-        placeholder={placeholder}
-        onChange={(event) => {
-          onChange(event.target.value);
-        }}
-        onFocus={() => {
-          setEnhanced(true);
-        }}
-        data-testid="flow-expression-fallback"
-      />
+      <div className="flex flex-col gap-1.5">
+        <Textarea
+          id={fieldId}
+          aria-describedby={descriptionId}
+          value={value}
+          rows={3}
+          spellCheck={false}
+          placeholder={placeholder}
+          onChange={(event) => {
+            onChange(event.target.value);
+          }}
+          onFocus={() => {
+            if (!preferPlain) {
+              setEnhanced(true);
+            }
+          }}
+          data-testid="flow-expression-fallback"
+        />
+        {preferPlain && (
+          <button
+            type="button"
+            className="self-start text-xs text-muted-foreground underline underline-offset-2"
+            aria-describedby={descriptionId}
+            onClick={() => {
+              setPreferPlain(false);
+              setEnhanced(true);
+            }}
+          >
+            Use code editor
+          </button>
+        )}
+      </div>
     );
   }
 
@@ -116,6 +134,7 @@ export function ExpressionEditor({
         className="self-start text-xs text-muted-foreground underline underline-offset-2"
         aria-describedby={descriptionId}
         onClick={() => {
+          setPreferPlain(true);
           setEnhanced(false);
         }}
       >{t('flow.usePlainText')}</button>

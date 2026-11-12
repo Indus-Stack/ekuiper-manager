@@ -116,7 +116,7 @@ describe('Flow Studio localized visible labels and controls', () => {
 
   it('renders visible Definition/Test Output tabs, Hide/Show panel actions, and validation headings in both locales', async () => {
     const container = await renderWithLocale(
-      <FlowBottomPanel flowId="flow-1" clientDiagnostics={[]} ruleTestSupported={false} />,
+      <FlowBottomPanel flowId="flow-1" clientDiagnostics={[]} ruleTestSupported={false} defaultOpen />,
       'en-US',
     );
 

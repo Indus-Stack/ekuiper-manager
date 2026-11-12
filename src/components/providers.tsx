@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider } from "@/lib/i18n";
 import { ThemeProvider, useTheme } from "@/lib/theme";
 import { Toaster } from "sonner";
+import { ekuiperClient } from "@/lib/ekuiper/client";
 import { useServerStore } from "@/stores/server-store";
 
 function ThemedToaster() {
@@ -27,15 +28,24 @@ export function Providers({ children }: { children: ReactNode }) {
       })
   );
 
-  // Initialize Server Store
+  // Initialize Server Store & sync explicit target context
   const fetchServers = useServerStore((state) => state.fetchServers);
+  const activeServerId = useServerStore((state) => state.activeServerId);
+  const servers = useServerStore((state) => state.servers);
   const pathname = usePathname();
+  const activeServer = servers.find((s) => s.id === activeServerId) ?? null;
 
   useEffect(() => {
     if (pathname !== "/welcome" && pathname !== "/change-password") {
       void fetchServers();
     }
   }, [fetchServers, pathname]);
+
+  useEffect(() => {
+    ekuiperClient.setNodeContext(activeServerId, activeServer?.profileRevision ?? null);
+    void queryClient.cancelQueries();
+    void queryClient.invalidateQueries();
+  }, [activeServerId, activeServer?.profileRevision, queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>

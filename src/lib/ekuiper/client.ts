@@ -66,8 +66,10 @@ function normalizeExternalFunction(value: ExternalFunction | Record<string, unkn
 export class EKuiperClient {
   protected baseUrl: string;
   private timeout: number;
+  private nodeId: string | null = null;
+  private profileRevision: number | null = null;
 
-  /** Create a client bound to the Manager's selected, registered eKuiper node. */
+  /** Create a client bound to the Manager's selected, registered engine node. */
   constructor(_baseUrl?: string, _ekuiperUrl?: string, timeout?: number, _isDirect = false) {
     // Node selection and credentials are intentionally owned by the Manager server.
     this.baseUrl = "/api/ekuiper";
@@ -76,6 +78,17 @@ export class EKuiperClient {
 
   setBaseUrl(_url: string) {
     // Kept as a compatibility no-op while older screens are consolidated.
+  }
+
+  /** Bind this client explicitly to a registered nodeId (ignores tab-shared cookie). */
+  setNodeContext(nodeId: string | null, profileRevision: number | null = null) {
+    this.nodeId = nodeId;
+    this.profileRevision = profileRevision;
+    this.baseUrl = nodeId ? `/api/nodes/${encodeURIComponent(nodeId)}/engine` : "/api/ekuiper";
+  }
+
+  getNodeId(): string | null {
+    return this.nodeId;
   }
 
   // ---------------------------------------------------------------------------
@@ -96,6 +109,9 @@ export class EKuiperClient {
 
       if (!(options.body instanceof FormData)) {
         headers["Content-Type"] = "application/json";
+      }
+      if (this.nodeId && this.profileRevision !== null && options.method && options.method.toUpperCase() !== "GET") {
+        headers["x-engine-profile-revision"] = String(this.profileRevision);
       }
 
       const response = await fetch(`${this.baseUrl}${endpoint}`, {

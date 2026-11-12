@@ -50,6 +50,8 @@ export async function POST(request: NextRequest) {
       baseUrl: body.baseUrl,
       description: body.description,
       authorization: body.authorization,
+      enginePreference: body.enginePreference,
+      operationModeOverride: body.operationModeOverride,
     });
     const node = await probeNode(created.id);
     recordAuditSafely({

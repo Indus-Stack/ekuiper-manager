@@ -3,9 +3,10 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Loader2, Plus, RefreshCw, Search, Workflow } from 'lucide-react';
+import { Loader2, Plus, RefreshCw, Search, Trash2, Workflow } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/layout';
+import { ConfirmDialog } from '@/components/common';
 import { useT } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -47,6 +48,7 @@ export default function FlowsPage() {
   const [createName, setCreateName] = React.useState('');
   const [createError, setCreateError] = React.useState('');
   const [creating, setCreating] = React.useState(false);
+  const [deleteTarget, setDeleteTarget] = React.useState<FlowListRecord | null>(null);
 
   const load = React.useCallback(async () => {
     setLoading(true);
@@ -106,6 +108,25 @@ export default function FlowsPage() {
     } finally {
       setCreating(false);
     }
+  };
+
+  const removeFlow = async () => {
+    if (!deleteTarget) return;
+    const response = await fetch(`/api/flows/${encodeURIComponent(deleteTarget.id)}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null);
+      const message =
+        payload && typeof payload === 'object' && 'error' in payload
+          ? String((payload as { error: { message?: string } }).error?.message ?? 'Failed to delete flow')
+          : 'Failed to delete flow';
+      toast.error(message);
+      throw new Error(message);
+    }
+    toast.success(`Deleted flow ${deleteTarget.name}`);
+    setFlows((prev) => prev.filter((item) => item.id !== deleteTarget.id));
+    setDeleteTarget(null);
   };
 
   const visible = flows.filter((flow) =>
@@ -178,6 +199,16 @@ export default function FlowsPage() {
                       Target: {flow.targetNodeId ?? '—'} · Updated: {formatUpdated(flow.updatedAt)}
                     </span>
                   </Link>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    aria-label={`Delete flow ${flow.name}`}
+                    onClick={() => setDeleteTarget(flow)}
+                  >
+                    <Trash2 className="size-4" aria-hidden="true" />
+                  </Button>
                 </div>
               ))}
             </CardContent>
@@ -224,6 +255,17 @@ export default function FlowsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ConfirmDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+        title="Delete flow"
+        description={`Delete flow "${deleteTarget?.name ?? ''}"? Any deployed rule on the target node will be undeployed first.`}
+        confirmLabel={t('common.delete')}
+        variant="danger"
+        onConfirm={removeFlow}
+      />
     </AppLayout>
   );
 }

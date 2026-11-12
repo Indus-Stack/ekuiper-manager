@@ -26,6 +26,8 @@ import {
 import { cn } from '@/lib/utils';
 import { useT } from '@/lib/i18n';
 import type { MessageKey } from '@/lib/i18n/translate';
+import type { EngineFamily } from '@/lib/engines/types';
+import { useServerStore, type ServerConnection } from '@/stores/server-store';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -35,6 +37,51 @@ export interface NavItem {
   titleKey: MessageKey;
   href: string;
   icon: ComponentType<{ className?: string }>;
+  requiredEngine?: EngineFamily;
+  requiredCapability?: string;
+}
+
+export function isNavItemSupported(item: NavItem, server: ServerConnection | null): boolean {
+  if (!server) return !item.requiredEngine;
+  if (item.requiredEngine && server.engineFamily && server.engineFamily !== item.requiredEngine) {
+    return false;
+  }
+  if (item.requiredEngine && !server.engineFamily) {
+    return false;
+  }
+  if (item.requiredCapability && server.capabilities && server.capabilities[item.requiredCapability] === false) {
+    return false;
+  }
+  return true;
+}
+
+const ENGINE_SPECIFIC_ROUTES: Array<{
+  prefix: string;
+  requiredEngine: EngineFamily;
+  label: string;
+}> = [
+  { prefix: '/fleet', requiredEngine: 'rekuiper', label: 'Fleet management' },
+  { prefix: '/declarative', requiredEngine: 'rekuiper', label: 'Declarative operations' },
+  { prefix: '/diagnostics', requiredEngine: 'rekuiper', label: 'Runtime diagnostics & DLQ' },
+];
+
+export function checkRouteSupportForTarget(
+  pathname: string,
+  server: ServerConnection | null,
+): { supported: true } | { supported: false; reason: string } {
+  const match = ENGINE_SPECIFIC_ROUTES.find(
+    (rule) => pathname === rule.prefix || pathname.startsWith(`${rule.prefix}/`),
+  );
+  if (!match) return { supported: true };
+  if (!server || server.engineFamily !== match.requiredEngine) {
+    const targetName = server?.name ?? 'the current selection';
+    const engineName = server?.engineFamily ?? 'unknown engine';
+    return {
+      supported: false,
+      reason: `${match.label} requires a ${match.requiredEngine} target (${targetName} is ${engineName}).`,
+    };
+  }
+  return { supported: true };
 }
 
 export interface NavGroup {
@@ -116,6 +163,7 @@ function active(pathname: string, href: string): boolean {
 export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) {
   const pathname = usePathname();
   const t = useT();
+  const activeServer = useServerStore((state) => state.getActiveServer());
   return (
     <aside
       className={cn(
@@ -149,7 +197,9 @@ export function Sidebar({ collapsed = false, onCollapsedChange }: SidebarProps) 
                 </p>
               )}
               <div className="flex flex-col gap-1">
-                {group.items.map((item) => {
+                {group.items
+                  .filter((item) => isNavItemSupported(item, activeServer))
+                  .map((item) => {
                   const label = t(item.titleKey);
                   const itemButton = (
                     <Button

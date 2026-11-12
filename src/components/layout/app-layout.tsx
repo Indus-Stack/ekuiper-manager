@@ -2,10 +2,14 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Sidebar } from "./sidebar";
+import Link from "next/link";
+import { Sidebar, checkRouteSupportForTarget } from "./sidebar";
 import { Header } from "./header";
 import { UnifiedSearch } from "@/components/common/unified-search";
 import { Assistant } from "@/components/assistant/assistant";
+import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
+import { useServerStore } from "@/stores/server-store";
 
 import { useT } from '@/lib/i18n';
 interface AppLayoutProps {
@@ -16,9 +20,19 @@ interface AppLayoutProps {
 export function AppLayout({ children, title }: AppLayoutProps) {
   const t = useT();
   const router = useRouter();
-  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+  const pathname = usePathname();
+  const activeServer = useServerStore((state) => state.getActiveServer());
+  const routeSupport = checkRouteSupportForTarget(pathname, activeServer);
+  const isFlowDesignerRoute = /^\/flows\/[^/]+/.test(pathname);
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(isFlowDesignerRoute);
   const [mounted, setMounted] = React.useState(false);
   const [sessionReady, setSessionReady] = React.useState(false);
+
+  React.useEffect(() => {
+    if (isFlowDesignerRoute) {
+      setSidebarCollapsed(true);
+    }
+  }, [isFlowDesignerRoute]);
 
   // Prevent hydration mismatch - wait for client mount
   React.useEffect(() => {
@@ -85,7 +99,22 @@ export function AppLayout({ children, title }: AppLayoutProps) {
       <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         <Header title={title} />
         <main id="main-content" tabIndex={-1} className="flex-1 overflow-auto p-4 md:p-6 focus:outline-none">
-          {children}
+          {routeSupport.supported ? (
+            children
+          ) : (
+            <div className="mx-auto mt-12 max-w-lg rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
+              <h2 className="text-lg font-semibold">Feature unavailable for selected target</h2>
+              <p className="mt-2 text-sm text-muted-foreground">{routeSupport.reason}</p>
+              <div className="mt-4 flex gap-2">
+                <Button asChild size="sm">
+                  <Link href="/dashboard">Back to Overview</Link>
+                </Button>
+                <Button asChild variant="outline" size="sm">
+                  <Link href="/nodes">Manage Nodes</Link>
+                </Button>
+              </div>
+            </div>
+          )}
         </main>
       </div>
 

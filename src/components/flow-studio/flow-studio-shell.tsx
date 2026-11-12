@@ -33,18 +33,18 @@ interface PanelState {
 }
 
 function readStoredState(): PanelState {
-  if (typeof window === "undefined") return { palette: false, inspector: false };
+  if (typeof window === "undefined") return { palette: true, inspector: true };
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { palette: false, inspector: false };
+    if (!raw) return { palette: true, inspector: true };
     const parsed = JSON.parse(raw) as Partial<PanelState>;
     return {
-      palette: parsed.palette === true,
-      inspector: parsed.inspector === true,
+      palette: parsed.palette !== false,
+      inspector: parsed.inspector !== false,
     };
   } catch {
     // A blocked or corrupt store must never stop the editor from rendering.
-    return { palette: false, inspector: false };
+    return { palette: true, inspector: true };
   }
 }
 
@@ -59,11 +59,11 @@ export function FlowStudioShell({
   const t = useT();
   const canvasContent = canvas ?? children;
 
-  // Start expanded on the server and on first paint, then adopt the stored preference, so the
-  // markup does not depend on browser state and hydration stays stable.
+  // Start collapsed on the server and on first paint so the canvas has maximum room,
+  // then adopt the stored preference while keeping hydration stable.
   const [collapsed, setCollapsed] = React.useState<PanelState>({
-    palette: false,
-    inspector: false,
+    palette: true,
+    inspector: true,
   });
   React.useEffect(() => {
     setCollapsed(readStoredState());
