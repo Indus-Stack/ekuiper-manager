@@ -188,6 +188,7 @@ function StringField({
       id={fieldId}
       aria-describedby={descriptionId}
       type={typeOptions?.password === true ? "password" : "text"}
+      autoComplete={typeOptions?.password === true ? "new-password" : "off"}
       value={text}
       placeholder={placeholder}
       onChange={(event) => {

@@ -414,6 +414,7 @@ function renderControl({
         <Input
           id={`prop-${prop.name}`}
           type={showPassword ? 'text' : 'password'}
+          autoComplete="new-password"
           value={value ?? ''}
           onChange={(e) => onChange(e.target.value)}
           placeholder={prop.default ? String(prop.default) : '••••••••'}
@@ -438,6 +439,7 @@ function renderControl({
     <Input
       id={`prop-${prop.name}`}
       type="text"
+      autoComplete="off"
       value={value ?? ''}
       onChange={(e) => onChange(e.target.value)}
       placeholder={prop.default ? String(prop.default) : ''}

@@ -32,7 +32,7 @@ test('visual rule design and safe duplication round-trip through eKuiper', async
   await expect(page.getByRole('textbox', { name: 'Rule JSON' })).toHaveValue(/SELECT \* FROM e2e_designer_stream WHERE temperature > 80/);
 
   await page.getByRole('button', { name: 'Validate', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText('eKuiper accepted this rule definition');
+  await expect(page.getByRole('status')).toContainText('The engine accepted this rule definition.');
   await page.getByRole('button', { name: 'Create rule', exact: true }).first().click();
   await expect(page).toHaveURL(/\/rules\/e2e_designer_rule/);
 

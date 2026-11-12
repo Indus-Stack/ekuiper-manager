@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { captureUnexpectedErrors, dblclickEmptyCanvas, ensureSignedIn } from './helpers';
+import { captureUnexpectedErrors, dblclickEmptyCanvas, ensureSignedIn, openFlowStudioPanels } from './helpers';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -50,6 +50,7 @@ async function openStudio(page: Page, flowId: string): Promise<void> {
   await page.goto(`/flows/${flowId}`);
   await expect(page.getByTestId('flow-studio-shell')).toBeVisible();
   await expect(page.getByTestId('flow-canvas')).toBeVisible();
+  await openFlowStudioPanels(page);
   await expect(page.getByTestId('node-palette')).toBeVisible();
 }
 

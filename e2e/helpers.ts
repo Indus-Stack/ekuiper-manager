@@ -109,3 +109,35 @@ export async function dblclickEmptyCanvas(
   }
   throw new Error('No empty canvas point found to open the quick node picker');
 }
+
+export async function openFlowStudioPanels(
+  page: Page,
+  options: { palette?: boolean; inspector?: boolean; bottom?: boolean } = {
+    palette: true,
+    inspector: true,
+    bottom: true,
+  },
+): Promise<void> {
+  if (options.palette !== false) {
+    const paletteToggle = page.getByTestId('flow-studio-palette-toggle');
+    if (await paletteToggle.isVisible().catch(() => false)) {
+      if ((await paletteToggle.getAttribute('aria-expanded')) === 'false') {
+        await paletteToggle.click();
+      }
+    }
+  }
+  if (options.inspector !== false) {
+    const inspectorToggle = page.getByTestId('flow-studio-inspector-toggle');
+    if (await inspectorToggle.isVisible().catch(() => false)) {
+      if ((await inspectorToggle.getAttribute('aria-expanded')) === 'false') {
+        await inspectorToggle.click();
+      }
+    }
+  }
+  if (options.bottom !== false) {
+    const bottomExpand = page.getByTestId('flow-bottom-panel-expand');
+    if (await bottomExpand.isVisible().catch(() => false)) {
+      await bottomExpand.click();
+    }
+  }
+}

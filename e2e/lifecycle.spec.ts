@@ -36,7 +36,7 @@ test('owner, node, stream, rule, and user lifecycle', async ({ page }) => {
   await page.getByLabel('Rule ID').fill('e2e_rule');
   await page.getByRole('button').filter({ hasText: 'e2e_stream' }).click();
   await page.getByRole('button', { name: 'Validate', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText('eKuiper accepted this rule definition');
+  await expect(page.getByRole('status')).toContainText('The engine accepted this rule definition.');
   await page.getByRole('button', { name: 'Create rule', exact: true }).first().click();
   await expect(page).toHaveURL(/\/rules\/e2e_rule/);
   await page.getByRole('button', { name: 'Start', exact: true }).click();
