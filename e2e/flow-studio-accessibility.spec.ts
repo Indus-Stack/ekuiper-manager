@@ -265,6 +265,7 @@ test('locale switch to zh-CN updates visible labels, supports Chinese command se
     await page.reload();
     await expect(page.getByTestId('flow-studio-shell')).toBeVisible();
     await expect(page.getByRole('button', { name: '部署流程' })).toHaveText('部署');
+    await page.getByTestId('flow-bottom-panel-expand').click();
     await expect(page.getByTestId('flow-bottom-panel-tab-definition')).toHaveText('定义');
 
     const unexpectedErrors = errors.filter(

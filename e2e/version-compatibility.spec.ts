@@ -644,7 +644,8 @@ test('named sql connection CRUD and recovery status reflection on connections pa
     await apiJson(page, `/api/ekuiper/connections/${encodeURIComponent(connId)}`, { method: 'DELETE' });
 
     let phase: 'failed' | 'connected' = 'failed';
-    await page.route('**/api/ekuiper/connections', async (route) => {
+    const connectionsPattern = /\/api\/(?:ekuiper|nodes\/[^/]+\/engine)\/connections$/;
+    await page.route(connectionsPattern, async (route) => {
       if (route.request().method() !== 'GET') {
         await route.continue();
         return;
@@ -680,7 +681,7 @@ test('named sql connection CRUD and recovery status reflection on connections pa
       page.getByText('dial tcp 127.0.0.1:5432: connect: connection refused'),
     ).toBeHidden();
 
-    await page.unroute('**/api/ekuiper/connections');
+    await page.unroute(connectionsPattern);
     expect(errors).toEqual([]);
   } finally {
     await cleanupResources(page, { connIds: [connId] });
