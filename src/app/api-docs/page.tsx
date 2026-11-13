@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 
 import { useT } from '@/lib/i18n';
 
-type ApiContractSpec = '2.4.2' | '2.5-preview';
+type ApiContractSpec = '2.4.2' | '2.5-preview' | 'rekuiper';
 
 export default function ApiDocsPage() {
   const t = useT();
@@ -17,7 +17,11 @@ export default function ApiDocsPage() {
   const [isLoaded, setIsLoaded] = React.useState(false);
 
   const iframeSrc =
-    specMode === '2.5-preview' ? '/api-docs/index.html?spec=2.5-preview' : '/api-docs/index.html';
+    specMode === '2.5-preview'
+      ? '/api-docs/index.html?spec=2.5-preview'
+      : specMode === 'rekuiper'
+        ? '/api-docs/index.html?spec=rekuiper'
+        : '/api-docs/index.html';
 
   const handleSpecChange = (nextSpec: ApiContractSpec) => {
     if (nextSpec === specMode) return;
@@ -53,7 +57,11 @@ export default function ApiDocsPage() {
               className="h-5 px-1.5 text-[10px] font-mono font-medium text-muted-foreground"
               data-testid="api-docs-version-badge"
             >
-              {specMode === '2.5-preview' ? '2.5.0-alpha.5 Preview · OpenAPI 3.0' : '2.4.2 · OpenAPI 3.0'}
+              {specMode === '2.5-preview'
+                ? '2.5.0-alpha.5 Preview · OpenAPI 3.0'
+                : specMode === 'rekuiper'
+                  ? 'reKuiper 1.0.0-rc5 (main) · OpenAPI 3.0'
+                  : '2.4.2 · OpenAPI 3.0'}
             </Badge>
           </div>
         </div>
@@ -85,6 +93,17 @@ export default function ApiDocsPage() {
               data-testid="api-docs-spec-preview"
             >
               {t('admin.apiContractPreview')}
+            </Button>
+            <Button
+              type="button"
+              variant={specMode === 'rekuiper' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => handleSpecChange('rekuiper')}
+              className="h-7 px-2.5 text-xs font-medium"
+              aria-pressed={specMode === 'rekuiper'}
+              data-testid="api-docs-spec-rekuiper"
+            >
+              reKuiper (main)
             </Button>
           </div>
 
@@ -127,7 +146,6 @@ export default function ApiDocsPage() {
           onLoad={() => setIsLoaded(true)}
           title={t('admin.interactiveApiDocs')}
           className="h-full w-full border-0 bg-white"
-          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
         />
       </div>
     </div>

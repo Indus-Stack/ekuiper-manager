@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "engineFamily": "rekuiper",
+  "profileId": "rekuiper-main-24848c8",
+  "sourceCommit": "24848c8f88363bfe0004cc88c7db73302657aa0c",
+  "protocols": [
+    {
+      "id": "comms-wire-tap",
+      "transport": "websocket",
+      "endpoint": "/comms",
+      "managerRelayEndpoint": "/api/nodes/{nodeId}/engine/events",
+      "managerRelayTransport": "sse",
+      "auth": "server-side-upstream-credential",
+      "notes": "Upstream /comms emits events for multiple rules on a shared bus; Manager relay filters by authorized target/rule and enforces a 500-sample inspection buffer.",
+      "events": [
+        "tap_sample",
+        "connector_event",
+        "heartbeat",
+        "dropped_samples"
+      ]
+    },
+    {
+      "id": "rule-test-sse",
+      "transport": "sse",
+      "endpoint": "/test/{name}",
+      "managerRelayEndpoint": "/api/nodes/{nodeId}/engine/test/{name}",
+      "managerRelayTransport": "sse",
+      "declarativeModeAllowed": false,
+      "notes": "Uses main REST listener rather than auxiliary httpServerPort. Manager disables managed trials in declarative mode due to upstream DELETE cleanup block.",
+      "events": [
+        "started",
+        "data",
+        "error",
+        "completed"
+      ]
+    },
+    {
+      "id": "fleet-agent-ws",
+      "transport": "websocket",
+      "endpoint": "/fleet/ws",
+      "disposition": "engine-internal",
+      "notes": "Engine-to-engine control-plane tunnel between reKuiper devices and hub. Manager does not proxy or implement this protocol."
+    }
+  ]
+}

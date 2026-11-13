@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { captureUnexpectedErrors, ensureSignedIn } from './helpers';
+import { captureUnexpectedErrors, ensureSignedIn, openFlowStudioPanels } from './helpers';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -58,6 +58,7 @@ test('flow studio authoring journey round-trips through autosave', async ({ page
     await expect(page.getByTestId('flow-studio-shell')).toBeVisible();
     const canvas = page.getByTestId('flow-canvas');
     await expect(canvas).toBeVisible();
+    await openFlowStudioPanels(page);
     await expect(page.getByTestId('node-palette')).toBeVisible();
     await expect(page.getByTestId('flow-studio-header')).toContainText(flowName);
 
@@ -305,6 +306,7 @@ test('palette drop payload creates a node via real drop events', async ({ page }
     await expect(page.getByTestId('flow-studio-shell')).toBeVisible();
     const canvas = page.getByTestId('flow-canvas');
     await expect(canvas).toBeVisible();
+    await openFlowStudioPanels(page, { palette: true, inspector: false, bottom: false });
     await expect(page.getByTestId('node-palette-item-memory-source')).toBeVisible();
 
     // Use the outer ReactFlow node element: the inner flow-node div sits inside
@@ -468,6 +470,7 @@ test('flow studio happy path validates memory source, filter, and log sink then 
     await expect(page.getByTestId('flow-studio-shell')).toBeVisible();
     const canvas = page.getByTestId('flow-canvas');
     await expect(canvas).toBeVisible();
+    await openFlowStudioPanels(page);
     await expect(page.getByTestId('node-palette')).toBeVisible();
     await expect(page.getByTestId('flow-studio-header')).toContainText(flowName);
 

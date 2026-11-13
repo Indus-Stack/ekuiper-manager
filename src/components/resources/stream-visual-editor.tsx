@@ -784,7 +784,7 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                   <Button
                     type="button"
                     onClick={() => void save()}
-                    disabled={saving || !resourceName.trim()}
+                    disabled={saving || (!sql.trim() && !resourceName.trim())}
                     className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-6"
                   >
                     {saving ? t('stream.submitting') : t('stream.submit')}
@@ -833,14 +833,6 @@ export function StreamVisualEditor({ kind, name }: StreamVisualEditorProps) {
                           placeholder={generatedSql}
                         />
                       </div>
-                      <Button
-                        type="button"
-                        onClick={() => void save()}
-                        disabled={saving || (!sql.trim() && !resourceName.trim())}
-                        className="w-full text-xs"
-                      >
-                        {saving ? t('stream.saving') : t(byKind(kind, 'stream.saveStream', 'stream.saveTable'))}
-                      </Button>
                     </CardContent>
                   </Card>
                 </div>

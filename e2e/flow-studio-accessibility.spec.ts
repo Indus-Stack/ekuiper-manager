@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { captureUnexpectedErrors, dblclickEmptyCanvas, ensureSignedIn } from './helpers';
+import { captureUnexpectedErrors, dblclickEmptyCanvas, ensureSignedIn, openFlowStudioPanels } from './helpers';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -50,6 +50,7 @@ async function openStudio(page: Page, flowId: string): Promise<void> {
   await page.goto(`/flows/${flowId}`);
   await expect(page.getByTestId('flow-studio-shell')).toBeVisible();
   await expect(page.getByTestId('flow-canvas')).toBeVisible();
+  await openFlowStudioPanels(page);
   await expect(page.getByTestId('node-palette')).toBeVisible();
 }
 
@@ -264,6 +265,7 @@ test('locale switch to zh-CN updates visible labels, supports Chinese command se
     await page.reload();
     await expect(page.getByTestId('flow-studio-shell')).toBeVisible();
     await expect(page.getByRole('button', { name: '部署流程' })).toHaveText('部署');
+    await page.getByTestId('flow-bottom-panel-expand').click();
     await expect(page.getByTestId('flow-bottom-panel-tab-definition')).toHaveText('定义');
 
     const unexpectedErrors = errors.filter(

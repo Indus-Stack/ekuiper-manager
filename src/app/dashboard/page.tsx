@@ -132,7 +132,24 @@ export default function DashboardPage() {
               <div><p className="text-xs text-muted-foreground">{t('page.version')}</p><p className="font-medium">{data?.info.version ?? '—'}</p></div>
               <div><p className="text-xs text-muted-foreground">{t('page.platform')}</p><p className="font-medium">{[data?.info.os, data?.info.arch].filter(Boolean).join(' / ') || '—'}</p></div>
               <div><p className="text-xs text-muted-foreground">{t('page.cpu')}</p><p className="font-medium">{data?.info.cpuUsage ?? t('flow.notReported')}</p></div>
-              <div><p className="text-xs text-muted-foreground">{t('page.memory')}</p><p className="font-medium">{data?.info.memoryUsed ?? t('flow.notReported')}{data?.info.memoryTotal ? ` / ${data.info.memoryTotal}` : ''}</p></div>
+              <div>
+                <p className="text-xs text-muted-foreground">{t('page.memory')}</p>
+                <p className="font-medium">
+                  {(() => {
+                    const fmt = (val?: string) => {
+                      if (!val) return null;
+                      if (!/^\d+$/.test(val.trim())) return val;
+                      const bytes = Number(val);
+                      if (bytes >= 1024 ** 3) return `${(bytes / 1024 ** 3).toFixed(2)} GiB`;
+                      if (bytes >= 1024 ** 2) return `${(bytes / 1024 ** 2).toFixed(1)} MiB`;
+                      return `${bytes} B`;
+                    };
+                    const used = fmt(data?.info.memoryUsed);
+                    const total = fmt(data?.info.memoryTotal);
+                    return `${used ?? t('flow.notReported')}${total ? ` / ${total}` : ''}`;
+                  })()}
+                </p>
+              </div>
             </CardContent>
           </Card>
         </div>

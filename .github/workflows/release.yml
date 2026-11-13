@@ -153,3 +153,4 @@ jobs:
           name: "eKuiper Manager ${{ inputs.tag || github.ref_name }}"
           body_path: RELEASE_BODY.md
           generate_release_notes: true
+

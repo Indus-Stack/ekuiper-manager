@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import type { FlowDiagnostic } from "@/lib/flows/model/diagnostic";
 
 import { useT } from '@/lib/i18n';
+import { useServerStore } from '@/stores/server-store';
 export interface FlowDeploySuccessSummary {
   deploymentId: string;
   ruleId: string;
@@ -139,6 +140,7 @@ export function FlowDeployDialog({
   onDeployed,
 }: FlowDeployDialogProps) {
   const t = useT();
+  const activeServerId = useServerStore((state) => state.activeServerId);
   const [validation, setValidation] =
     React.useState<ServerValidationState>(INITIAL_VALIDATION);
   const [deploy, setDeploy] = React.useState<DeployState>(INITIAL_DEPLOY);
@@ -238,12 +240,19 @@ export function FlowDeployDialog({
     });
     void (async () => {
       try {
-        // No request body: the server deploys the current saved draft to
-        // the flow's registered target. No compiled JSON and no target URL
-        // are ever sent from this dialog.
+        // Pass only the selected targetNodeId (if any); no compiled JSON or URL.
         const response = await fetch(
           `/api/flows/${encodeURIComponent(flowId)}/deploy`,
-          { method: "POST", cache: "no-store" },
+          {
+            method: "POST",
+            cache: "no-store",
+            ...(activeServerId
+              ? {
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ targetNodeId: activeServerId }),
+                }
+              : {}),
+          },
         );
         const payload: unknown = await response.json().catch(() => null);
         if (epoch !== epochRef.current) return;

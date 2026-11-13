@@ -49,7 +49,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { ekuiperClient } from '@/lib/ekuiper/client';
-import { getFunctionsForVersion } from '@/lib/ekuiper/functions';
+import { getFunctionsForTarget } from '@/lib/engines/catalogs';
 import { resolveTargetFeatures } from '@/lib/flows/capabilities/resolve-capabilities';
 import {
   BUILTIN_SINKS,
@@ -702,6 +702,7 @@ export function RuleDesigner({ id }: { id?: string }) {
   const [sinkMetadata, setSinkMetadata] = React.useState<Record<string, MetadataDetail>>({});
   const [availableConnections, setAvailableConnections] = React.useState<string[]>([]);
   const [availableSchemas, setAvailableSchemas] = React.useState<string[]>([]);
+  const [runtimeFunctions, setRuntimeFunctions] = React.useState<unknown>([]);
   const [sinkFilter, setSinkFilter] = React.useState('');
   const [loading, setLoading] = React.useState(Boolean(id));
   const [saving, setSaving] = React.useState(false);
@@ -737,13 +738,15 @@ export function RuleDesigner({ id }: { id?: string }) {
   React.useEffect(() => {
     if (!active) return;
     let cancelled = false;
+    setSinkMetadata({});
     Promise.all([
       ekuiperClient.listStreams().catch(() => []),
       ekuiperClient.listTables().catch(() => []),
       ekuiperClient.listSinkMetadata().catch(() => []),
       ekuiperClient.listConnections().catch(() => []),
       ekuiperClient.listSchemas('protobuf').catch(() => []),
-    ]).then(([streams, tables, sinks, conns, schemas]) => {
+      ekuiperClient.listBuiltinFunctions().catch(() => []),
+    ]).then(([streams, tables, sinks, conns, schemas, fns]) => {
       if (cancelled) return;
       setResources([
         ...streams.map((item) => ({ name: item.name, kind: 'stream' as const })),
@@ -756,6 +759,7 @@ export function RuleDesigner({ id }: { id?: string }) {
       setAvailableSchemas(
         Array.isArray(schemas) ? schemas.map((s: any) => s.name || s).filter(Boolean) : []
       );
+      setRuntimeFunctions(fns);
     });
     return () => { cancelled = true; };
   }, [active]);
@@ -805,14 +809,13 @@ export function RuleDesigner({ id }: { id?: string }) {
   const filteredResources = resources.filter((resource) => resource.name.toLowerCase().includes(resourceFilter.toLowerCase()));
   const filteredSinks = sinkTypes.filter((type) => `${type} ${actionLabel(type, t)}`.toLowerCase().includes(sinkFilter.toLowerCase()));
   const availableFunctions = React.useMemo(() => {
-    const matches = getFunctionsForVersion(active?.version, fnSearch);
-    const seen = new Set<string>();
-    return matches.filter((fn) => {
-      if (seen.has(fn.name)) return false;
-      seen.add(fn.name);
-      return true;
+    return getFunctionsForTarget({
+      engineFamily: active?.engineFamily,
+      version: active?.version,
+      runtimeFunctions,
+      query: fnSearch,
     });
-  }, [active?.version, fnSearch]);
+  }, [active?.engineFamily, active?.version, runtimeFunctions, fnSearch]);
 
   const insertFunctionSignature = (signature: string) => {
     if (queryMode === 'visual') {
@@ -869,8 +872,8 @@ export function RuleDesigner({ id }: { id?: string }) {
     try {
       const result = await ekuiperClient.validateRule(assertReady());
       const next = result.valid
-        ? { kind: 'ok' as const, message: 'eKuiper accepted this rule definition.' }
-        : { kind: 'error' as const, message: result.error ?? 'eKuiper rejected this rule definition.' };
+        ? { kind: 'ok' as const, message: 'The engine accepted this rule definition.' }
+        : { kind: 'error' as const, message: result.error ?? 'The engine rejected this rule definition.' };
       setValidation(next);
       if (result.valid) toast.success('Rule is valid'); else toast.error(next.message);
     } catch (reason) {
@@ -956,10 +959,6 @@ export function RuleDesigner({ id }: { id?: string }) {
               <div className="flex items-center gap-2"><Workflow className="size-6 text-primary" /><h2 className="text-2xl font-semibold tracking-tight">{id ? t('rule.editRule', { id }) : t('rule.ruleDesigner')}</h2></div>
               <p className="mt-1 text-sm text-muted-foreground">{t('rule.designerSubtitle', { node: active?.name ?? t('rule.selectedNode') })}</p>
             </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={() => void validate()} disabled={loading || !active}>{t('rule.validateWithEkuiper')}</Button>
-            <Button onClick={() => void save()} disabled={saving || loading || !active}>{saving ? t('stream.saving') : id ? t('rule.saveChanges') : t('rule.createRule')}</Button>
           </div>
         </div>
 

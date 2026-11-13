@@ -237,10 +237,14 @@ export function DataTable<TData, TValue>({
 
         <div className="flex items-center gap-2">
           <div className="text-sm text-muted-foreground">
-            {t("layout.pageOf", {
-              page: table.getState().pagination.pageIndex + 1,
-              total: table.getPageCount(),
-            })}
+            {(() => {
+              const totalPages = Math.max(1, table.getPageCount());
+              const currentPage = Math.min(table.getState().pagination.pageIndex + 1, totalPages);
+              return t("layout.pageOf", {
+                page: currentPage,
+                total: totalPages,
+              });
+            })()}
           </div>
 
           <div className="flex items-center gap-1">

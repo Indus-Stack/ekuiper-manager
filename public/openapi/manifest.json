@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-12",
+  "specs": [
+    {
+      "engineFamily": "ekuiper",
+      "profileId": "ekuiper-2.4.2",
+      "version": "2.4.2",
+      "commit": "7866cc05bbf4df5ec24e73614981de765f34fefb",
+      "path": "openapi/ekuiper/2.4.2.json",
+      "aliasPath": "ekuiper-openapi.json",
+      "operationCount": 140,
+      "sha256": "944e337ebe05d82b88511ba258241f9f37ba24c46c704ce0c21637e9f77ab27f",
+      "status": "qualified"
+    },
+    {
+      "engineFamily": "ekuiper",
+      "profileId": "ekuiper-2.5.0-alpha.5",
+      "version": "2.5.0-alpha.5",
+      "commit": "fd6bf37959ca00a88d8a874cc10ff4ba868b2900",
+      "path": "openapi/ekuiper/2.5.0-alpha.5.json",
+      "aliasPath": "ekuiper-openapi-2.5-preview.json",
+      "operationCount": 141,
+      "sha256": "afb2d6d98a28332ebb2574abd6c5d84881bf05b7f4fd6176d15b7a28aa10ccca",
+      "status": "preview"
+    },
+    {
+      "engineFamily": "rekuiper",
+      "profileId": "rekuiper-main-24848c8",
+      "version": "1.0.0-rc5",
+      "commit": "24848c8f88363bfe0004cc88c7db73302657aa0c",
+      "path": "openapi/rekuiper/1.0.0-rc5-main.json",
+      "eventsPath": "openapi/rekuiper/1.0.0-rc5-main.events.json",
+      "operationCount": 212,
+      "sha256": "3e9af16a2675433304141a71ec3efc75a95446042a81ae72c9ac98678b389f65",
+      "eventsSha256": "b0d6c4b32bc45763310e0c3200a17ee377a963a56d23a736c7484725da61c3ba",
+      "status": "pinned-for-qualification"
+    }
+  ]
+}

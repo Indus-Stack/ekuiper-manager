@@ -576,9 +576,10 @@ export default function ConnectionsPage() {
                               variant="ghost"
                               size="sm"
                               className="h-8 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
+                              aria-label={`Delete ${item.name}`}
                               onClick={() => setDeleteConfKey(item)}
                             >
-                              <Trash2 className="size-3.5" />
+                              <Trash2 className="size-3.5" aria-hidden="true" />
                             </Button>
                           </div>
                         </div>

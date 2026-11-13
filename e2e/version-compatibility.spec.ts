@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { captureUnexpectedErrors, ensureSignedIn } from './helpers';
+import { captureUnexpectedErrors, ensureSignedIn, openFlowStudioPanels } from './helpers';
 
 test.describe.configure({ mode: 'serial' });
 
@@ -377,6 +377,7 @@ test('flow studio sourceName graphs warn on <2.5 targets and verify runtime outp
     // 5. Open typedFileFlow in Flow Studio UI to verify client/inspector/server/deploy diagnostics & deploy.
     await page.goto(`/flows/${encodeURIComponent(typedFileFlowId)}`);
     await expect(page.getByTestId('flow-studio-shell')).toBeVisible();
+    await openFlowStudioPanels(page);
     await expect(page.locator('[data-save-status="saved"]')).toBeVisible({ timeout: 30_000 });
 
     const clientWarning = page.getByTestId('flow-validation-client-diagnostic').filter({
@@ -580,7 +581,7 @@ test('rule designer filters 2.4.2 SQL functions by target version and validates 
 
       await page.getByRole('button', { name: 'Validate', exact: true }).click();
       await expect(
-        page.locator('[role="status"]').filter({ hasText: 'eKuiper accepted this rule definition' }),
+        page.locator('[role="status"]').filter({ hasText: 'The engine accepted this rule definition.' }),
       ).toBeVisible({ timeout: 20_000 });
 
       for (const expr of [
@@ -643,7 +644,8 @@ test('named sql connection CRUD and recovery status reflection on connections pa
     await apiJson(page, `/api/ekuiper/connections/${encodeURIComponent(connId)}`, { method: 'DELETE' });
 
     let phase: 'failed' | 'connected' = 'failed';
-    await page.route('**/api/ekuiper/connections', async (route) => {
+    const connectionsPattern = /\/api\/(?:ekuiper|nodes\/[^/]+\/engine)\/connections$/;
+    await page.route(connectionsPattern, async (route) => {
       if (route.request().method() !== 'GET') {
         await route.continue();
         return;
@@ -679,7 +681,7 @@ test('named sql connection CRUD and recovery status reflection on connections pa
       page.getByText('dial tcp 127.0.0.1:5432: connect: connection refused'),
     ).toBeHidden();
 
-    await page.unroute('**/api/ekuiper/connections');
+    await page.unroute(connectionsPattern);
     expect(errors).toEqual([]);
   } finally {
     await cleanupResources(page, { connIds: [connId] });

@@ -30,6 +30,7 @@ export interface FlowBottomPanelProps {
    * impossible to connect.
    */
   historyToggle?: React.ReactNode;
+  defaultOpen?: boolean;
 }
 
 /**
@@ -43,9 +44,10 @@ export function FlowBottomPanel({
   ruleTestSupported = false,
   className,
   historyToggle,
+  defaultOpen = false,
 }: FlowBottomPanelProps) {
   const t = useT();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(defaultOpen);
   const [tab, setTab] = React.useState<FlowBottomPanelTab>("validation");
 
   const clientErrorCount = clientDiagnostics.filter(

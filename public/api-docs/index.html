@@ -3,38 +3,95 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>eKuiper REST API Reference</title>
+  <title>Engine REST API Reference</title>
   <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
   <style>
     body {
       margin: 0;
       padding: 0;
       background: #fafafa;
+      font-family: system-ui, -apple-system, sans-serif;
     }
     .swagger-ui .topbar {
       display: none;
     }
+    .spec-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 13px;
+    }
+    .spec-toolbar select {
+      padding: 5px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: #fff;
+      font-size: 13px;
+    }
   </style>
 </head>
 <body>
+  <div class="spec-toolbar">
+    <label for="spec-select"><strong>Engine API Contract:</strong></label>
+    <select id="spec-select">
+      <option value="/openapi/ekuiper/2.4.2.json">eKuiper 2.4.2 (GA)</option>
+      <option value="/openapi/ekuiper/2.5.0-alpha.5.json">eKuiper 2.5.0-alpha.5 (Preview)</option>
+      <option value="/openapi/rekuiper/1.0.0-rc5-main.json">reKuiper 1.0.0-rc5 (main)</option>
+    </select>
+    <span id="target-note" style="color: #6b7280;"></span>
+  </div>
   <div id="swagger-ui"></div>
   <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
   <script>
     window.onload = function() {
       var params = new URLSearchParams(window.location.search);
-      var specUrl = params.get("spec") === "2.5-preview"
-        ? "/ekuiper-openapi-2.5-preview.json"
-        : "/ekuiper-openapi.json";
-      SwaggerUIBundle({
-        url: specUrl,
-        dom_id: "#swagger-ui",
-        deepLinking: true,
-        presets: [
-          SwaggerUIBundle.presets.apis,
-          SwaggerUIBundle.SwaggerUIStandalonePreset
-        ],
-        layout: "BaseLayout"
+      var specParam = params.get("spec");
+      var nodeId = params.get("nodeId");
+      var specUrl = "/openapi/ekuiper/2.4.2.json";
+      if (specParam === "2.5-preview" || specParam === "ekuiper-2.5.0-alpha.5") {
+        specUrl = "/openapi/ekuiper/2.5.0-alpha.5.json";
+      } else if (specParam === "rekuiper" || specParam === "rekuiper-main") {
+        specUrl = "/openapi/rekuiper/1.0.0-rc5-main.json";
+      }
+
+      var select = document.getElementById("spec-select");
+      var note = document.getElementById("target-note");
+      select.value = specUrl;
+      if (nodeId) {
+        note.textContent = "Interactive requests route through Manager node " + nodeId + " (credentials stay server-side).";
+      } else {
+        note.textContent = "Offline reference mode (pass ?nodeId=<id> to route requests through Manager).";
+      }
+
+      function mountSwagger(url) {
+        SwaggerUIBundle({
+          url: url,
+          dom_id: "#swagger-ui",
+          deepLinking: true,
+          requestInterceptor: function(req) {
+            if (nodeId && req.url && !req.url.endsWith(".json")) {
+              try {
+                var parsed = new URL(req.url, window.location.origin);
+                req.url = "/api/nodes/" + encodeURIComponent(nodeId) + "/engine" + parsed.pathname + parsed.search;
+              } catch (_) {}
+            }
+            return req;
+          },
+          presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIBundle.SwaggerUIStandalonePreset
+          ],
+          layout: "BaseLayout"
+        });
+      }
+
+      select.addEventListener("change", function() {
+        mountSwagger(select.value);
       });
+      mountSwagger(specUrl);
     };
   </script>
 </body>

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-12",
+  "engines": [
+    {
+      "family": "ekuiper",
+      "profileId": "ekuiper-2.4.1",
+      "channel": "stable",
+      "version": "2.4.1",
+      "refType": "tag",
+      "ref": "v2.4.1",
+      "repository": "https://github.com/lf-edge/ekuiper",
+      "openApiSpec": "public/ekuiper-openapi.json",
+      "fixture": "lfedge/ekuiper:2.4.1",
+      "status": "qualified"
+    },
+    {
+      "family": "ekuiper",
+      "profileId": "ekuiper-2.4.2",
+      "channel": "stable",
+      "version": "2.4.2",
+      "refType": "tag",
+      "ref": "v2.4.2",
+      "commit": "7866cc05bbf4df5ec24e73614981de765f34fefb",
+      "repository": "https://github.com/lf-edge/ekuiper",
+      "openApiSpec": "public/ekuiper-openapi.json",
+      "fixture": "lfedge/ekuiper:2.4.2-slim",
+      "status": "qualified"
+    },
+    {
+      "family": "ekuiper",
+      "profileId": "ekuiper-2.5.0-alpha.5",
+      "channel": "preview",
+      "version": "2.5.0-alpha.5",
+      "refType": "tag",
+      "ref": "v2.5.0-alpha.5",
+      "commit": "fd6bf37959ca00a88d8a874cc10ff4ba868b2900",
+      "repository": "https://github.com/lf-edge/ekuiper",
+      "openApiSpec": "public/ekuiper-openapi-2.5-preview.json",
+      "fixture": "lfedge/ekuiper:2.5.0-alpha.5",
+      "status": "preview"
+    },
+    {
+      "family": "rekuiper",
+      "profileId": "rekuiper-main-24848c8",
+      "channel": "main",
+      "version": "1.0.0-rc5",
+      "refType": "branch",
+      "ref": "main",
+      "commit": "24848c8f88363bfe0004cc88c7db73302657aa0c",
+      "distinguishedFromTag": {
+        "tag": "v1.0.0-rc5",
+        "tagObject": "5d67727c46bbd29f581b6f6cfd7788a634929abf",
+        "commit": "ec1673850e65bd033c0592dce477b575633664f0"
+      },
+      "repository": "https://github.com/Indus-Stack/rekuiper",
+      "operationLedger": "src/lib/engines/contracts/rekuiper-operation-ledger.json",
+      "fixtures": [
+        "rekuiper-imperative",
+        "rekuiper-declarative",
+        "rekuiper-auth",
+        "rekuiper-fleet"
+      ],
+      "status": "pinned-for-qualification"
+    }
+  ]
+}
+

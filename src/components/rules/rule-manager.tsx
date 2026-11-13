@@ -728,7 +728,12 @@ export function RuleWorkspace({ id }: { id: string }) {
 
   const load = React.useCallback(async () => {
     if (!active) return;
-    setLoading(true); setError('');
+    ekuiperClient.setNodeContext(active.id, active.profileRevision ?? null);
+    setRule(null);
+    setStatus(null);
+    setTabData(null);
+    setLoading(true);
+    setError('');
     try {
       const [definition, ruleStatus] = await Promise.all([
         ekuiperClient.getRule(id), ekuiperClient.getRuleStatus(id).catch(() => ({})),

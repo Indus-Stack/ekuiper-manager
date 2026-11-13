@@ -25,6 +25,7 @@ import {
  *   unavailable); when omitted, the version-gated baseline applies.
  */
 export interface ResolveCapabilitiesInput {
+  engineFamily?: 'ekuiper' | 'rekuiper' | null;
   version?: string | null;
   reachable?: boolean;
   sourceNames?: readonly string[] | null;
@@ -179,6 +180,7 @@ function unavailable(version: string | null, reachable: boolean): TargetCapabili
  * known `version` and probe `status`.
  */
 export interface AuthoringTargetInput {
+  engineFamily?: 'ekuiper' | 'rekuiper' | null;
   version?: string | null;
   status?: string | null;
 }
@@ -204,9 +206,10 @@ export function resolveAuthoringCapabilities(
   const raw = typeof input.version === 'string' ? input.version.trim() : '';
   const version = raw.length > 0 ? raw : null;
   if (version === null && input.status === 'INCOMPATIBLE') {
-    return resolveTargetCapabilities({ version: null, reachable: true });
+    return resolveTargetCapabilities({ engineFamily: input.engineFamily, version: null, reachable: true });
   }
   return resolveTargetCapabilities({
+    engineFamily: input.engineFamily,
     version: version ?? BASELINE_EKUIPER_VERSION,
     reachable: true,
   });
@@ -231,7 +234,10 @@ export function resolveTargetCapabilities(
   if (!reachable || version === null) {
     return unavailable(version, reachable);
   }
-  if (!versionAtLeast(version, MIN_BASELINE_VERSION)) {
+  const isReKuiper =
+    input.engineFamily === 'rekuiper' ||
+    (input.engineFamily == null && /^1\.0\.0-rc/i.test(version));
+  if (!isReKuiper && !versionAtLeast(version, MIN_BASELINE_VERSION)) {
     return unavailable(version, reachable);
   }
 

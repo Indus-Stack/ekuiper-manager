@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import crypto from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -249,7 +250,174 @@ function collectSpecOperations(spec) {
   return operations;
 }
 
+function validateReKuiperDocument(spec, specPath, ledger) {
+  const errors = [];
+  const operationIds = new Map();
+
+  if (!/^3\.0\./.test(spec.openapi ?? "")) {
+    errors.push(`openapi must be a 3.0.x version, found ${JSON.stringify(spec.openapi)}`);
+  }
+  if (spec["x-engine-family"] !== "rekuiper") {
+    errors.push(`x-engine-family must be "rekuiper", found ${JSON.stringify(spec["x-engine-family"])}`);
+  }
+  if (spec["x-source-commit"] !== ledger.pinnedCommit) {
+    errors.push(`x-source-commit must match pinned main commit (${ledger.pinnedCommit}), found ${JSON.stringify(spec["x-source-commit"])}`);
+  }
+
+  for (const [routePath, pathItem] of Object.entries(spec.paths ?? {})) {
+    if (!routePath.startsWith("/")) errors.push(`path does not start with '/': ${routePath}`);
+    const templateNames = [...routePath.matchAll(/\{([^}]+)\}/g)].map((match) => match[1]);
+
+    for (const [method, operation] of Object.entries(pathItem ?? {})) {
+      if (!HTTP_METHODS.has(method)) continue;
+      const label = `${method.toUpperCase()} ${routePath}`;
+
+      if (!operation.operationId) {
+        errors.push(`${label} has no operationId`);
+      } else if (operationIds.has(operation.operationId)) {
+        errors.push(`${label} duplicates operationId '${operation.operationId}' from ${operationIds.get(operation.operationId)}`);
+      } else {
+        operationIds.set(operation.operationId, label);
+      }
+
+      if (!operation.responses || Object.keys(operation.responses).length === 0) {
+        errors.push(`${label} has no responses`);
+      }
+      if (!Array.isArray(operation["x-deployment-modes"]) || operation["x-deployment-modes"].length === 0) {
+        errors.push(`${label} is missing x-deployment-modes`);
+      }
+      if (!operation["x-side-effect"]) {
+        errors.push(`${label} is missing x-side-effect`);
+      }
+
+      const parameters = [...(pathItem.parameters ?? []), ...(operation.parameters ?? [])].map((parameter) =>
+        parameter?.$ref ? resolveJsonPointer(spec, parameter.$ref) : parameter,
+      );
+      const declaredPathParameters = parameters
+        .filter((parameter) => parameter?.in === "path")
+        .map((parameter) => parameter.name);
+      for (const name of templateNames) {
+        const parameter = parameters.find((candidate) => candidate?.in === "path" && candidate.name === name);
+        if (!parameter) errors.push(`${label} does not declare path parameter '${name}'`);
+        else if (parameter.required !== true) errors.push(`${label} path parameter '${name}' is not required`);
+      }
+      for (const name of declaredPathParameters) {
+        if (!templateNames.includes(name)) errors.push(`${label} declares unused path parameter '${name}'`);
+      }
+    }
+  }
+
+  visit(spec, (value, location) => {
+    if (value && typeof value === "object" && typeof value.$ref === "string") {
+      if (value.$ref.startsWith("#/") && resolveJsonPointer(spec, value.$ref) === undefined) {
+        errors.push(`${location} contains unresolved reference ${value.$ref}`);
+      }
+    }
+  });
+
+  const specOps = collectSpecOperations(spec);
+  for (const entry of ledger.operations) {
+    if (entry.disposition === "engine-internal") continue;
+    const oaPath = entry.path.replace(/\*([a-zA-Z0-9_]+)/g, "{$1}").replace(/:([a-zA-Z0-9_]+)/g, "{$1}");
+    if (entry.method === "ANY") {
+      for (const m of ["GET", "POST", "PUT", "DELETE"]) {
+        const key = normalizeOperation(m, oaPath);
+        if (!specOps.has(key)) errors.push(`${specPath} is missing proxy operation ${key}`);
+      }
+    } else {
+      const key = normalizeOperation(entry.method, oaPath);
+      if (!specOps.has(key)) errors.push(`${specPath} is missing ledger operation ${key}`);
+    }
+  }
+
+  if (spec.paths?.["/stop"]?.get?.["x-side-effect"] !== "destructive") {
+    errors.push("GET /stop must be annotated with x-side-effect: 'destructive'");
+  }
+
+  return errors;
+}
+
+function normalizeLf(buf) {
+  return Buffer.from(buf.toString("utf8").replace(/\r\n/g, "\n"), "utf8");
+}
+
+function sha256Buffer(buf) {
+  return crypto.createHash("sha256").update(normalizeLf(buf)).digest("hex");
+}
+
+async function validateAllSpecs() {
+  const errors = [];
+  const manifestPath = path.resolve("public/openapi/manifest.json");
+  const docsManifestPath = path.resolve("docs-site/openapi/manifest.json");
+  const ledgerPath = path.resolve("src/lib/engines/contracts/rekuiper-operation-ledger.json");
+
+  const [manifestBuf, docsManifestBuf, ledgerRaw] = await Promise.all([
+    readFile(manifestPath),
+    readFile(docsManifestPath),
+    readFile(ledgerPath, "utf8"),
+  ]);
+  if (!normalizeLf(manifestBuf).equals(normalizeLf(docsManifestBuf))) {
+    errors.push("public/openapi/manifest.json and docs-site/openapi/manifest.json differ");
+  }
+
+  const manifest = JSON.parse(manifestBuf.toString("utf8"));
+  const ledger = JSON.parse(ledgerRaw);
+
+  for (const entry of manifest.specs ?? []) {
+    const pubSpecPath = path.resolve("public", entry.path);
+    const docsSpecPath = path.resolve("docs-site", entry.path);
+    const [pubBuf, docsBuf] = await Promise.all([readFile(pubSpecPath), readFile(docsSpecPath)]);
+
+    if (!normalizeLf(pubBuf).equals(normalizeLf(docsBuf))) {
+      errors.push(`public/${entry.path} and docs-site/${entry.path} are not byte-identical`);
+    }
+    if (sha256Buffer(pubBuf) !== entry.sha256) {
+      errors.push(`manifest sha256 mismatch for ${entry.path}`);
+    }
+    if (entry.aliasPath) {
+      const aliasBuf = await readFile(path.resolve("public", entry.aliasPath));
+      if (!normalizeLf(pubBuf).equals(normalizeLf(aliasBuf))) {
+        errors.push(`public/${entry.aliasPath} does not match public/${entry.path}`);
+      }
+    }
+    if (entry.eventsPath) {
+      const pubEvents = await readFile(path.resolve("public", entry.eventsPath));
+      const docsEvents = await readFile(path.resolve("docs-site", entry.eventsPath));
+      if (!normalizeLf(pubEvents).equals(normalizeLf(docsEvents))) {
+        errors.push(`public/${entry.eventsPath} and docs-site/${entry.eventsPath} differ`);
+      }
+      if (sha256Buffer(pubEvents) !== entry.eventsSha256) {
+        errors.push(`manifest eventsSha256 mismatch for ${entry.eventsPath}`);
+      }
+      const eventsDoc = JSON.parse(pubEvents.toString("utf8"));
+      if (!Array.isArray(eventsDoc.protocols) || eventsDoc.protocols.length === 0) {
+        errors.push(`events contract ${entry.eventsPath} must define protocols`);
+      }
+    }
+
+    const spec = JSON.parse(pubBuf.toString("utf8"));
+    const opCount = collectSpecOperations(spec).size;
+    if (opCount !== entry.operationCount) {
+      errors.push(`${entry.path} operationCount ${opCount} != manifest ${entry.operationCount}`);
+    }
+
+    if (entry.engineFamily === "rekuiper") {
+      errors.push(...validateReKuiperDocument(spec, pubSpecPath, ledger));
+    } else {
+      errors.push(...validateDocument(spec, pubSpecPath));
+    }
+  }
+
+  if (errors.length) fail(errors);
+  console.log(`Validated all ${manifest.specs.length} engine OpenAPI profiles, checksums, and docs-site parity.`);
+}
+
 const args = process.argv.slice(2);
+if (args.includes("--all")) {
+  await validateAllSpecs();
+  process.exit(0);
+}
+
 const specPath = path.resolve(args.find((arg) => !arg.startsWith("--")) ?? "public/ekuiper-openapi.json");
 const sourceArg = args.find((arg) => arg.startsWith("--official-source-dir="));
 const officialSourceDirectory = sourceArg ? path.resolve(sourceArg.slice("--official-source-dir=".length)) : undefined;
@@ -260,6 +428,14 @@ try {
   spec = JSON.parse(await readFile(specPath, "utf8"));
 } catch (error) {
   fail([`cannot parse ${specPath}: ${error.message}`]);
+}
+
+if (spec["x-engine-family"] === "rekuiper") {
+  const ledger = JSON.parse(await readFile(path.resolve("src/lib/engines/contracts/rekuiper-operation-ledger.json"), "utf8"));
+  const rekuiperErrors = validateReKuiperDocument(spec, specPath, ledger);
+  if (rekuiperErrors.length) fail(rekuiperErrors);
+  console.log(`Validated ${collectSpecOperations(spec).size} operations for reKuiper contract ${specPath}.`);
+  process.exit(0);
 }
 
 const documentErrors = validateDocument(spec, specPath);
